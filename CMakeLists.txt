@@ -5,7 +5,9 @@ set(CMAKE_CXX_STANDARD 17)
 
 include_directories(${PROJECT_SOURCE_DIR}/include)
 
-set(LIBS src/io/json11.cpp)
+# Libraries
+add_subdirectory(src)
+set(LIBS src/io/json11.cpp;parallel)
 
 add_executable(min_cut src/main.cpp)
 target_link_libraries(min_cut ${LIBS})
