@@ -1,12 +1,3 @@
-// Copyright (C) 2018 ETH Zurich
-// Copyright (C) 2018 UT-Battelle, LLC
-// All rights reserved.
-//
-// See LICENSE for terms of usage.
-// See CITATION.md for citation guidelines, if DCA++ is used for scientific publications.
-//
-// Author: Raffaele Solca' (rasolca@itp.phys.ethz.ch)
-//
 // This file tests the Matrix<CPU> class.
 
 #include "linalg/matrix.hpp"
@@ -26,7 +17,7 @@ TEST(MatrixCPUTest, Constructors) {
 
   // Tests all the constructors.
   {
-    dca::linalg::Matrix<float, dca::linalg::CPU> mat(name, size2, capacity2);
+    linalg::Matrix<float, linalg::CPU> mat(name, size2, capacity2);
     ASSERT_EQ(name, mat.get_name());
     ASSERT_EQ(size2, mat.size());
     ASSERT_LE(capacity2.first, mat.capacity().first);
@@ -34,48 +25,48 @@ TEST(MatrixCPUTest, Constructors) {
     ASSERT_NE(nullptr, mat.ptr());
   }
   {
-    dca::linalg::Matrix<double, dca::linalg::CPU> mat;
+    linalg::Matrix<double, linalg::CPU> mat;
     EXPECT_EQ(std::make_pair(0, 0), mat.size());
     EXPECT_LE(0, mat.capacity().first);
     EXPECT_LE(0, mat.capacity().second);
   }
   {
-    dca::linalg::Matrix<int, dca::linalg::CPU> mat(size);
+    linalg::Matrix<int, linalg::CPU> mat(size);
     EXPECT_EQ(std::make_pair(size, size), mat.size());
     EXPECT_LE(size, mat.capacity().first);
     EXPECT_LE(size, mat.capacity().second);
     EXPECT_NE(nullptr, mat.ptr());
   }
   {
-    dca::linalg::Matrix<std::complex<double>, dca::linalg::CPU> mat(size, capacity);
+    linalg::Matrix<std::complex<double>, linalg::CPU> mat(size, capacity);
     EXPECT_EQ(std::make_pair(size, size), mat.size());
     EXPECT_LE(capacity, mat.capacity().first);
     EXPECT_LE(capacity, mat.capacity().second);
     EXPECT_NE(nullptr, mat.ptr());
   }
   {
-    dca::linalg::Matrix<std::complex<float>, dca::linalg::CPU> mat(size2);
+    linalg::Matrix<std::complex<float>, linalg::CPU> mat(size2);
     EXPECT_EQ(size2, mat.size());
     EXPECT_LE(size2.first, mat.capacity().first);
     EXPECT_LE(size2.second, mat.capacity().second);
     EXPECT_NE(nullptr, mat.ptr());
   }
   {
-    dca::linalg::Matrix<float, dca::linalg::CPU> mat(size2, capacity2);
+    linalg::Matrix<float, linalg::CPU> mat(size2, capacity2);
     EXPECT_EQ(size2, mat.size());
     EXPECT_LE(capacity2.first, mat.capacity().first);
     EXPECT_LE(capacity2.second, mat.capacity().second);
     EXPECT_NE(nullptr, mat.ptr());
   }
   {
-    dca::linalg::Matrix<double, dca::linalg::CPU> mat(name);
+    linalg::Matrix<double, linalg::CPU> mat(name);
     EXPECT_EQ(name, mat.get_name());
     EXPECT_EQ(std::make_pair(0, 0), mat.size());
     EXPECT_LE(0, mat.capacity().first);
     EXPECT_LE(0, mat.capacity().second);
   }
   {
-    dca::linalg::Matrix<int, dca::linalg::CPU> mat(name, size);
+    linalg::Matrix<int, linalg::CPU> mat(name, size);
     EXPECT_EQ(name, mat.get_name());
     EXPECT_EQ(std::make_pair(size, size), mat.size());
     EXPECT_LE(size, mat.capacity().first);
@@ -83,7 +74,7 @@ TEST(MatrixCPUTest, Constructors) {
     EXPECT_NE(nullptr, mat.ptr());
   }
   {
-    dca::linalg::Matrix<std::complex<double>, dca::linalg::CPU> mat(name, size, capacity);
+    linalg::Matrix<std::complex<double>, linalg::CPU> mat(name, size, capacity);
     EXPECT_EQ(name, mat.get_name());
     EXPECT_EQ(std::make_pair(size, size), mat.size());
     EXPECT_LE(capacity, mat.capacity().first);
@@ -91,7 +82,7 @@ TEST(MatrixCPUTest, Constructors) {
     EXPECT_NE(nullptr, mat.ptr());
   }
   {
-    dca::linalg::Matrix<std::complex<float>, dca::linalg::CPU> mat(name, size2);
+    linalg::Matrix<std::complex<float>, linalg::CPU> mat(name, size2);
     EXPECT_EQ(name, mat.get_name());
     EXPECT_EQ(size2, mat.size());
     EXPECT_LE(size2.first, mat.capacity().first);
@@ -101,7 +92,7 @@ TEST(MatrixCPUTest, Constructors) {
 }
 
 TEST(MatrixCPUTest, Name) {
-  dca::linalg::Matrix<short, dca::linalg::CPU> mat("First name.");
+  linalg::Matrix<short, linalg::CPU> mat("First name.");
   EXPECT_EQ("First name.", mat.get_name());
   mat.set_name("Second name.");
   EXPECT_EQ("Second name.", mat.get_name());
@@ -112,7 +103,7 @@ TEST(MatrixCPUTest, Properties) {
     std::pair<int, int> size2(3, 5);
     std::pair<int, int> capacity2(5, 5);
 
-    dca::linalg::Matrix<float, dca::linalg::CPU> mat(size2, capacity2);
+    linalg::Matrix<float, linalg::CPU> mat(size2, capacity2);
     EXPECT_FALSE(mat.is_square());
     EXPECT_EQ(size2.first, mat.nrRows());
     EXPECT_EQ(size2.second, mat.nrCols());
@@ -122,7 +113,7 @@ TEST(MatrixCPUTest, Properties) {
     std::pair<int, int> size2(5, 5);
     std::pair<int, int> capacity2(256, 5);
 
-    dca::linalg::Matrix<float, dca::linalg::CPU> mat(size2, capacity2);
+    linalg::Matrix<float, linalg::CPU> mat(size2, capacity2);
     EXPECT_TRUE(mat.is_square());
     EXPECT_EQ(size2.first, mat.nrRows());
     EXPECT_EQ(size2.second, mat.nrCols());
@@ -131,9 +122,9 @@ TEST(MatrixCPUTest, Properties) {
 }
 
 TEST(MatrixCPUTest, ComparisonOperators) {
-  dca::linalg::Matrix<int, dca::linalg::CPU> mat1(std::make_pair(2, 2));
-  dca::linalg::Matrix<int, dca::linalg::CPU> mat2(std::make_pair(2, 2));
-  dca::linalg::Matrix<int, dca::linalg::CPU> mat3(std::make_pair(2, 3));
+  linalg::Matrix<int, linalg::CPU> mat1(std::make_pair(2, 2));
+  linalg::Matrix<int, linalg::CPU> mat2(std::make_pair(2, 2));
+  linalg::Matrix<int, linalg::CPU> mat3(std::make_pair(2, 3));
 
   auto fill_func = [](int i, int j) { return 10 * i + j; };
   testing::setMatrixElements(mat1, fill_func);
@@ -167,8 +158,8 @@ TEST(MatrixCPUTest, ElementPointers) {
   // Check if the pointers are computed correctly.
   std::pair<int, int> size2(5, 3);
 
-  dca::linalg::Matrix<int, dca::linalg::CPU> mat(size2);
-  const dca::linalg::Matrix<int, dca::linalg::CPU>& mat_const_ref(mat);
+  linalg::Matrix<int, linalg::CPU> mat(size2);
+  const linalg::Matrix<int, linalg::CPU>& mat_const_ref(mat);
   for (int j = 0; j < mat.nrCols(); ++j)
     for (int i = 0; i < mat.nrRows(); ++i) {
       int* ptr = mat.ptr();
@@ -184,8 +175,8 @@ TEST(MatrixCPUTest, ElementAccess) {
   // Check if the different element accesses return the same value.
   std::pair<int, int> size2(2, 3);
 
-  dca::linalg::Matrix<int, dca::linalg::CPU> mat(size2);
-  const dca::linalg::Matrix<int, dca::linalg::CPU>& mat_const_ref(mat);
+  linalg::Matrix<int, linalg::CPU> mat(size2);
+  const linalg::Matrix<int, linalg::CPU>& mat_const_ref(mat);
   for (int j = 0; j < mat.nrCols(); ++j)
     for (int i = 0; i < mat.nrRows(); ++i) {
       int el = 3 * i - 2 * j;
@@ -199,11 +190,11 @@ TEST(MatrixCPUTest, ElementAccess) {
 
 TEST(MatrixCPUTest, CopyConstructor) {
   std::pair<int, int> size2(2, 3);
-  dca::linalg::Matrix<float, dca::linalg::CPU> mat("some name", size2);
+  linalg::Matrix<float, linalg::CPU> mat("some name", size2);
   auto el_value = [](int i, int j) { return 3 * i - 2 * j; };
   testing::setMatrixElements(mat, el_value);
 
-  dca::linalg::Matrix<float, dca::linalg::CPU> mat_copy(mat, "another name");
+  linalg::Matrix<float, linalg::CPU> mat_copy(mat, "another name");
   EXPECT_EQ(mat, mat_copy);
   // The name is not copied.
   EXPECT_EQ("another name", mat_copy.get_name());
@@ -214,7 +205,7 @@ TEST(MatrixCPUTest, CopyConstructor) {
 }
 
 TEST(MatrixCPUTest, MoveConstructor) {
-  using MatrixType = dca::linalg::Matrix<double, dca::linalg::CPU>;
+  using MatrixType = linalg::Matrix<double, linalg::CPU>;
   MatrixType mat("matrix name", 4);
   auto el_value = [](int i, int j) { return 3.14 * i - 2.5 * j; };
   testing::setMatrixElements(mat, el_value);
@@ -232,11 +223,11 @@ TEST(MatrixCPUTest, Assignement) {
     // Assign a matrix that fits into the capacity.
     std::pair<int, int> size2(2, 3);
 
-    dca::linalg::Matrix<float, dca::linalg::CPU> mat_copy(10);
+    linalg::Matrix<float, linalg::CPU> mat_copy(10);
     auto old_ptr = mat_copy.ptr();
     auto capacity = mat_copy.capacity();
 
-    dca::linalg::Matrix<float, dca::linalg::CPU> mat("name", size2);
+    linalg::Matrix<float, linalg::CPU> mat("name", size2);
     auto el_value = [](int i, int j) { return 3 * i - 2 * j; };
     testing::setMatrixElements(mat, el_value);
 
@@ -253,11 +244,11 @@ TEST(MatrixCPUTest, Assignement) {
   }
   {
     // Assign a matrix that does not fit into the capacity.
-    dca::linalg::Matrix<float, dca::linalg::CPU> mat_copy(10);
+    linalg::Matrix<float, linalg::CPU> mat_copy(10);
     auto size2 = mat_copy.capacity();
     ++size2.first;
 
-    dca::linalg::Matrix<float, dca::linalg::CPU> mat("name", size2);
+    linalg::Matrix<float, linalg::CPU> mat("name", size2);
     auto el_value = [](int i, int j) { return 3 * i - 2 * j; };
     testing::setMatrixElements(mat, el_value);
 
@@ -275,7 +266,7 @@ TEST(MatrixCPUTest, Assignement) {
 }
 
 TEST(MatrixCPUTest, MoveAssignement) {
-  using MatrixType = dca::linalg::Matrix<short, dca::linalg::CPU>;
+  using MatrixType = linalg::Matrix<short, linalg::CPU>;
   MatrixType mat("matrix name", std::make_pair(2, 5));
   auto el_value = [](int i, int j) { return 3 * i + 2 * j; };
   testing::setMatrixElements(mat, el_value);
@@ -298,11 +289,11 @@ TEST(MatrixCPUTest, Set) {
     // Assign a matrix that fits into the capacity.
     std::pair<int, int> size2(2, 3);
 
-    dca::linalg::Matrix<float, dca::linalg::CPU> mat_copy(10);
+    linalg::Matrix<float, linalg::CPU> mat_copy(10);
     auto old_ptr = mat_copy.ptr();
     auto capacity = mat_copy.capacity();
 
-    dca::linalg::Matrix<float, dca::linalg::CPU> mat("name", size2);
+    linalg::Matrix<float, linalg::CPU> mat("name", size2);
     auto el_value = [](int i, int j) { return 3 * i - 2 * j; };
     testing::setMatrixElements(mat, el_value);
 
@@ -319,11 +310,11 @@ TEST(MatrixCPUTest, Set) {
   }
   {
     // Assign a matrix that does not fit into the capacity.
-    dca::linalg::Matrix<float, dca::linalg::CPU> mat_copy(10);
+    linalg::Matrix<float, linalg::CPU> mat_copy(10);
     auto size2 = mat_copy.capacity();
     ++size2.first;
 
-    dca::linalg::Matrix<float, dca::linalg::CPU> mat("name", size2);
+    linalg::Matrix<float, linalg::CPU> mat("name", size2);
     auto el_value = [](int i, int j) { return 3 * i - 2 * j; };
     testing::setMatrixElements(mat, el_value);
 
@@ -343,13 +334,13 @@ TEST(MatrixCPUTest, Set) {
 TEST(MatrixCPUTest, Swap) {
   std::string mat1_name = "name 1";
   std::pair<int, int> mat1_size(7, 8);
-  dca::linalg::Matrix<float, dca::linalg::CPU> mat1(mat1_name, mat1_size);
+  linalg::Matrix<float, linalg::CPU> mat1(mat1_name, mat1_size);
   auto mat1_capacity = mat1.capacity();
   auto mat1_ptr = mat1.ptr();
 
   std::string mat2_name = "name 2";
   std::pair<int, int> mat2_size(2, 128);
-  dca::linalg::Matrix<float, dca::linalg::CPU> mat2(mat2_name, mat2_size);
+  linalg::Matrix<float, linalg::CPU> mat2(mat2_name, mat2_size);
   auto mat2_capacity = mat2.capacity();
   auto mat2_ptr = mat2.ptr();
 
@@ -368,13 +359,13 @@ TEST(MatrixCPUTest, Swap) {
 TEST(MatrixCPUTest, SwapWithName) {
   std::string mat1_name = "name 1";
   std::pair<int, int> mat1_size(7, 8);
-  dca::linalg::Matrix<float, dca::linalg::CPU> mat1(mat1_name, mat1_size);
+  linalg::Matrix<float, linalg::CPU> mat1(mat1_name, mat1_size);
   auto mat1_capacity = mat1.capacity();
   auto mat1_ptr = mat1.ptr();
 
   std::string mat2_name = "name 2";
   std::pair<int, int> mat2_size(2, 128);
-  dca::linalg::Matrix<float, dca::linalg::CPU> mat2(mat2_name, mat2_size);
+  linalg::Matrix<float, linalg::CPU> mat2(mat2_name, mat2_size);
   auto mat2_capacity = mat2.capacity();
   auto mat2_ptr = mat2.ptr();
 
@@ -394,7 +385,7 @@ TEST(MatrixCPUTest, ResizePair) {
   {
     std::pair<int, int> size2(4, 2);
 
-    dca::linalg::Matrix<long, dca::linalg::CPU> mat(size2);
+    linalg::Matrix<long, linalg::CPU> mat(size2);
     auto el_value = [](int i, int j) { return 1 + 3 * i - 2 * j; };
     testing::setMatrixElements(mat, el_value);
 
@@ -417,7 +408,7 @@ TEST(MatrixCPUTest, ResizePair) {
   {
     std::pair<int, int> size2(5, 2);
 
-    dca::linalg::Matrix<long, dca::linalg::CPU> mat(size2);
+    linalg::Matrix<long, linalg::CPU> mat(size2);
     auto old_ptr = mat.ptr();
     auto capacity = mat.capacity();
     auto el_value = [](int i, int j) { return 1 + 3 * i - 2 * j; };
@@ -443,10 +434,10 @@ TEST(MatrixCPUTest, ResizePair) {
     // where padding_col is the column capacity of a (1, 1) matrix.
     // In this way the column capacity decreases when we resize the matrix to 1 column.
     int padding_col =
-        dca::linalg::Matrix<long, dca::linalg::CPU>(std::make_pair(1, 1)).capacity().second;
+        linalg::Matrix<long, linalg::CPU>(std::make_pair(1, 1)).capacity().second;
     std::pair<int, int> size2(5, padding_col + 1);
 
-    dca::linalg::Matrix<long, dca::linalg::CPU> mat(size2);
+    linalg::Matrix<long, linalg::CPU> mat(size2);
     auto old_ptr = mat.ptr();
     auto capacity = mat.capacity();
     auto el_value = [](int i, int j) { return 1 + 3 * i - 2 * j; };
@@ -474,10 +465,10 @@ TEST(MatrixCPUTest, ResizePair) {
     // where padding_row is the row capacity of a (1, 1) matrix.
     // In this way the row capacity decreases when we resize the matrix to 1 row.
     int padding_row =
-        dca::linalg::Matrix<long, dca::linalg::CPU>(std::make_pair(1, 1)).capacity().first;
+        linalg::Matrix<long, linalg::CPU>(std::make_pair(1, 1)).capacity().first;
     std::pair<int, int> size2(padding_row + 1, 2);
 
-    dca::linalg::Matrix<long, dca::linalg::CPU> mat(size2);
+    linalg::Matrix<long, linalg::CPU> mat(size2);
     auto old_ptr = mat.ptr();
     auto capacity = mat.capacity();
     auto el_value = [](int i, int j) { return 1 + 3 * i - 2 * j; };
@@ -506,7 +497,7 @@ TEST(MatrixCPUTest, ResizeValue) {
   {
     std::pair<int, int> size2(4, 2);
 
-    dca::linalg::Matrix<long, dca::linalg::CPU> mat(size2);
+    linalg::Matrix<long, linalg::CPU> mat(size2);
 
     auto el_value = [](int i, int j) { return 1 + 3 * i - 2 * j; };
     testing::setMatrixElements(mat, el_value);
@@ -530,7 +521,7 @@ TEST(MatrixCPUTest, ResizeValue) {
   {
     std::pair<int, int> size2(5, 3);
 
-    dca::linalg::Matrix<long, dca::linalg::CPU> mat(size2);
+    linalg::Matrix<long, linalg::CPU> mat(size2);
     auto old_ptr = mat.ptr();
     auto capacity = mat.capacity();
     auto el_value = [](int i, int j) { return 1 + 3 * i - 2 * j; };
@@ -553,7 +544,7 @@ TEST(MatrixCPUTest, ResizeValue) {
   {
     std::pair<int, int> size2(3, 3);
 
-    dca::linalg::Matrix<long, dca::linalg::CPU> mat(size2);
+    linalg::Matrix<long, linalg::CPU> mat(size2);
     auto old_ptr = mat.ptr();
     auto capacity = mat.capacity();
     auto el_value = [](int i, int j) { return 1 + 3 * i - 2 * j; };
@@ -581,7 +572,7 @@ TEST(MatrixCPUTest, ResizeNoCopyPair) {
   {
     std::pair<int, int> size2(4, 2);
 
-    dca::linalg::Matrix<long, dca::linalg::CPU> mat(size2);
+    linalg::Matrix<long, linalg::CPU> mat(size2);
 
     // Resize to capacity. No reallocation has to take place.
     auto old_ptr = mat.ptr();
@@ -595,7 +586,7 @@ TEST(MatrixCPUTest, ResizeNoCopyPair) {
   {
     std::pair<int, int> size2(5, 2);
 
-    dca::linalg::Matrix<long, dca::linalg::CPU> mat(size2);
+    linalg::Matrix<long, linalg::CPU> mat(size2);
     auto old_ptr = mat.ptr();
     auto capacity = mat.capacity();
 
@@ -610,7 +601,7 @@ TEST(MatrixCPUTest, ResizeNoCopyPair) {
   {
     std::pair<int, int> size2(5, 2);
 
-    dca::linalg::Matrix<long, dca::linalg::CPU> mat(size2);
+    linalg::Matrix<long, linalg::CPU> mat(size2);
     auto capacity = mat.capacity();
 
     // New number of rows is larger than capacity().first.
@@ -624,7 +615,7 @@ TEST(MatrixCPUTest, ResizeNoCopyPair) {
   {
     std::pair<int, int> size2(5, 2);
 
-    dca::linalg::Matrix<long, dca::linalg::CPU> mat(size2);
+    linalg::Matrix<long, linalg::CPU> mat(size2);
     auto capacity = mat.capacity();
 
     // New number of columns is larger than capacity().second.
@@ -641,7 +632,7 @@ TEST(MatrixCPUTest, ResizeNoCopyValue) {
   {
     std::pair<int, int> size2(4, 2);
 
-    dca::linalg::Matrix<long, dca::linalg::CPU> mat(size2);
+    linalg::Matrix<long, linalg::CPU> mat(size2);
 
     // Resize to capacity. No reallocation has to take place.
     auto old_ptr = mat.ptr();
@@ -655,7 +646,7 @@ TEST(MatrixCPUTest, ResizeNoCopyValue) {
   {
     std::pair<int, int> size2(5, 3);
 
-    dca::linalg::Matrix<long, dca::linalg::CPU> mat(size2);
+    linalg::Matrix<long, linalg::CPU> mat(size2);
     auto old_ptr = mat.ptr();
     auto capacity = mat.capacity();
 
@@ -669,7 +660,7 @@ TEST(MatrixCPUTest, ResizeNoCopyValue) {
   {
     std::pair<int, int> size2(3, 3);
 
-    dca::linalg::Matrix<long, dca::linalg::CPU> mat(size2);
+    linalg::Matrix<long, linalg::CPU> mat(size2);
     auto capacity = mat.capacity();
 
     // New size is larger than capacity.
@@ -683,7 +674,7 @@ TEST(MatrixCPUTest, ResizeNoCopyValue) {
 }
 
 TEST(MatrixCPUTest, Clear) {
-  dca::linalg::Matrix<float, dca::linalg::CPU> mat(42);
+  linalg::Matrix<float, linalg::CPU> mat(42);
 
   EXPECT_EQ(std::make_pair(42, 42), mat.size());
   mat.clear();

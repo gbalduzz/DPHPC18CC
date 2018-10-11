@@ -1,4 +1,4 @@
-// This file implements the methods of thead_pool.hpp
+// This file implements the methods of thread_pool.hpp
 
 #include "parallel/threading/thread_pool.hpp"
 

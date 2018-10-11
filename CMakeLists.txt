@@ -7,7 +7,7 @@ include_directories(${PROJECT_SOURCE_DIR}/include)
 
 # Libraries
 add_subdirectory(src)
-set(LIBS src/io/json11.cpp;parallel)
+set(LIBS io;parallel)
 
 add_executable(min_cut src/main.cpp)
 target_link_libraries(min_cut ${LIBS})

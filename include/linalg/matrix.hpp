@@ -31,7 +31,7 @@ public:
 
   // Copy and move constructor:
   Matrix(const Matrix<ScalarType>& rhs);
-  Matrix(const Matrix<ScalarType>&& rhs);
+  Matrix(Matrix<ScalarType>&& rhs);
 
   ~Matrix();
 
@@ -135,6 +135,8 @@ public:
 
   // Prints the values of the matrix elements.
   void print() const;
+  // Print memory usage.
+  void printFingerprint() const;
 
 private:
   static std::pair<int, int> capacityMultipleOfBlockSize(std::pair<int, int> size);
@@ -177,13 +179,6 @@ Matrix<ScalarType>::Matrix(const Matrix<ScalarType>& rhs) {
 template <typename ScalarType>
 Matrix<ScalarType>::Matrix(Matrix<ScalarType>&& rhs) {
   *this = std::move(rhs);
-}
-
-template <typename ScalarType>
-Matrix<ScalarType>::Matrix(const Matrix<ScalarType>& rhs)
-    : size_(rhs.size_), capacity_(rhs.capacity_) {
-  data_ = allocator_.allocate(nrElements(capacity_));
-  util::memoryCopy(data_, leadingDimension(), rhs.data_, rhs.leadingDimension(), size_);
 }
 
 template <typename ScalarType>
@@ -290,7 +285,7 @@ void Matrix<ScalarType>::printFingerprint() const {
   std::stringstream ss;
 
   ss << "\n";
-  ss << "    name: " << name_ << "\n";
+  //  ss << "    name: " << name_ << "\n";
   ss << "    size: " << size_.first << ", " << size_.second << "\n";
   ss << "    capacity: " << capacity_.first << ", " << capacity_.second << "\n";
   ss << "    memory-size: " << nrElements(capacity_) * sizeof(ScalarType) * 1.e-6 << "(Mbytes)\n";
