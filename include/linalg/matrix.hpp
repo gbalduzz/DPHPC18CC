@@ -21,7 +21,7 @@ public:
   using ValueType = ScalarType;
   using Allocator = util::AlignedAllocator<ScalarType>;
 
-  Matrix(int size);
+  Matrix(int size = 0);
 
   Matrix(std::pair<int, int> size);
 

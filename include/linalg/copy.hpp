@@ -25,7 +25,7 @@ void memoryCopy(ScalarType *dest, int ld_dest, const ScalarType *src,
 
   size_t ncols = size.second;
   for (size_t i = 0; i < ncols; ++i) {
-    memoryCopyCpu(dest + i * ld_dest, src + i * ld_src, size.first);
+    memoryCopy(dest + i * ld_dest, src + i * ld_src, size.first);
   }
 }
 
