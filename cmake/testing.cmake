@@ -35,7 +35,6 @@ function(add_gtest name)
   # tests.
   target_compile_definitions(${name} PRIVATE SOURCE_DIR=\"${PROJECT_SOURCE_DIR}\")
 
-  message("LIBS  : ${ADD_GTEST_LIBS}")
   # Use gtest main.
   target_link_libraries(${name} ${ADD_GTEST_LIBS}
                         ${GTEST_LIB_DIR}/libgtest.a ${GTEST_LIB_DIR}/libgtest_main.a)
