@@ -6,66 +6,20 @@
 
 #include "gtest/gtest.h"
 
-TEST(ThreadPoolTest, Enqueue) {
-  const int n_items = 9;
-  const int n_threads = 4;
-  std::vector<int> input(n_items);
-  std::vector<int> output(n_items, 0);
-  std::iota(input.begin(), input.end(), 0);
+TEST(ThreadPoolTest, Fibonacci) {
+  parallel::ThreadPool pool(std::thread::hardware_concurrency());
 
-  auto workload = [](const int id, const std::vector<int>& inp, std::vector<int>& out) {
-    std::this_thread::sleep_for(std::chrono::milliseconds(5));
-    out[id] = inp[id] * inp[id];
-  };
-
-  const int n_immediate_checks = 4;
-  {
-    parallel::ThreadPool pool(n_threads);
-    EXPECT_EQ(n_threads, pool.size());
-
-    auto task = std::bind(workload, std::placeholders::_1, std::ref(input), std::ref(output));
-    std::vector<std::future<void>> futures;
-    for (int id = 0; id < n_items; ++id)
-      futures.emplace_back(pool.enqueue(task, id));
-
-    // Check the synchronization with futures.
-    for (int id = 0; id < n_immediate_checks; ++id) {
-      futures[id].wait();
-      EXPECT_EQ(input[id] * input[id], output[id]);
+  std::function<int(int)> fibonacci = [&](int n) -> int {
+    if (n == 1 or n == 0) {
+      //  std::this_thread::sleep_for(std::chrono::seconds(1));
+      return n;
     }
-  }
 
-  // Check that the other tasks finished before the pool is destroyed.
-  for (int id = n_immediate_checks; id < n_items; ++id)
-    EXPECT_EQ(input[id] * input[id], output[id]);
-}
+    auto f1 = pool.enqueue(fibonacci, n - 1);
+    auto f2 = pool.enqueue(fibonacci, n - 2);
 
-TEST(ThreadPoolTest, Enlarge) {
-  parallel::ThreadPool& pool = parallel::ThreadPool::get_instance();
-  EXPECT_EQ(0, pool.size());
-
-  pool.enlarge(3);
-  EXPECT_EQ(3, pool.size());
-
-  pool.enlarge(1);
-  EXPECT_EQ(3, pool.size());
-
-  // Dispatch some work to test if queue enlarging breaks running tasks.
-  auto workload = [](int id) {
-    std::this_thread::sleep_for(std::chrono::milliseconds(10));
-    return id;
+    return f1.get() + f2.get();
   };
-  std::vector<std::future<int>> futures;
 
-  for (int i = 0; i < 5; ++i)
-    futures.emplace_back(pool.enqueue(workload, i));
-
-  pool.enlarge(5);
-  EXPECT_EQ(5, pool.size());
-
-  for (int i = 5; i < 12; ++i)
-    futures.emplace_back(pool.enqueue(workload, i));
-
-  for (int i = 0; i < 12; ++i)
-    EXPECT_EQ(i, futures[i].get());
+  EXPECT_EQ(21, fibonacci(8));
 }
