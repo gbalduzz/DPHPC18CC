@@ -46,6 +46,7 @@ private:
   boost::fibers::mutex mutex_;
   boost::fibers::condition_variable_any done_variable_;
   boost::barrier scheduler_registered_;
+  bool done_ = true;
 };
 
 template <class F, class... Args>

@@ -15,6 +15,7 @@ ThreadPool::ThreadPool(size_t n_threads) : scheduler_registered_(n_threads) {
 }
 
 ThreadPool::~ThreadPool() {
+  done_ = true;
   done_variable_.notify_all();
 
   for (std::thread& worker : workers_)
@@ -27,9 +28,8 @@ void ThreadPool::workerLoop(int thread_count) {
 
   scheduler_registered_.wait();
 
-  mutex_.lock();
-  done_variable_.wait(mutex_);
-  mutex_.unlock();
+  std::unique_lock<boost::fibers::mutex> lock(mutex_);
+  done_variable_.wait(mutex_, [=]() { return done_;});
 }
 
 }  // parallel
