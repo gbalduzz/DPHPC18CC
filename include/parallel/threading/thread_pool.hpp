@@ -2,6 +2,7 @@
 
 #include <thread>
 
+#include <boost/thread/barrier.hpp>
 #include <boost/fiber/future.hpp>
 #include <boost/fiber/algo/round_robin.hpp>
 #include <boost/fiber/algo/work_stealing.hpp>
@@ -25,7 +26,6 @@ public:
   auto enqueue(F&& f, Args&&... args)
       -> boost::fibers::future<typename std::result_of<F(Args...)>::type>;
 
-  // The destructor concludes all the pending work gracefully before merging all spawned threads.
   ~ThreadPool();
 
   // Returns the number of threads used by this class.
@@ -43,6 +43,9 @@ private:
   void workerLoop(int n_threads);
 
   std::vector<std::thread> workers_;
+  boost::fibers::mutex mutex_;
+  boost::fibers::condition_variable_any done_variable_;
+  boost::barrier scheduler_registered_;
 };
 
 template <class F, class... Args>

@@ -7,11 +7,11 @@
 #include "gtest/gtest.h"
 
 TEST(ThreadPoolTest, Fibonacci) {
-  parallel::ThreadPool pool(std::thread::hardware_concurrency());
+  parallel::ThreadPool pool(2);
 
   std::function<int(int)> fibonacci = [&](int n) -> int {
     if (n == 1 or n == 0) {
-      //  std::this_thread::sleep_for(std::chrono::seconds(1));
+//      std::this_thread::sleep_for(std::chrono::milliseconds(500));
       return n;
     }
 
