@@ -32,10 +32,14 @@ Obstacles
 - https://stanford.edu/~rezab/classes/cme323/S16/projects_reports/flatow_penner.pdf
 	- A distributed algorithm for global min cut
 	- David Flatow and Daniel Penner, Stanford University
+	- ATTENTION: STUDENT PAPER (maybe don't take results for granted...)! 
 - http://spcl.inf.ethz.ch/Publications/.pdf/comm_avoiding_mincut.pdf
 	- Communication avoiding parallel minimum cuts and connected components
 	- Lukas Gianinazzi, Pavel Kalvoda et al., ETH Zürich
-	
+- https://link.springer.com/chapter/10.1007/BFb0054332
+	- Communication-efficient parallel multiway and approximate minimum cut computation
+	- Friedhelm Meyer auf der HeideGabriel Terán Martinez
+	- ETH Login necessary
 # Who does what? #
 - graph implementation
 	- storage 
