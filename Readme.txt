@@ -1,4 +1,4 @@
-#Important decisions
+# Important decisions
 Tools
 - C++
 - boost (threading)
@@ -25,7 +25,7 @@ Key concepts
 Obstacles
 
 
-#Papers
+# Papers
 - https://arxiv.org/pdf/1501.03105.pdf 
 	- A parallel min-cut algorithm using iteratively reweighted least squares 
 	- Yao Zhu and David F. Gleich, Purdue University
@@ -36,7 +36,7 @@ Obstacles
 	- Communication avoiding parallel minimum cuts and connected components
 	- Lukas Gianinazzi, Pavel Kalvoda et al., ETH Zürich
 	
-#Who does what?
+# Who does what?
 - graph implementation
 	- storage 
 	- operations
