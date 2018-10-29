@@ -17,7 +17,7 @@ int main(int argc, char** argv) {
 
   auto result = algorithms::serialConnectedComponents(n, edges);
 
-  for (int i = 0; i < m; ++i)
+  for (int i = 0; i < n; ++i)
     std::cout << i << ":\t" << result.representative(i) << "\n";
 
   std::cout << std::endl;
