@@ -3,10 +3,11 @@
 
 namespace algorithms {
 
-graph::HookTree serialConnectedComponents(const unsigned n, const std::vector<graph::Edge>& edges) {
+graph::mock::HookTree serialConnectedComponents(const unsigned n,
+                                                const std::vector<graph::Edge>& edges) {
   const unsigned int m = edges.size();
 
-  graph::HookTree tree(n);
+  graph::mock::HookTree tree(n);
 
   for (const auto& edge : edges) {
     // Assume ordered edge.

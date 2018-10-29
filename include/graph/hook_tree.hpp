@@ -20,10 +20,7 @@ public:
 
   bool isSingleton(VertexIdx i) const;
 
-  //  void makeStar(VertexIdx i);
-
-  // Returns true if any changes has been made during compression.
-  bool compress();
+  void makeStar(VertexIdx i);
 };
 
 }  // graph

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <utility>
+
 namespace graph {
 
 // TODO: agree on vertex label type.
