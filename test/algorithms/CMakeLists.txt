@@ -1,0 +1,1 @@
+add_gtest(serial_connected_components_test LIBS algorithms;graph)
