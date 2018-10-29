@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 
 #include "algorithms/serial_connected_components.hpp"
 #include "graph/generate_random_graph.hpp"
@@ -17,9 +18,10 @@ int main(int argc, char** argv) {
 
   auto result = algorithms::serialConnectedComponents(n, edges);
 
+  std::ofstream out("labels.txt");
   for (int i = 0; i < n; ++i)
-    std::cout << i << ":\t" << result.representative(i) << "\n";
+    out << i << ":\t" << result.representative(i) << "\n";
+  out.close();
 
-  std::cout << std::endl;
   return 0;
 }
