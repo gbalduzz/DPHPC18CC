@@ -1,6 +1,9 @@
 #include "algorithms/serial_connected_components.hpp"
 
+#include <fstream>
 #include <gtest/gtest.h>
+
+#include "graph/generate_random_graph.hpp"
 
 void performTest(int n, const std::vector<graph::Edge>& edges, const std::vector<int>& expected);
 
@@ -23,6 +26,20 @@ TEST(SerialConnectedComponentsTest, LessSimple) {
   const std::vector<int> expected{0, 1, 2, 0, 1, 1, 0, 1, 2, 3, 3, 0};
 
   performTest(n, edges, expected);
+}
+
+TEST(SerialConnectedComponentsTest, Precomputed) {
+    const int n = 200;
+    const int m = 150;
+    auto edges = graph::generateRandomGraph(n,m);
+
+    std::vector<int> expected(n);
+    std::ifstream inp("labels.txt");
+    for(auto& label : expected)
+        inp >> label;
+    inp.close();
+
+    performTest(n, edges, expected);
 }
 
 void performTest(int n, const std::vector<graph::Edge>& edges, const std::vector<int>& expected) {
