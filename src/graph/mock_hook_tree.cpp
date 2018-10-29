@@ -20,23 +20,16 @@ bool HookTree::isStar(int i) const {
   return repr == representatives_[repr];
 }
 
-bool HookTree::compress() {
-  bool changes = false;
-
+void HookTree::compress() {
   for (int i = 0; i < representatives_.size(); ++i) {
     if (!isStar(i)) {
-      changes = true;
-
       int repr = representatives_[i];
       while (repr != representatives_[repr])
         repr = representatives_[repr];
       representatives_[i] = repr;
     }
   }
-
-  return changes;
 }
 
 }  // mock
 }  // graph
-

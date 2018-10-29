@@ -22,8 +22,7 @@ public:
 
   bool isSingleton(int i) const;
 
-  // Returns true if any changes has been made during compression.
-  bool compress();
+  void compress();
 
 private:
   std::vector<int> representatives_;

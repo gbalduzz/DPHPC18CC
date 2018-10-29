@@ -20,13 +20,14 @@ graph::mock::HookTree serialConnectedComponents(const unsigned n,
       const auto i = edge.first;
       const auto j = edge.second;
 
+      // NOTE: the call to isStaar does not seem to be a prerequisite for correctness.
       if (tree.isStar(i) && tree.representative(i) != tree.representative(j)) {
         tree.hook(i, j);
         changes = true;
       }
     }
 
-    changes &= tree.compress();
+    tree.compress();
 
     if (!changes)
       break;
