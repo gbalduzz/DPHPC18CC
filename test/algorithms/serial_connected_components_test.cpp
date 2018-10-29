@@ -4,14 +4,14 @@
 
 void performTest(int n, const std::vector<graph::Edge>& edges, const std::vector<int>& expected);
 
-//TEST(SerialConnectedComponentsTest, Simple) {
-//  const int n = 5;
-//  const std::vector<graph::Edge> edges{std::make_pair(1, 0), std::make_pair(2, 1),
-//                                       std::make_pair(2, 0), std::make_pair(4, 3)};
-//  const std::vector<int> expected{0, 0, 0, 1, 1};
-//
-//  performTest(n, edges, expected);
-//}
+TEST(SerialConnectedComponentsTest, Simple) {
+  const int n = 5;
+  const std::vector<graph::Edge> edges{std::make_pair(1, 0), std::make_pair(2, 1),
+                                       std::make_pair(2, 0), std::make_pair(4, 3)};
+  const std::vector<int> expected{0, 0, 0, 1, 1};
+
+  performTest(n, edges, expected);
+}
 
 TEST(SerialConnectedComponentsTest, LessSimple) {
   const int n = 12;

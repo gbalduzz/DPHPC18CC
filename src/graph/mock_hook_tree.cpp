@@ -12,7 +12,7 @@ HookTree::HookTree(int n) : representatives_(n) {
 }
 
 void HookTree::hook(int i, int j) {
-  representatives_[i] = representatives_[j];
+  representatives_[representatives_[i]] = representatives_[j];
 }
 
 bool HookTree::isStar(int i) const {
