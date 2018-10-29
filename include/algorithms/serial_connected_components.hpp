@@ -7,6 +7,6 @@
 
 namespace algorithms {
 
-graph::HookTree serialConnectedComponents(const int n, const std::vector<graph::Edge>& edges);
+graph::HookTree serialConnectedComponents(unsigned int n, const std::vector<graph::Edge>& edges);
 
 }  // algorithms
