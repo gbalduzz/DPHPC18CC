@@ -13,7 +13,7 @@ link_directories(${BOOST_DIR}/lib)
 # Local libraries.
 include_directories(${PROJECT_SOURCE_DIR}/include)
 add_subdirectory(src)
-set(LIBS io;parallel)
+set(LIBS algorithms;io;parallel)
 
 # Main application
 add_executable(main src/main.cpp)

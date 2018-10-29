@@ -3,10 +3,9 @@
 #include <random>
 #include <utility>
 
-namespace graph {
+#include "graph/typedefs.hpp"
 
-// TODO: agree on vertex label type.
-using Edge = std::pair<int, int>;
+namespace graph {
 
 std::vector<Edge> generateRandomGraph(int n, int m) {
   std::mt19937_64 rng(42);
