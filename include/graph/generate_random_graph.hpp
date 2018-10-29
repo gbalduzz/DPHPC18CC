@@ -4,7 +4,7 @@
 #include <random>
 #include <utility>
 
-#include "graph/typedefs.hpp"
+#include "graph/edge.hpp"
 
 namespace graph {
 
@@ -19,12 +19,12 @@ std::vector<Edge> generateRandomGraph(int n, int m) {
 
   while (list.size() < m) {
     while (list.size() < m) {
-      int v1 = distro(rng);
-      int v2 = distro(rng);
+      Label v1 = distro(rng);
+      Label v2 = distro(rng);
       if (v1 == v2)
         continue;
 
-      auto edge = (v1 < v2) && ordered ? std::make_pair(v2, v1) : std::make_pair(v1, v2);
+      auto edge = (v1 < v2) && ordered ? Edge(v2, v1) : Edge(v1, v2);
       list.push_back(edge);
     }
 

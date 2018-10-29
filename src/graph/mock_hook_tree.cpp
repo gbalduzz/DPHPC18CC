@@ -7,23 +7,23 @@
 namespace graph {
 namespace mock {
 
-HookTree::HookTree(int n) : representatives_(n) {
+HookTree::HookTree(Label n) : representatives_(n) {
   std::iota(representatives_.begin(), representatives_.end(), 0);
 }
 
-void HookTree::hook(int i, int j) {
+void HookTree::hook(Label i, Label j) {
   representatives_[representatives_[i]] = representatives_[j];
 }
 
-bool HookTree::isStar(int i) const {
-  const int repr = representatives_[i];
+bool HookTree::isStar(Label i) const {
+  const Label repr = representatives_[i];
   return repr == representatives_[repr];
 }
 
 void HookTree::compress() {
-  for (int i = 0; i < representatives_.size(); ++i) {
+  for (std::size_t i = 0; i < representatives_.size(); ++i) {
     if (!isStar(i)) {
-      int repr = representatives_[i];
+      Label repr = representatives_[i];
       while (repr != representatives_[repr])
         repr = representatives_[repr];
       representatives_[i] = repr;

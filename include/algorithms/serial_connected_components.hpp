@@ -3,7 +3,7 @@
 #include <vector>
 
 #include "graph/mock_hook_tree.hpp"
-#include "graph/typedefs.hpp"
+#include "graph/edge.hpp"
 
 namespace algorithms {
 
