@@ -3,6 +3,9 @@ project(MinCut)
 
 set(CMAKE_CXX_STANDARD 17)
 
+#Threading options
+SET(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-std=c++11 -pthread")
+
 # System libraries.
 set(BOOST_DIR "/usr/local/boost" CACHE STRING "Path to boost.")
 #set(BOOST_DIR "C:/Program Files/boost/boost_1_68_0" CACHE STRING "Path to boost.")
@@ -22,5 +25,8 @@ configure_file("${PROJECT_SOURCE_DIR}/src/input.json"
                "${CMAKE_BINARY_DIR}/input.json" COPYONLY)
 
 # Testing.
+
 include(cmake/testing.cmake)
+enable_testing()
+
 add_subdirectory(test)
