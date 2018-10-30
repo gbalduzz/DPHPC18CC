@@ -4,6 +4,7 @@
 #include "algorithms/serial_connected_components.hpp"
 #include "graph/generate_random_graph.hpp"
 #include "io/json11.hpp"
+#include "util/timer.hpp"
 
 int main(int argc, char** argv) {
   std::string input_name = "input.json";
@@ -17,7 +18,11 @@ int main(int argc, char** argv) {
   auto edges = graph::generateRandomGraph(n, m);
   std::cout << "Generated random graph.\n";
 
+  auto start = util::getTime();
   auto result = algorithms::serialConnectedComponents(n, edges);
+  auto end = util::getTime();
+
+  std::cout << "Serial contraction took " << util::getDiff(start, end) << " s" << std::endl;
 
   std::ofstream out("labels.txt");
   for (int i = 0; i < n; ++i)
