@@ -15,8 +15,6 @@ graph::mock::HookTree serialConnectedComponents(const unsigned n,
       tree.hook(edge.first, edge.second);
   }
 
-  tree.compress();
-
   while (true) {
     bool changes = false;
     for (const auto& edge : edges) {
