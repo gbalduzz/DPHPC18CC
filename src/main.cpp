@@ -15,6 +15,7 @@ int main(int argc, char** argv) {
   const int n = parameters["vertices"].int_value();
   const int m = parameters["edges"].int_value();
   auto edges = graph::generateRandomGraph(n, m);
+  std::cout << "Generated random graph.\n";
 
   auto result = algorithms::serialConnectedComponents(n, edges);
 
