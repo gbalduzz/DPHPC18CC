@@ -4,7 +4,7 @@ project(MinCut)
 set(CMAKE_CXX_STANDARD 17)
 
 #Threading options
-SET(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-std=c++11 -pthread")
+SET(CMAKE_CXX_FLAGS -pthread)
 
 # System libraries.
 set(BOOST_DIR "/usr/local/boost" CACHE STRING "Path to boost.")
