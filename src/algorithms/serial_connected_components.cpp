@@ -3,21 +3,24 @@
 
 namespace algorithms {
 
-graph::mock::HookTree serialConnectedComponents(const unsigned n,
-                                                const std::vector<graph::Edge>& edges) {
+graph::mock::HookTree serialConnectedComponents(const unsigned n, std::vector<graph::Edge>& edges) {
   const unsigned int m = edges.size();
 
   graph::mock::HookTree tree(n);
 
-  for (const auto& edge : edges) {
+  for (auto& edge : edges) {
     // Assume ordered edge.
-    if (tree.representative(edge.first) == edge.first)
+    if (tree.representative(edge.first) == edge.first) {
       tree.hook(edge.first, edge.second);
+      edge.markInvalid();
+    }
   }
 
   while (true) {
     bool changes = false;
-    for (const auto& edge : edges) {
+    for (auto& edge : edges) {
+      if (!edge.isValid())
+        continue;
       const auto i = edge.first;
       const auto j = edge.second;
 
@@ -25,10 +28,12 @@ graph::mock::HookTree serialConnectedComponents(const unsigned n,
       if (tree.isStar(i) && tree.representative(i) > tree.representative(j)) {
         changes = true;
         tree.hook(i, j);
+        edge.markInvalid();
       }
       else if (tree.isStar(j) && tree.representative(j) > tree.representative(i)) {
         changes = true;
         tree.hook(j, i);
+        edge.markInvalid();
       }
     }
 
