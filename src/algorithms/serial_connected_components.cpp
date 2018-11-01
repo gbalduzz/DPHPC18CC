@@ -18,7 +18,7 @@ graph::HookTree serialConnectedComponents(const unsigned n, std::vector<graph::E
 
       if (repr_i != repr_j) {
         changes = true;
-        const bool hooked = tree.hook(std::max(repr_i, repr_j), std::min(repr_i, repr_j));
+        const bool hooked = tree.hookRoots(std::max(repr_i, repr_j), std::min(repr_i, repr_j));
 
         if (hooked) {
           edge.markInvalid();

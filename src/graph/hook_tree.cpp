@@ -1,5 +1,6 @@
 #include "graph/hook_tree.hpp"
 
+#include <cassert>
 #include <numeric>
 
 namespace graph {
@@ -9,7 +10,13 @@ HookTree::HookTree(Label n) : parent_(n) {
 }
 
 bool HookTree::hook(Label i, Label j) {
-  parent_[representative(i)] = representative(j);
+  return hookRoots(representative(i), representative(j));
+}
+
+bool HookTree::hookRoots(Label i, Label j) {
+  // TODO: replace by atomicCAS.
+  assert(isRoot(i) && isRoot(j));
+  parent_[i] = j;
   return true;
 }
 
