@@ -3,37 +3,26 @@
 
 namespace algorithms {
 
-graph::mock::HookTree serialConnectedComponents(const unsigned n, std::vector<graph::Edge>& edges) {
+graph::HookTree serialConnectedComponents(const unsigned n, std::vector<graph::Edge>& edges) {
   const unsigned int m = edges.size();
 
-  graph::mock::HookTree tree(n);
-
-  for (auto& edge : edges) {
-    // Assume ordered edge.
-    if (tree.representative(edge.first) == edge.first) {
-      tree.hook(edge.first, edge.second);
-      edge.markInvalid();
-    }
-  }
+  graph::HookTree tree(n);
 
   while (true) {
     bool changes = false;
     for (auto& edge : edges) {
       if (!edge.isValid())
         continue;
-      const auto i = edge.first;
-      const auto j = edge.second;
+      const auto repr_i = tree.representative(edge.first);
+      const auto repr_j = tree.representative(edge.second);
 
-      // NOTE: the call to isStaar does not seem to be a prerequisite for correctness.
-      if (tree.isStar(i) && tree.representative(i) > tree.representative(j)) {
+      if (repr_i != repr_j) {
         changes = true;
-        tree.hook(i, j);
-        edge.markInvalid();
-      }
-      else if (tree.isStar(j) && tree.representative(j) > tree.representative(i)) {
-        changes = true;
-        tree.hook(j, i);
-        edge.markInvalid();
+        const bool hooked = tree.hook(std::max(repr_i, repr_j), std::min(repr_i, repr_j));
+
+        if (hooked) {
+          edge.markInvalid();
+        }
       }
     }
 
