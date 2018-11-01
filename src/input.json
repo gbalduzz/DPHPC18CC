@@ -1,4 +1,5 @@
 {
   "vertices" : 100,
-  "edges" : 300
+  "edges" : 300,
+  "threads" : 1
 }

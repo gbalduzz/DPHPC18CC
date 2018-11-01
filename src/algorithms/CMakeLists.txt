@@ -1,2 +1,2 @@
 
-add_library(algorithms serial_connected_components.cpp)
+add_library(algorithms serial_connected_components.cpp parallel_connected_components.cpp)

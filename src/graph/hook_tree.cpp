@@ -29,7 +29,7 @@ Label HookTree::representative(Label index) const {
 
 void HookTree::compress() {
   for (std::size_t i = 0; i < parent_.size(); ++i) {
-    parent_[i] = representative(i);
+    compress(i);
   }
 }
 

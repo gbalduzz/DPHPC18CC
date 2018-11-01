@@ -21,6 +21,10 @@ public:
 
   void compress();
 
+  void compress(const Label i) {
+    parent_[i] = representative(i);
+  }
+
   Label parent(Label i) const {
     return parent_[i];
   }
