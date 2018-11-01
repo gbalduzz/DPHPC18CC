@@ -1,26 +1,28 @@
 #pragma once
 
 #include "typedefs.hpp"
+#include <vector>
 // TODO: implement
 
 namespace graph {
 
-class HookTree {
-public:
-  using VertexIdx = typename Edge::first_type;
+    class HookTree {
+    public:
+      using VertexIdx = typename Edge::first_type;
 
-  HookTree(VertexIdx n);
+      HookTree(int n) {};
 
-  // Hook the three containing i to the three containing j.
-  void hook(VertexIdx i, VertexIdx j);
+      // Hook the three containing i to the three containing j.
+      virtual void hook(VertexIdx i, VertexIdx j) = 0;
 
-  VertexIdx representative(VertexIdx i) const;
+      virtual VertexIdx representative(VertexIdx i) const = 0;
 
-  bool isStar(VertexIdx i) const;
+      virtual bool isStar(VertexIdx i) const = 0;
 
-  bool isSingleton(VertexIdx i) const;
+      virtual bool isSingleton(VertexIdx i) const = 0;
 
-  void makeStar(VertexIdx i);
-};
+      virtual void makeStar(VertexIdx i) = 0;
+
+    };
 
 }  // graph

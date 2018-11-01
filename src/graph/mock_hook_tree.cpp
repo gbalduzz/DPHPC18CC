@@ -16,6 +16,9 @@ void HookTree::hook(int i, int j) {
 }
 
 bool HookTree::isStar(int i) const {
+
+  // i don't think this is correct. -Michael
+
   const int repr = representatives_[i];
   return repr == representatives_[repr];
 }
