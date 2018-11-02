@@ -16,8 +16,7 @@ bool HookTree::hook(Label i, Label j) {
 bool HookTree::hookRoots(Label i, Label j) {
   // TODO: replace by atomicCAS.
   assert(isRoot(i) && isRoot(j));
-  parent_[i] = j;
-  return true;
+  return std::atomic_compare_exchange_weak(reinterpret_cast<std::atomic<Label>*>(&parent_[i]), &i, j);
 }
 
 Label HookTree::representative(Label index) const {
