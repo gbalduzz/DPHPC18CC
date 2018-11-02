@@ -1,5 +1,6 @@
 {
-  "vertices" : 100,
-  "edges" : 300,
-  "threads" : 1
+  "vertices" : 1e7,
+  "edges" : 1e7,
+  "threads" : 4,
+  "tasks" : 400
 }

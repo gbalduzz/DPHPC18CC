@@ -42,7 +42,7 @@ TEST(ParallelConnectedComponentsTest, Precomputed) {
 }
 
 void performTest(int n, std::vector<graph::Edge>& edges, const std::vector<int>& expected) {
-  auto forest = algorithms::parallelConnectedComponents(n, edges, 4);
+  auto forest = algorithms::parallelConnectedComponents(n, edges, 4, 40);
 
   auto are_connected = [&](int i, int j) {
     return forest.representative(i) == forest.representative(j);

@@ -8,6 +8,6 @@
 namespace algorithms {
 
 graph::HookTree parallelConnectedComponents(unsigned int n, std::vector<graph::Edge>& edges,
-                                            int n_threads);
+                                            int n_threads, int block_size);
 
 }  // algorithms

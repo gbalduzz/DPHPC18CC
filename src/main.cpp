@@ -19,9 +19,10 @@ int main(int argc, char** argv) {
   std::cout << "Generated random graph.\n";
 
   const int n_threads = parameters["threads"].int_value();
+  const int n_tasks = parameters["tasks"].int_value();
 
   auto start = util::getTime();
-  auto result = algorithms::parallelConnectedComponents(n, edges, n_threads);
+  auto result = algorithms::parallelConnectedComponents(n, edges, n_threads, n_tasks);
   auto end = util::getTime();
 
   std::cout << "Serial contraction took " << util::getDiff(start, end) << " s" << std::endl;
