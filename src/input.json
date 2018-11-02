@@ -1,4 +1,4 @@
 {
-  "vertices" : 100,
-  "edges" : 300
+  "vertices" : 1e7,
+  "edges" : 1e7
 }
