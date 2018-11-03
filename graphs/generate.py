@@ -1,6 +1,7 @@
 import networkx as nx
 import sys
 import random
+import io, json
 
 """
 GENERATES RANDOM GRAPHS
@@ -32,7 +33,9 @@ if (sys.argv[1].isdigit() == False):
 
 nr_graphs = int(sys.argv[1])
 print(nr_graphs)
-
+"""
+	
+"""
 for i in range(nr_graphs): 
 	#generate graph size
 	nr_edges = random.randint(100,1000)
@@ -42,4 +45,39 @@ for i in range(nr_graphs):
 	nr_connected_components = nx.number_connected_components(G)
 
 	print("Graph ", i, " has : ", nr_connected_components)
-	nx.write_adjlist(G,"graph_"+ str(i) + "_" + str(nr_connected_components) +".adjlist")
+	graph_name = "graph_" + str(i)
+	nx.write_adjlist(G,graph_name +".adjlist")
+
+	connected_components = nx.connected_components(G)
+
+	
+	component_list = []
+	with io.open(graph_name + "_info.json", 'w', encoding='utf-8') as f:
+		for i in connected_components: 
+			component_list += [list(i)]
+		json.dump(component_list, f, ensure_ascii=False, separators=(',', ': '))
+	f.close()
+
+	"""
+	Choose first node of each connected component as representative and write it into the info.txt file. 
+	Line x with number z means that node x belongs to the graph with representative z. 	
+	"""
+	
+	connected_components = nx.connected_components(G) #### NECESSARY !!!
+	representatives = [None] * nr_nodes
+	for connected_component in connected_components: 
+		for l in connected_component: 
+			representatives[l] = list(connected_component)[0]
+
+	with open(graph_name + "_info.txt", 'w') as f: 
+		for x in representatives: 
+			f.write(str(x) + "\n")
+
+	f.close()
+
+
+
+		
+
+	
+
