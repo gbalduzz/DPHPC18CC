@@ -33,15 +33,15 @@ TEST(SerialConnectedComponentsTest, Precomputed) {
     const int n = 200;
     const int m = 150;
     auto edges = graph::generateRandomGraph(n,m);
-    auto expected = readExpected("/home/lea/ETH/DPHPC18MinCut/test/algorithms/labels.txt"); 
+    auto expected = readExpected("labels.txt"); 
     performTest(edges, expected);
 }
 
 TEST(SerialConnectedComponentsTest, Random) {
     //Load random graph
     util::GraphReader g; 
-    auto edges = g.read_graph_from_adjacency_list("/home/lea/ETH/DPHPC18MinCut/graphs/graph_0.adjlist"); 
-    auto expected = readExpected("/home/lea/ETH/DPHPC18MinCut/graphs/graph_0_info.txt"); 
+    auto edges = g.read_graph_from_adjacency_list("graph_0.adjlist"); 
+    auto expected = readExpected("graph_0_info.txt"); 
     performTest(edges, expected); 
 }
 
