@@ -18,7 +18,7 @@ T stddev(const std::vector<T>& v) {
   T result(0);
   for (auto x : v)
     result += (x - mean) * (x - mean);
-  return std::sqrt(result / v.size());
+  return std::sqrt(result / (v.size() - 1.));
 }
 
 }  // util

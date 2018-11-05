@@ -24,14 +24,15 @@ int main(int argc, char** argv) {
   const auto edges = graph::generateRandomGraph(n, m);
   std::cout << "Generated random graph.\n";
 
-  auto time = [&](std::function<void()>&& f) -> std::pair<double, double> {
+  auto time = [&](auto&& f, int n_threads) -> std::pair<double, double> {
     constexpr int n_times = 10;
     std::vector<double> results(n_times);
 
     for (auto& result : results) {
+      std::vector<graph::Edge> edges_copy(edges);
       const auto start = util::getTime();
-      f();
-      auto end = util::getTime();
+      f(n, edges_copy, n_threads);
+      const auto end = util::getTime();
       result = util::getDiff(start, end);
     }
 
@@ -44,14 +45,13 @@ int main(int argc, char** argv) {
   out << "# n_threads(0 = serial) \t time \t err.\n";
 
   // Time serial algorithm.
-  out << 0 << "\t" << time(std::bind(algorithms::serialConnectedComponents, n, edges)) << std::endl;
+  out << 0 << "\t" << time(algorithms::serialConnectedComponents, 0) << std::endl;
 
   std::cout << "Done serial.\n";
 
   // Time parallel.
   for (int threads = 1; threads <= max_threads; ++threads) {
-    out << threads << "\t"
-        << time(std::bind(algorithms::parallelConnectedComponents, n, edges, threads)) << std::endl;
+    out << threads << "\t" << time(algorithms::parallelConnectedComponents, threads) << std::endl;
 
     std::cout << "Done parallel " << threads << ".\n";
   }
