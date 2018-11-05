@@ -24,7 +24,8 @@ int main(int argc, char** argv) {
   auto result = algorithms::parallelConnectedComponents(n, edges, n_threads);
   auto end = util::getTime();
 
-  std::cout << "Serial contraction took " << util::getDiff(start, end) << " s" << std::endl;
+  std::cout << "Parallel contraction took " << util::getDiff(start, end) << " s" << std::endl;
+  std::cout << "N threads " << n_threads << std::endl;
 
   std::ofstream out("labels.txt");
   for (int i = 0; i < n; ++i)
