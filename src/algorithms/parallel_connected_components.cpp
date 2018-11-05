@@ -16,7 +16,7 @@ graph::HookTree parallelConnectedComponents(const unsigned n, std::vector<graph:
   //  }
   graph::HookTree tree(n);
 
-  parallel::ThreadPool pool(n_threads);
+  auto& pool = parallel::ThreadPool::get_instance(n_threads);
 
   while (true) {
     bool changes = false;

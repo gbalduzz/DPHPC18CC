@@ -30,12 +30,14 @@ public:
 
   // Returns the number of threads used by this class.
   std::size_t size() const {
-    return workers_.size();
+    return workers_.size() + 1;
   }
 
   // Returns a global instance.
-  static ThreadPool& get_instance() {
-    static ThreadPool global_pool(1);
+  static ThreadPool& get_instance(int n) {
+    static ThreadPool global_pool(n);
+    if (n != global_pool.size())
+      throw(std::logic_error("Change of the pool size is not supported."));
     return global_pool;
   }
 
