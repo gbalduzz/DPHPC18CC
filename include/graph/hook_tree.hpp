@@ -11,7 +11,7 @@ namespace graph {
 
 class HookTree {
 public:
-  HookTree(Label n);
+  HookTree(Label n, bool parallel = false);
 
   // Hooks i to j.
   // Precondition: i and j are roots.
@@ -40,8 +40,15 @@ private:
   std::vector<Label> parent_;
 };
 
-inline HookTree::HookTree(Label n) : parent_(n) {
-  std::iota(parent_.begin(), parent_.end(), 0);
+inline HookTree::HookTree(const Label n, const bool parallel) : parent_(n) {
+  if (!parallel) {
+    std::iota(parent_.begin(), parent_.end(), 0);
+  }
+  else {
+#pragma omp parallel for
+    for (int i = 0; i < n; ++i)
+      parent_[i] = i;
+  }
 }
 
 inline void HookTree::hook(Label i, Label j) {
