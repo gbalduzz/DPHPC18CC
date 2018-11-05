@@ -19,13 +19,12 @@ add_subdirectory(src)
 set(LIBS algorithms;io;parallel)
 
 # Main application
-add_executable(main src/main.cpp)
-target_link_libraries(main ${LIBS})
-configure_file("${PROJECT_SOURCE_DIR}/src/input.json"
-               "${CMAKE_BINARY_DIR}/input.json" COPYONLY)
+add_subdirectory(applications)
+
+# Performance test.
+add_subdirectory(benchmarking)
 
 # Testing.
-
 include(cmake/testing.cmake)
 enable_testing()
 

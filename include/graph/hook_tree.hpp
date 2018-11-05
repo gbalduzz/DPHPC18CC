@@ -46,7 +46,7 @@ inline HookTree::HookTree(Label n) : parent_(n) {
 
 inline void HookTree::hook(Label i, Label j) {
   assert(isRoot(i) && isRoot(j));
-  parent_[i] = parent_[j];
+  parent_[i] = j;
 }
 
 inline bool HookTree::hookAtomic(Label i, Label j) {
