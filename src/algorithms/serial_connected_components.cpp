@@ -8,29 +8,16 @@ graph::HookTree serialConnectedComponents(const unsigned n, std::vector<graph::E
 
   graph::HookTree tree(n);
 
-  while (true) {
-    bool changes = false;
-    for (auto& edge : edges) {
-      if (!edge.isValid())
-        continue;
-      const auto repr_i = tree.representative(edge.first);
-      const auto repr_j = tree.representative(edge.second);
+  for (auto& edge : edges) {
+    const auto repr_i = tree.representative(edge.first);
+    const auto repr_j = tree.representative(edge.second);
 
-      if (repr_i != repr_j) {
-        changes = true;
-        const bool hooked = tree.hookRoots(std::max(repr_i, repr_j), std::min(repr_i, repr_j));
-
-        if (hooked) {
-          edge.markInvalid();
-        }
-      }
+    if (repr_i != repr_j) {
+      tree.hook(std::max(repr_i, repr_j), std::min(repr_i, repr_j));
     }
-
-    tree.compress();
-
-    if (!changes)
-      break;
   }
+
+  tree.compress();
 
   return tree;
 }

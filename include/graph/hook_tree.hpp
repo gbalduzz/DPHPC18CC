@@ -1,6 +1,8 @@
 #pragma once
 
 #include <atomic>
+#include <cassert>
+#include <numeric>
 #include <vector>
 
 #include "graph/edge.hpp"
@@ -11,12 +13,12 @@ class HookTree {
 public:
   HookTree(Label n);
 
-  // Tries to hook the tree containing i to the three containing j.
-  // Returns: true if success.
-  bool hook(Label i, Label j);
+  // Hooks i to j.
+  // Precondition: i and j are roots.
+  void hook(Label i, Label j);
 
-  // Same as above, but i and j are guaranteed to be root vertices by the caller.
-  bool hookRoots(Label i, Label j);
+  // Same as above, but it is atomic and allowed to fail.
+  bool hookAtomic(Label i, Label j);
 
   Label representative(Label i) const;
 
@@ -37,5 +39,31 @@ public:
 private:
   std::vector<Label> parent_;
 };
+
+inline HookTree::HookTree(Label n) : parent_(n) {
+  std::iota(parent_.begin(), parent_.end(), 0);
+}
+
+inline void HookTree::hook(Label i, Label j) {
+  assert(isRoot(i) && isRoot(j));
+  parent_[i] = parent_[j];
+}
+
+inline bool HookTree::hookAtomic(Label i, Label j) {
+  return std::atomic_compare_exchange_weak(reinterpret_cast<std::atomic<Label>*>(&parent_[i]), &i, j);
+}
+
+inline Label HookTree::representative(Label index) const {
+  while (index != parent_[index]) {
+    index = parent_[index];
+  }
+  return index;
+}
+
+inline void HookTree::compress() {
+  for (std::size_t i = 0; i < parent_.size(); ++i) {
+    compress(i);
+  }
+}
 
 }  // graph

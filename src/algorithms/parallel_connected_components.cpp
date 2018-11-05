@@ -26,7 +26,7 @@ graph::HookTree parallelConnectedComponents(const unsigned n, std::vector<graph:
 
       if (repr_i != repr_j) {
         changes = true;
-        const bool hooked = tree.hookRoots(std::max(repr_i, repr_j), std::min(repr_i, repr_j));
+        const bool hooked = tree.hookAtomic(std::max(repr_i, repr_j), std::min(repr_i, repr_j));
 
         if (hooked) {
           edge.markInvalid();
