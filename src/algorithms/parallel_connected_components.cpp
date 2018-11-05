@@ -18,7 +18,7 @@ graph::HookTree parallelConnectedComponents(const unsigned n, std::vector<graph:
 
   while (failures) {
     failures = false;
-#pragma omp parallel for
+#pragma omp parallel for schedule(dynamic, 5000)
     for (unsigned int e_id = 0; e_id < m; ++e_id) {
       auto& edge = edges[e_id];
       if (!edge.isValid())
@@ -39,7 +39,7 @@ graph::HookTree parallelConnectedComponents(const unsigned n, std::vector<graph:
       edge.markInvalid();
     }
 
-#pragma omp parallel for
+#pragma omp parallel for schedule(dynamic, 5000)
     for (unsigned int i = 0; i < n; ++i) {
       tree.compress(i);
     }
