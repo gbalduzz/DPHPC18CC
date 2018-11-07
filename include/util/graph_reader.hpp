@@ -25,6 +25,10 @@ public:
      * Reads in a json file and returns a list with node names for each connected component */ 
     std::vector<std::vector<graph::Label>> read_connected_components_from_json(string filename); 
 
+    /**
+     *  Read Edges from this: http://www.dis.uniroma1.it/challenge9/download.shtml challenge
+     *  */
+    std::vector<graph::Edge> read_graph_from_DIMACS_challenge(string filename); 
 };
 }  // namespace graph
 
