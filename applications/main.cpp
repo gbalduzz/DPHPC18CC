@@ -1,7 +1,7 @@
 #include <iostream>
 #include <fstream>
 
-#include "algorithms/serial_connected_components.hpp"
+#include "algorithms/parallel_connected_components.hpp"
 #include "graph/generate_random_graph.hpp"
 #include "io/json11.hpp"
 #include "util/timer.hpp"
@@ -18,11 +18,14 @@ int main(int argc, char** argv) {
   auto edges = graph::generateRandomGraph(n, m);
   std::cout << "Generated random graph.\n";
 
+  const int n_threads = parameters["threads"].int_value();
+
   auto start = util::getTime();
-  auto result = algorithms::serialConnectedComponents(n, edges);
+  auto result = algorithms::parallelConnectedComponents(n, edges, n_threads);
   auto end = util::getTime();
 
-  std::cout << "Serial contraction took " << util::getDiff(start, end) << " s" << std::endl;
+  std::cout << "Parallel contraction took " << util::getDiff(start, end) << " s" << std::endl;
+  std::cout << "N threads " << n_threads << std::endl;
 
   std::ofstream out("labels.txt");
   for (int i = 0; i < n; ++i)

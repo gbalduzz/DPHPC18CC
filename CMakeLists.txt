@@ -4,7 +4,7 @@ project(MinCut)
 set(CMAKE_CXX_STANDARD 17)
 
 #Threading options
-SET(CMAKE_CXX_FLAGS "-lgtest -pthread")
+SET(CMAKE_CXX_FLAGS "-pthread -fopenmp")
 
 # System libraries.
 set(BOOST_DIR "/usr/local/boost" CACHE STRING "Path to boost.")
@@ -16,17 +16,17 @@ link_directories(${BOOST_DIR}/lib)
 # Local libraries.
 include_directories(${PROJECT_SOURCE_DIR}/include)
 add_subdirectory(src)
-set(LIBS algorithms;io;graph;parallel;util)
+set(LIBS algorithms;io;parallel;util)
 
 # Main application
-add_executable(main src/main.cpp)
-target_link_libraries(main ${LIBS})
-configure_file("${PROJECT_SOURCE_DIR}/src/input.json"
-               "${CMAKE_BINARY_DIR}/input.json" COPYONLY)
+add_subdirectory(applications)
+
+# Performance test.
+add_subdirectory(benchmarking)
 
 # Testing.
+enable_testing()
 include(cmake/testing.cmake)
 add_subdirectory(test)
-enable_testing()
 
 
