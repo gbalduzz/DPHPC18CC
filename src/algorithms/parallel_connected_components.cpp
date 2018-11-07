@@ -28,7 +28,11 @@ graph::HookTree parallelConnectedComponents(const unsigned n, std::vector<graph:
       const auto repr_j = tree.representative(edge.second);
 
       if (repr_i != repr_j) {
-        const bool hooked = tree.hookAtomic(std::max(repr_i, repr_j), std::min(repr_i, repr_j));
+        bool hooked;
+        if (repr_i > repr_j)
+          hooked = tree.hookAtomicAndUpdate(repr_i, repr_j, edge.first, edge.second);
+        else
+          hooked = tree.hookAtomicAndUpdate(repr_j, repr_i, edge.second, edge.first);
 
         if (!hooked) {
           failures = true;
