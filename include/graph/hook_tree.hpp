@@ -79,8 +79,12 @@ inline bool HookTree::hookAtomic(Label i, Label j) {
 inline bool HookTree::hookAtomicAndUpdate(Label repr_i, Label repr_j, Label i, Label j) {
   const bool result = std::atomic_compare_exchange_weak(
       reinterpret_cast<std::atomic<Label>*>(&parent_[repr_i]), &repr_i, repr_j);
-  parent_[i] = result ? repr_j : repr_i;
-  parent_[j] = repr_j;
+  if (parent_[i] != repr_i) {
+    parent_[i] = repr_i;
+  }
+  if (parent_[j] != repr_j) {
+    parent_[j] = repr_j;
+  }
   return result;
 }
 
