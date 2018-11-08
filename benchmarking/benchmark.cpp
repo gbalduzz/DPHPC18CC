@@ -5,7 +5,7 @@
 
 #include "algorithms/parallel_connected_components.hpp"
 #include "algorithms/serial_connected_components.hpp"
-#include "graph/generate_random_graph.hpp"
+#include "util/graph_reader.hpp"
 #include "util/timer.hpp"
 #include "util/stddev.hpp"
 
@@ -18,11 +18,10 @@ int main(int argc, char** argv) {
   if (argc > 1)
     max_threads = std::atoi(argv[1]);
 
-  constexpr int n = 1e7;
-  constexpr int m = 1e7;
-
-  const auto edges = graph::generateRandomGraph(n, m);
-  std::cout << "Generated random graph.\n";
+  const std::string filename = "USA-road-t.USA.gr";
+  const auto edges = util::GraphReader().read_graph_from_DIMACS_challenge(filename);
+  const int n = util::GraphReader().vertexNumber(edges);
+  std::cout << "Loaded graph.\n";
 
   auto time = [&](auto&& f, int n_threads) -> std::pair<double, double> {
     constexpr int n_times = 10;
