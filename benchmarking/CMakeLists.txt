@@ -17,4 +17,4 @@ add_custom_target(USA-road-t.USA.gr
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
         DEPENDS USA_road_archieve)
 
-add_dependencies(benchmark USA-road-t.USA.gr)
+add_dependencies(benchmark USA-road-t.NY.gr)

@@ -88,6 +88,64 @@ std::vector<graph::Edge> GraphReader::read_graph_from_DIMACS_challenge(string fi
   return edge_list;
 }
 
+
+void GraphReader::read_graph_from_DIMACS_challenge_to_file(string filename) {
+  ifstream file;
+  ofstream outfile;
+
+  file.open(filename);
+  
+
+  if (!file) {
+    exit(1);  // terminate with error
+  }
+  outfile.open(filename + ".out");
+  if (!outfile) {
+    exit(1);
+  }
+
+
+  outfile << endl;
+  while (!file.eof()) {
+    string content;
+    getline(file, content);
+
+
+	// read number of vertices and nodes
+	// currently only taking edge in one direction into account
+	if (content.front() == 'p') {
+      int nodes, edges; 
+	  getline(file, content);
+      vector<string> nr;
+      boost::split(nr, content, [](char c) { return c == ' '; });
+      nodes = stoi(nr[3]);
+      edges = stoi(nr[6])/2; // only half of the edges get read
+      outfile << nodes << " " << edges << endl;
+    }
+
+	 if (content.front() != 'a') {
+      
+      continue;
+    }
+    
+	 
+    // if the first char in one line is an a, then the line describes an edge
+
+
+    if (content.front() = 'a') {
+          vector<string> nr;
+          boost::split(nr, content, [](char c) { return c == ' '; });
+          outfile << nr[1] << " " << nr[2] << " " << nr[3] << endl;
+          getline(file, content); // only half of the edges get read
+    }
+  }
+
+  file.close();
+  outfile.close();
+
+}
+
+
 int GraphReader::vertexNumber(const std::vector<graph::Edge>& edges) {
   graph::Label max_id = 0;
   for (const auto& edge : edges) {
