@@ -115,7 +115,7 @@ void GraphReader::read_graph_from_DIMACS_challenge_to_file(string filename) {
 	// currently only taking edge in one direction into account
 	if (content.front() == 'p') {
       int nodes, edges; 
-	  getline(file, content);
+	    getline(file, content);
       vector<string> nr;
       boost::split(nr, content, [](char c) { return c == ' '; });
       nodes = stoi(nr[3]);
@@ -123,21 +123,19 @@ void GraphReader::read_graph_from_DIMACS_challenge_to_file(string filename) {
       outfile << nodes << " " << edges << endl;
     }
 
-	 if (content.front() != 'a') {
-      
-      continue;
+	  if (content.front() != 'a') {
+        continue;
     }
     
 	 
     // if the first char in one line is an a, then the line describes an edge
 
-
-    if (content.front() = 'a') {
-          vector<string> nr;
-          boost::split(nr, content, [](char c) { return c == ' '; });
-          outfile << nr[1] << " " << nr[2] << " " << nr[3] << endl;
-          getline(file, content); // only half of the edges get read
-    }
+    vector<string> nr;
+    boost::split(nr, content, [](char c) { return c == ' '; });
+    //Hack. DIMAC files have the first node at 1, the min communication expects first number to be 0. 
+    outfile << (stoi(nr[1]) -1)<< " " << (stoi(nr[2]) -1) << " " << nr[3] << endl;
+    getline(file, content); // only half of the edges get read
+  
   }
 
   file.close();
