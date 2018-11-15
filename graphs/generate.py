@@ -38,8 +38,8 @@ print(nr_graphs)
 """
 for i in range(nr_graphs): 
 	#generate graph size
-	nr_edges = random.randint(100,1000)
-	nr_nodes = random.randint(100,200)	
+	nr_edges = random.randint(20,20)
+	nr_nodes = random.randint(10,10)	
 	
 	G = nx.gnm_random_graph(nr_nodes,nr_edges)
 	nr_connected_components = nx.number_connected_components(G)

@@ -3,6 +3,9 @@ project(MinCut)
 
 set(CMAKE_CXX_STANDARD 17)
 
+# set mpi compiler
+set(CMAKE_CXX_COMPILER mpicxx)
+
 #Threading options
 SET(CMAKE_CXX_FLAGS "-pthread -fopenmp")
 
@@ -12,6 +15,10 @@ set(BOOST_DIR "/usr/local/boost" CACHE STRING "Path to boost.")
 include_directories(${BOOST_DIR}/include)
 #include_directories(${BOOST_DIR})
 link_directories(${BOOST_DIR}/lib)
+
+# MPI
+set(MPI_DIR "/usr/include/mpi" CACHE STRING "Path to MPI.")
+include_directories(${MPI_DIR})
 
 # Local libraries.
 include_directories(${PROJECT_SOURCE_DIR}/include)
@@ -28,5 +35,3 @@ add_subdirectory(benchmarking)
 enable_testing()
 include(cmake/testing.cmake)
 add_subdirectory(test)
-
-

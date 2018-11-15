@@ -1,12 +1,25 @@
 #include <iostream>
 #include <fstream>
+#include <mpi.h>
 
 #include "algorithms/parallel_connected_components.hpp"
+#include "algorithms/parallel_mpi_connected_components.hpp"
 #include "graph/generate_random_graph.hpp"
 #include "io/json11.hpp"
 #include "util/timer.hpp"
 
 int main(int argc, char** argv) {
+
+    MPI_Init(&argc, &argv);
+
+    algorithms::parallelMpiConnectedComponents("/home/michael/Documents/DPHPC18MinCut/graphs/graph_0.adjlist", 0);
+
+    MPI_Finalize();
+
+
+
+
+  /*
   std::string input_name = "input.json";
   if (argc > 1)
     input_name = std::string(argv[1]);
@@ -31,6 +44,7 @@ int main(int argc, char** argv) {
   for (int i = 0; i < n; ++i)
     out << i << ":\t" << result.representative(i) << "\n";
   out.close();
+  */
 
   return 0;
 }

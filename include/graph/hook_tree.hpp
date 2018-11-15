@@ -4,6 +4,8 @@
 #include <cassert>
 #include <numeric>
 #include <vector>
+#include <string>
+#include <algorithm>
 
 #include "graph/edge.hpp"
 
@@ -35,6 +37,33 @@ public:
   bool isRoot(Label i) const {
     return i == parent_[i];
   }
+
+  std::string toString() {
+
+    std::string res = "";
+
+    //std::vector<std::vector<Label>> connected_components(parent_.size());
+    for(int i=0; i<parent_.size(); ++i) {
+        Label root = representative(parent_[i]);
+        res += std::to_string(i) + "->" + std::to_string(root) + "\n";
+        //connected_components[root].push_back(i);
+    }
+
+    /*
+    for(int i=0; i<connected_components.size(); ++i) {
+        if(connected_components[i].size() > 0) {
+            for(int j=0; j<connected_components[i].size(); ++j) {
+                res += std::to_string(connected_components[i][j]) + " | ";
+            }
+            res += "\n";
+        }
+    }
+    */
+
+    return res;
+
+  }
+
 
 private:
   std::vector<Label> parent_;
