@@ -34,6 +34,9 @@ public:
  *  Returns the number ov vertices in the graph
  *  */
     int vertexNumber(const std::vector<graph::Edge>& edges);
+
+
+	void read_graph_from_DIMACS_challenge_to_file(string filename);
 };
 }  // namespace graph
 

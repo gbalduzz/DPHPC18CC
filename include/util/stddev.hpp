@@ -3,7 +3,6 @@
 #include <vector>
 #include <cmath>
 
-
 namespace util {
 
 template <typename T>

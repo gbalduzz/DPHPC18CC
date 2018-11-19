@@ -13,8 +13,11 @@ graph::HookTree serialConnectedComponents(const unsigned n, std::vector<graph::E
     const auto repr_i = tree.representative(edge.first);
     const auto repr_j = tree.representative(edge.second);
 
-    if (repr_i != repr_j) {
-      tree.hook(std::max(repr_i, repr_j), std::min(repr_i, repr_j));
+    if (repr_i > repr_j) {
+      tree.hookAndUpdate(repr_i, repr_j, edge.first, edge.second);
+    }
+    else if (repr_i < repr_j) {
+      tree.hookAndUpdate(repr_j, repr_i, edge.second, edge.first);
     }
   }
 

@@ -3,6 +3,7 @@
 #include <functional>
 #include <thread>
 
+
 #include "algorithms/parallel_connected_components.hpp"
 #include "algorithms/serial_connected_components.hpp"
 #include "util/graph_reader.hpp"
@@ -14,15 +15,26 @@ std::ostream& operator<<(std::ostream& out, std::pair<double, double> p) {
 }
 
 int main(int argc, char** argv) {
+  bool writting_graph_file = true;
   int max_threads = std::thread::hardware_concurrency();
   if (argc > 1)
     max_threads = std::atoi(argv[1]);
 
-  const std::string filename = "USA-road-t.USA.gr";
+ 
+
+  const std::string filename = "USA-road-t.NY.gr";
+
+
+  if (writting_graph_file) {
+  
+  util::GraphReader().read_graph_from_DIMACS_challenge_to_file(filename);
+  std::cout << "Written graph to file" << std::endl;
+  }
   const auto edges = util::GraphReader().read_graph_from_DIMACS_challenge(filename);
   const int n = util::GraphReader().vertexNumber(edges);
   std::cout << "Loaded graph.\n";
 
+  
   auto time = [&](auto&& f, int n_threads) -> std::pair<double, double> {
     constexpr int n_times = 10;
     std::vector<double> results(n_times);
