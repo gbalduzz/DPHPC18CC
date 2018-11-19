@@ -24,6 +24,9 @@ Key concepts
 
 Obstacles
 
+# Difficulties #
+- Getting "communication avoiding" to run without out_of_range() exceptions
+- Finding suitable graphs (World map from open world?)
 
 # Papers #
 - https://arxiv.org/pdf/1501.03105.pdf 
