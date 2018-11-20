@@ -4,10 +4,16 @@
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
 #include <boost/foreach.hpp>
+#include <iostream>
 
 using namespace std;
 
 namespace util {
+
+//Read graph from adjacency list
+//Ignore lines that start with '#', as those are comments. 
+//If not # or number, will throw error!
+//Does not check for duplicates and similar. 
 vector<graph::Edge> GraphReader::read_graph_from_adjacency_list(string filename) {
   ifstream adjacency_list;
 
@@ -21,8 +27,14 @@ vector<graph::Edge> GraphReader::read_graph_from_adjacency_list(string filename)
     string content;
     getline(adjacency_list, content);
     vector<string> nr;
-    boost::split(nr, content, [](char c) { return c == ' '; });
 
+    //Comment
+    if (content.front() == '#') {
+      continue; 
+    }
+    //If there is no 'space' in a certain line, then the nr array will be empty -> Nodes without connections don't have to be handled seperatly
+    boost::split(nr, content, [](char c) { return c == ' '; }); 
+  
     for (int i = 1; i < nr.size(); i++) {
       edge_list.push_back(graph::Edge(std::stoi(nr[0]), std::stoi(nr[i])));
     }
