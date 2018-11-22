@@ -34,7 +34,7 @@ namespace algorithms {
 
         // broadcast number of edges
         MPI_Bcast(&n_edges, 1, MPI_INT, 0, MPI_COMM_WORLD);
-        printf("P_%d: n_edges = %d\n", rank, n_edges);
+        //printf("P_%d: n_edges = %d\n", rank, n_edges);
 
 
 
@@ -88,32 +88,92 @@ namespace algorithms {
                 printf("P_%d: Invalid edge %d - %d detected\n", rank, e.first, e.second);
             }
         }
-        n_my_nodes++;
+        n_my_nodes++; // the number of nodes is one more than the maximum node id
 
+        /*
         printf("P_%d: num nodes = %d\n", rank, n_my_nodes);
         for(int i=0; i<my_edges.size(); ++i) {
             printf("P_%d: %d - %d\n", rank, my_edges[i].first, my_edges[i].second);
         }
-
+        */
 
 
 
 
         // compute connected components
         graph::HookTree myHookTree = parallelConnectedComponents(n_my_nodes, my_edges, n_threads_per_node);
+
+        /*
         MPI_Barrier(MPI_COMM_WORLD);
-
-
         for(int i=0; i<comm_size; ++i) {
-            if(rank == i) {
+            if (rank == i) {
                 printf("P_%d:\n%s", rank, myHookTree.toString().c_str());
             }
             MPI_Barrier(MPI_COMM_WORLD);
         }
 
+        printf("\n");
+         */
 
 
-        return graph::HookTree(0);
+        // combine results
+        int n_active_nodes = comm_size;
+        const int TAG_N_NODES = 10;
+        const int TAG_DATA = 20;
+        bool done = false;
+        while(n_active_nodes > 1) {
+
+            // if there is an odd number of active nodes the root node skipps this step
+            if(not(rank == 0 && n_active_nodes%2 == 1) && !done) {
+
+                if (rank < (float)n_active_nodes / 2) {
+                    // we are the receiver
+                    int peer_rank = rank + floor((float)n_active_nodes / 2);
+                    int n_peer_nodes;
+                    MPI_Recv(&n_peer_nodes, 1, MPI_INT, peer_rank, TAG_N_NODES, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+
+                    unsigned peer_parents[n_peer_nodes];
+                    MPI_Recv(peer_parents, n_peer_nodes, MPI_UNSIGNED, peer_rank, TAG_DATA, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+                    graph::HookTree peerHookTree(peer_parents, n_peer_nodes);
+
+                    myHookTree += peerHookTree;
+                    myHookTree.compress();
+
+
+                } else {
+                    // we are the sender
+                    int peer_rank = rank - floor((float)n_active_nodes / 2);
+                    MPI_Send(&n_my_nodes, 1, MPI_INT, peer_rank, TAG_N_NODES, MPI_COMM_WORLD);
+                    MPI_Send(myHookTree.getParents().data(), n_my_nodes, MPI_UNSIGNED, peer_rank, TAG_DATA, MPI_COMM_WORLD);
+                    done = true;
+                }
+
+            }
+
+
+            n_active_nodes = (int)ceil((float)n_active_nodes / 2);
+
+            /*
+            for(int i=0; i<n_active_nodes; ++i) {
+                if(!done) {
+                    if (rank == i) {
+                        printf("P_%d:\n %s\n", rank, myHookTree.toString().c_str());
+                    }
+                }
+                MPI_Barrier(MPI_COMM_WORLD);
+            }
+             */
+
+
+        }
+
+
+        if(rank != 0) {
+            return graph::HookTree(0);
+        }
+
+        return myHookTree;
+
 
     }
 

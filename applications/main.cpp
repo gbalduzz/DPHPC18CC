@@ -12,7 +12,7 @@ int main(int argc, char** argv) {
 
     MPI_Init(&argc, &argv);
 
-    algorithms::parallelMpiConnectedComponents("/home/michael/Documents/DPHPC18MinCut/graphs/graph_0.adjlist", 0);
+    graph::HookTree finalHookTree = algorithms::parallelMpiConnectedComponents("/home/michael/Documents/DPHPC18MinCut/graphs/graph_0.adjlist", 0);
 
     MPI_Finalize();
 

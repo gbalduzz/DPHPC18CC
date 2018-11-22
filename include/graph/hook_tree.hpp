@@ -15,6 +15,11 @@ class HookTree {
 public:
   HookTree(Label n, bool parallel = false);
 
+  // constructor to initialize hooktree from parent array
+  HookTree(Label* parent, int n);
+
+  HookTree& operator+=(const HookTree& rhs);
+
   // Hooks i to j.
   // Precondition: i and j are roots.
   void hook(Label i, Label j);
@@ -64,6 +69,12 @@ public:
 
   }
 
+  const std::vector<Label>& getParents() const {
+      return parent_;
+  }
+
+
+
 
 private:
   std::vector<Label> parent_;
@@ -74,10 +85,52 @@ inline HookTree::HookTree(const Label n, const bool parallel) : parent_(n) {
     std::iota(parent_.begin(), parent_.end(), 0);
   }
   else {
-#pragma omp parallel for
-    for (int i = 0; i < n; ++i)
-      parent_[i] = i;
+    #pragma omp parallel for
+    for (int i = 0; i < n; ++i) {
+        parent_[i] = i;
+    }
   }
+}
+
+inline HookTree::HookTree(graph::Label* parent, int n) {
+    parent_.resize(n);
+    #pragma omp parallel for
+    for (int i = 0; i < n; ++i) {
+        parent_[i] = parent[i];
+    }
+}
+
+inline HookTree& HookTree::operator+=(const HookTree& rhs) {
+
+    // extend this trees size to atleast size of other tree
+    for(int i=this->parent_.size(); i<rhs.parent_.size(); ++i) {
+        this->parent_.push_back(i);
+    }
+
+    // loop over all nodes in other tree
+    for(int i=0; i<rhs.parent_.size(); ++i) {
+
+        // there is nothing we need to do if i is already the root
+        if(rhs.isRoot(i)) {
+            continue;
+        }
+
+        Label other_representative = rhs.representative(i);
+        Label this_other_representative_representative = this->representative(other_representative);
+        Label this_representative = this->representative(i);
+
+        // edge already exists in this tree => there is nothing to do
+        if(this_representative == this_other_representative_representative) {
+            continue;
+        }
+
+        this->hook(std::max(this_representative, this_other_representative_representative), std::min(this_representative, this_other_representative_representative));
+
+
+    }
+
+
+
 }
 
 inline void HookTree::hook(Label i, Label j) {
