@@ -4,15 +4,51 @@
 
 #include "algorithms/parallel_connected_components.hpp"
 #include "algorithms/parallel_mpi_connected_components.hpp"
+#include "algorithms/serial_connected_components.hpp"
 #include "graph/generate_random_graph.hpp"
 #include "io/json11.hpp"
 #include "util/timer.hpp"
+#include "util/graph_reader.hpp"
 
 int main(int argc, char** argv) {
 
     MPI_Init(&argc, &argv);
 
-    graph::HookTree finalHookTree = algorithms::parallelMpiConnectedComponents("/home/michael/Documents/DPHPC18MinCut/graphs/graph_0.adjlist", 0);
+    int rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+
+    std::vector<graph::Edge> edges;
+
+    if(rank == 0) {
+        std::string filename = "../benchmarking/USA-road-t.NY.gr";
+
+        printf("start load graph\n");
+        edges = util::GraphReader().read_graph_from_DIMACS_challenge(filename);
+        printf("end load graph\n");
+
+        int n_nodes = util::GraphReader().vertexNumber(edges);
+
+        graph::HookTree serialHookTree = algorithms::serialConnectedComponents(n_nodes, edges);
+        printf("Serial number of connected componnets: %d\n", serialHookTree.getNumConnectedComponents());
+
+        graph::HookTree parallelHookTree = algorithms::parallelConnectedComponents(n_nodes, edges, 4);
+        printf("Parallel number of connected componnets: %d\n", parallelHookTree.getNumConnectedComponents());
+    }
+
+
+
+    graph::HookTree MpiHookTree = algorithms::parallelMpiConnectedComponents(edges, 4);
+
+
+
+    if(rank == 0) {
+        //printf("%s\n", finalHookTree.toString().c_str());
+        printf("MPI number of connected components: %d\n", MpiHookTree.getNumConnectedComponents());
+    }
+
+
+
+
 
     MPI_Finalize();
 

@@ -38,8 +38,8 @@ print(nr_graphs)
 """
 for i in range(nr_graphs): 
 	#generate graph size
-	nr_edges = random.randint(20,20)
-	nr_nodes = random.randint(10,10)	
+	nr_edges = random.randint(1e7,1e8)
+	nr_nodes = random.randint(1e7,1e7)	
 	
 	G = nx.gnm_random_graph(nr_nodes,nr_edges)
 	nr_connected_components = nx.number_connected_components(G)
@@ -48,32 +48,7 @@ for i in range(nr_graphs):
 	graph_name = "graph_" + str(i)
 	nx.write_adjlist(G,graph_name +".adjlist")
 
-	connected_components = nx.connected_components(G)
-
 	
-	component_list = []
-	with io.open(graph_name + "_info.json", 'w', encoding='utf-8') as f:
-		for i in connected_components: 
-			component_list += [list(i)]
-		json.dump(component_list, f, ensure_ascii=False, separators=(',', ': '))
-	f.close()
-
-	"""
-	Choose first node of each connected component as representative and write it into the info.txt file. 
-	Line x with number z means that node x belongs to the graph with representative z. 	
-	"""
-	
-	connected_components = nx.connected_components(G) #### NECESSARY !!!
-	representatives = [None] * nr_nodes
-	for connected_component in connected_components: 
-		for l in connected_component: 
-			representatives[l] = list(connected_component)[0]
-
-	with open(graph_name + "_info.txt", 'w') as f: 
-		for x in representatives: 
-			f.write(str(x) + "\n")
-
-	f.close()
 
 
 

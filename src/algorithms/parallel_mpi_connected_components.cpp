@@ -5,12 +5,10 @@
 #include <omp.h>
 #include <math.h>
 
-#include "util/graph_reader.hpp"
-
 namespace algorithms {
 
 
-    graph::HookTree parallelMpiConnectedComponents(std::string graph_file_name, int n_threads_per_node) {
+    graph::HookTree parallelMpiConnectedComponents(std::vector<graph::Edge>& all_edges, int n_threads_per_node) {
 
 
 
@@ -21,15 +19,13 @@ namespace algorithms {
         MPI_Comm_size(MPI_COMM_WORLD, &comm_size);
 
 
-        // load edges from file on root node
+
         int n_edges = -1;
-        std::vector<graph::Edge> all_edges;
+
         if(rank == 0) {
-            // read edges from file
-            util::GraphReader graphReader;
-            all_edges = graphReader.read_graph_from_adjacency_list(graph_file_name);
             n_edges = all_edges.size();
         }
+
 
 
         // broadcast number of edges
@@ -48,6 +44,8 @@ namespace algorithms {
         int recvbuff[buff_size];
         if(rank == 0) {
 
+            printf("start scattering\n");
+
             // create send buffer
             int sendbuffsize = comm_size * buff_size;
             sendbuff = new int[sendbuffsize];
@@ -56,6 +54,11 @@ namespace algorithms {
             for(int i=0; i<n_edges; ++i) {
                 sendbuff[2*i + 0] = all_edges[i].first;
                 sendbuff[2*i + 1] = all_edges[i].second;
+
+
+                if(sendbuff[2*i + 0] == -1 or sendbuff[2*i + 1] == -1){
+                    printf("wrong edge written to sendbuff\n");
+                }
             }
 
             // padd send buffer with -1
@@ -67,6 +70,10 @@ namespace algorithms {
 
         // scatter edges
         MPI_Scatter(sendbuff, buff_size, MPI_INT, recvbuff, buff_size, MPI_INT, 0, MPI_COMM_WORLD);
+
+        if(rank == 0) {
+            printf("finished scattering\n");
+        }
 
 
 
@@ -101,7 +108,9 @@ namespace algorithms {
 
 
         // compute connected components
+        printf("P_%d: start parallel contractions\n", rank);
         graph::HookTree myHookTree = parallelConnectedComponents(n_my_nodes, my_edges, n_threads_per_node);
+        printf("P_%d: end parallel contractions\n", rank);
 
         /*
         MPI_Barrier(MPI_COMM_WORLD);
@@ -146,6 +155,7 @@ namespace algorithms {
                     MPI_Send(&n_my_nodes, 1, MPI_INT, peer_rank, TAG_N_NODES, MPI_COMM_WORLD);
                     MPI_Send(myHookTree.getParents().data(), n_my_nodes, MPI_UNSIGNED, peer_rank, TAG_DATA, MPI_COMM_WORLD);
                     done = true;
+                    printf("P_%d: done\n", rank);
                 }
 
             }

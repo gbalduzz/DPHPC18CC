@@ -9,6 +9,6 @@
 
 namespace algorithms {
 
-    graph::HookTree parallelMpiConnectedComponents(std::string graph_file_name, int n_threads_per_node);
+    graph::HookTree parallelMpiConnectedComponents(std::vector<graph::Edge>& all_edges, int n_threads_per_node);
 
 }  // algorithms
