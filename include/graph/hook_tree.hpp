@@ -73,6 +73,8 @@ public:
       return parent_;
   }
 
+  const unsigned getNumConnectedComponents() const;
+
 
 
 
@@ -153,6 +155,24 @@ inline void HookTree::compress() {
   for (std::size_t i = 0; i < parent_.size(); ++i) {
     compress(i);
   }
+}
+
+inline const unsigned HookTree::getNumConnectedComponents() const {
+
+    const int n = parent_.size();
+    std::vector<bool> is_rep(n, false);
+
+    for(int i=0; i<n; ++i) {
+        is_rep[representative(i)] = true;
+    }
+
+    unsigned result = 0;
+    for(int i=0; i<n; ++i) {
+        result += is_rep[i] ? 1 : 0;
+    }
+
+    return result;
+
 }
 
 }  // graph

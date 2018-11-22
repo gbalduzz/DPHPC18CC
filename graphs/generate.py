@@ -27,8 +27,8 @@ else:
 
 for i in range(nr_graphs): 
 	#generate graph size
-	nr_edges = random.randint(20,20)
-	nr_nodes = random.randint(10,10)	
+	nr_edges = random.randint(1e7,1e8)
+	nr_nodes = random.randint(1e7,1e7)	
 	
 	G = nx.gnm_random_graph(nr_nodes,nr_edges)
 	nr_connected_components = nx.number_connected_components(G)
@@ -52,6 +52,7 @@ for i in range(nr_graphs):
 			f.write(str(x) + "\n")
 
 	f.close()
+
 
 
 
