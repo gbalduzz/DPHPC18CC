@@ -5,6 +5,7 @@
 
 #include "graph/generate_random_graph.hpp"
 #include "parallel/concurrency/mpi_concurrency.hpp"
+#include "util/graph_reader.hpp"
 
 void performTest(int n, std::vector<graph::Edge>& edges, const std::vector<int>& expected);
 
@@ -42,6 +43,24 @@ TEST(ParallelConnectedComponentsTest, Precomputed) {
   performTest(n, edges, expected);
 }
 
+TEST(ParallelMpiConnectedComponents, Random) {
+  // Load random graph
+  const std::string filename = "graph_0_info.txt";
+  std::ifstream inp(filename);
+  std::vector<int> expected;
+
+  std::string content;
+  while (std::getline(inp, content)) {
+    expected.push_back(std::stoi(content));
+  }
+  inp.close();
+
+  util::GraphReader reader;
+  auto edges = reader.read_graph_from_adjacency_list("graph_0.adjlist");
+
+  performTest(expected.size(), edges, expected);
+}
+
 void performTest(int n, std::vector<graph::Edge>& edges, const std::vector<int>& expected) {
   static parallel::MpiConcurrency concurrency;
 
@@ -53,7 +72,9 @@ void performTest(int n, std::vector<graph::Edge>& edges, const std::vector<int>&
   };
   auto expect_connected = [&](int i, int j) { return expected[i] == expected[j]; };
 
-  for (int i = 0; i < n; ++i)
-    for (int j = 0; j < n; ++j)
-      EXPECT_EQ(expect_connected(i, j), are_connected(i, j));
+  if (concurrency.id() == 0) {
+    for (int i = 0; i < n; ++i)
+      for (int j = 0; j < n; ++j)
+        EXPECT_EQ(expect_connected(i, j), are_connected(i, j));
+  }
 }
