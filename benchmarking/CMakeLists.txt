@@ -1,6 +1,9 @@
 add_executable(benchmark benchmark.cpp)
 target_link_libraries(benchmark ${LIBS})
 
+add_executable(benchmark_mpi benchmark_mpi.cpp)
+target_link_libraries(benchmark_mpi ${LIBS})
+
 include(${CMAKE_ROOT}/Modules/ExternalProject.cmake)
 ExternalProject_Add(
         USA_road_archieve
@@ -18,3 +21,4 @@ add_custom_target(USA-road-t.USA.gr
         DEPENDS USA_road_archieve)
 
 add_dependencies(benchmark USA-road-t.USA.gr)
+add_dependencies(benchmark_mpi USA-road-t.USA.gr)

@@ -12,7 +12,7 @@ inline Time getTime() {
 }
 
 // Prints in seconds.
-double getDiff(Time t0, Time tf) {
+inline double getDiff(Time t0, Time tf) {
   return std::chrono::duration<double>(tf - t0).count();
 }
 

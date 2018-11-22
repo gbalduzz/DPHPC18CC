@@ -1,182 +1,165 @@
 #include "algorithms/parallel_mpi_connected_components.hpp"
 #include "algorithms/parallel_connected_components.hpp"
+#include "util/timer.hpp"
+
 #include <mpi.h>
 
 #include <omp.h>
 #include <math.h>
 
-#include "util/graph_reader.hpp"
-
 namespace algorithms {
 
+std::pair<graph::HookTree, double> parallelMpiConnectedComponents(std::vector<graph::Edge>& all_edges,
+                                                                  int n_threads_per_node) {
+  // get MPI params
+  int rank;
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+  int comm_size;
+  MPI_Comm_size(MPI_COMM_WORLD, &comm_size);
 
-    graph::HookTree parallelMpiConnectedComponents(std::string graph_file_name, int n_threads_per_node) {
+  int n_edges = -1;
 
+  if (rank == 0) {
+    n_edges = all_edges.size();
+  }
 
+  // broadcast number of edges
+  MPI_Bcast(&n_edges, 1, MPI_INT, 0, MPI_COMM_WORLD);
+  // printf("P_%d: n_edges = %d\n", rank, n_edges);
 
-        // get MPI params
-        int rank;
-        MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-        int comm_size;
-        MPI_Comm_size(MPI_COMM_WORLD, &comm_size);
+  // Start the timer.
+  MPI_Barrier(MPI_COMM_WORLD);
+  const auto start = util::getTime();
 
+  // scatter edges to all nodes
 
-        // load edges from file on root node
-        int n_edges = -1;
-        std::vector<graph::Edge> all_edges;
-        if(rank == 0) {
-            // read edges from file
-            util::GraphReader graphReader;
-            all_edges = graphReader.read_graph_from_adjacency_list(graph_file_name);
-            n_edges = all_edges.size();
-        }
+  int buff_size = 2.0f * std::ceil((float)n_edges / comm_size);
+  int* sendbuff = nullptr;
+  int recvbuff[buff_size];
+  if (rank == 0) {
+    printf("start scattering\n");
 
+    // create send buffer
+    int sendbuffsize = comm_size * buff_size;
+    sendbuff = new int[sendbuffsize];
 
-        // broadcast number of edges
-        MPI_Bcast(&n_edges, 1, MPI_INT, 0, MPI_COMM_WORLD);
-        //printf("P_%d: n_edges = %d\n", rank, n_edges);
+    // write edges into send buffer
+    for (int i = 0; i < n_edges; ++i) {
+      sendbuff[2 * i + 0] = all_edges[i].first;
+      sendbuff[2 * i + 1] = all_edges[i].second;
 
-
-
-
-
-
-        // scatter edges to all nodes
-
-        int buff_size = 2.0f*std::ceil((float)n_edges / comm_size);
-        int* sendbuff = nullptr;
-        int recvbuff[buff_size];
-        if(rank == 0) {
-
-            // create send buffer
-            int sendbuffsize = comm_size * buff_size;
-            sendbuff = new int[sendbuffsize];
-
-            // write edges into send buffer
-            for(int i=0; i<n_edges; ++i) {
-                sendbuff[2*i + 0] = all_edges[i].first;
-                sendbuff[2*i + 1] = all_edges[i].second;
-            }
-
-            // padd send buffer with -1
-            for(int i=(2*n_edges); i<sendbuffsize; ++i) {
-                sendbuff[i] = -1;
-            }
-        }
-
-
-        // scatter edges
-        MPI_Scatter(sendbuff, buff_size, MPI_INT, recvbuff, buff_size, MPI_INT, 0, MPI_COMM_WORLD);
-
-
-
-
-        // assemble edges from recvbuffer
-        int n_my_edges = buff_size / 2;
-        int n_my_nodes = 0;
-        std::vector<graph::Edge> my_edges;
-        for(int i=0; i<n_my_edges; ++i) {
-            graph::Edge e(recvbuff[2*i+0], recvbuff[2*i+1]);
-
-            if(e.first != -1 and e.second != -1) {
-                if(n_my_nodes < e.first || n_my_nodes < e.second) {
-                    n_my_nodes = std::max(e.first, e.second);
-                }
-                my_edges.push_back(e);
-            }
-            else if(e.first != -1 or e.second != -1) {
-                printf("P_%d: Invalid edge %d - %d detected\n", rank, e.first, e.second);
-            }
-        }
-        n_my_nodes++; // the number of nodes is one more than the maximum node id
-
-        /*
-        printf("P_%d: num nodes = %d\n", rank, n_my_nodes);
-        for(int i=0; i<my_edges.size(); ++i) {
-            printf("P_%d: %d - %d\n", rank, my_edges[i].first, my_edges[i].second);
-        }
-        */
-
-
-
-
-        // compute connected components
-        graph::HookTree myHookTree = parallelConnectedComponents(n_my_nodes, my_edges, n_threads_per_node);
-
-        /*
-        MPI_Barrier(MPI_COMM_WORLD);
-        for(int i=0; i<comm_size; ++i) {
-            if (rank == i) {
-                printf("P_%d:\n%s", rank, myHookTree.toString().c_str());
-            }
-            MPI_Barrier(MPI_COMM_WORLD);
-        }
-
-        printf("\n");
-         */
-
-
-        // combine results
-        int n_active_nodes = comm_size;
-        const int TAG_N_NODES = 10;
-        const int TAG_DATA = 20;
-        bool done = false;
-        while(n_active_nodes > 1) {
-
-            // if there is an odd number of active nodes the root node skipps this step
-            if(not(rank == 0 && n_active_nodes%2 == 1) && !done) {
-
-                if (rank < (float)n_active_nodes / 2) {
-                    // we are the receiver
-                    int peer_rank = rank + floor((float)n_active_nodes / 2);
-                    int n_peer_nodes;
-                    MPI_Recv(&n_peer_nodes, 1, MPI_INT, peer_rank, TAG_N_NODES, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-
-                    unsigned peer_parents[n_peer_nodes];
-                    MPI_Recv(peer_parents, n_peer_nodes, MPI_UNSIGNED, peer_rank, TAG_DATA, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-                    graph::HookTree peerHookTree(peer_parents, n_peer_nodes);
-
-                    myHookTree += peerHookTree;
-                    myHookTree.compress();
-
-
-                } else {
-                    // we are the sender
-                    int peer_rank = rank - floor((float)n_active_nodes / 2);
-                    MPI_Send(&n_my_nodes, 1, MPI_INT, peer_rank, TAG_N_NODES, MPI_COMM_WORLD);
-                    MPI_Send(myHookTree.getParents().data(), n_my_nodes, MPI_UNSIGNED, peer_rank, TAG_DATA, MPI_COMM_WORLD);
-                    done = true;
-                }
-
-            }
-
-
-            n_active_nodes = (int)ceil((float)n_active_nodes / 2);
-
-            /*
-            for(int i=0; i<n_active_nodes; ++i) {
-                if(!done) {
-                    if (rank == i) {
-                        printf("P_%d:\n %s\n", rank, myHookTree.toString().c_str());
-                    }
-                }
-                MPI_Barrier(MPI_COMM_WORLD);
-            }
-             */
-
-
-        }
-
-
-        if(rank != 0) {
-            return graph::HookTree(0);
-        }
-
-        return myHookTree;
-
-
+      if (sendbuff[2 * i + 0] == -1 or sendbuff[2 * i + 1] == -1) {
+        printf("wrong edge written to sendbuff\n");
+      }
     }
 
+    // padd send buffer with -1
+    for (int i = (2 * n_edges); i < sendbuffsize; ++i) {
+      sendbuff[i] = -1;
+    }
+  }
 
+  // scatter edges
+  MPI_Scatter(sendbuff, buff_size, MPI_INT, recvbuff, buff_size, MPI_INT, 0, MPI_COMM_WORLD);
+
+  if (rank == 0) {
+    printf("finished scattering\n");
+  }
+
+  // assemble edges from recvbuffer
+  int n_my_edges = buff_size / 2;
+  int n_my_nodes = 0;
+  std::vector<graph::Edge> my_edges;
+  for (int i = 0; i < n_my_edges; ++i) {
+    graph::Edge e(recvbuff[2 * i + 0], recvbuff[2 * i + 1]);
+
+    if (e.first != -1 and e.second != -1) {
+      if (n_my_nodes < e.first || n_my_nodes < e.second) {
+        n_my_nodes = std::max(e.first, e.second);
+      }
+      my_edges.push_back(e);
+    }
+    else if (e.first != -1 or e.second != -1) {
+      printf("P_%d: Invalid edge %d - %d detected\n", rank, e.first, e.second);
+    }
+  }
+  n_my_nodes++;  // the number of nodes is one more than the maximum node id
+
+  /*
+  printf("P_%d: num nodes = %d\n", rank, n_my_nodes);
+  for(int i=0; i<my_edges.size(); ++i) {
+      printf("P_%d: %d - %d\n", rank, my_edges[i].first, my_edges[i].second);
+  }
+  */
+
+  // compute connected components
+  printf("P_%d: start parallel contractions\n", rank);
+  graph::HookTree myHookTree = parallelConnectedComponents(n_my_nodes, my_edges, n_threads_per_node);
+  printf("P_%d: end parallel contractions\n", rank);
+
+  /*
+  MPI_Barrier(MPI_COMM_WORLD);
+  for(int i=0; i<comm_size; ++i) {
+      if (rank == i) {
+          printf("P_%d:\n%s", rank, myHookTree.toString().c_str());
+      }
+      MPI_Barrier(MPI_COMM_WORLD);
+  }
+
+  printf("\n");
+   */
+
+  // combine results
+  int n_active_nodes = comm_size;
+  const int TAG_N_NODES = 10;
+  const int TAG_DATA = 20;
+  bool done = false;
+  while (n_active_nodes > 1) {
+    // if there is an odd number of active nodes the root node skipps this step
+    if (not(rank == 0 && n_active_nodes % 2 == 1) && !done) {
+      if (rank < (float)n_active_nodes / 2) {
+        // we are the receiver
+        int peer_rank = rank + floor((float)n_active_nodes / 2);
+        int n_peer_nodes;
+        MPI_Recv(&n_peer_nodes, 1, MPI_INT, peer_rank, TAG_N_NODES, MPI_COMM_WORLD,
+                 MPI_STATUS_IGNORE);
+
+        unsigned peer_parents[n_peer_nodes];
+        MPI_Recv(peer_parents, n_peer_nodes, MPI_UNSIGNED, peer_rank, TAG_DATA, MPI_COMM_WORLD,
+                 MPI_STATUS_IGNORE);
+        graph::HookTree peerHookTree(peer_parents, n_peer_nodes);
+
+        myHookTree += peerHookTree;
+        myHookTree.compress();
+      }
+      else {
+        // we are the sender
+        int peer_rank = rank - floor((float)n_active_nodes / 2);
+        MPI_Send(&n_my_nodes, 1, MPI_INT, peer_rank, TAG_N_NODES, MPI_COMM_WORLD);
+        MPI_Send(myHookTree.getParents().data(), n_my_nodes, MPI_UNSIGNED, peer_rank, TAG_DATA,
+                 MPI_COMM_WORLD);
+        done = true;
+        printf("P_%d: done\n", rank);
+      }
+    }
+
+    n_active_nodes = (int)ceil((float)n_active_nodes / 2);
+
+    /*
+    for(int i=0; i<n_active_nodes; ++i) {
+        if(!done) {
+            if (rank == i) {
+                printf("P_%d:\n %s\n", rank, myHookTree.toString().c_str());
+            }
+        }
+        MPI_Barrier(MPI_COMM_WORLD);
+    }
+     */
+  }
+
+  const auto end = util::getTime();
+
+  return std::make_pair(myHookTree, util::getDiff(start, end));
+}
 
 }  // algorithms

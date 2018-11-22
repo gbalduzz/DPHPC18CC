@@ -53,14 +53,13 @@ public:
   }
 
   std::string toString() {
-
     std::string res = "";
 
-    //std::vector<std::vector<Label>> connected_components(parent_.size());
-    for(int i=0; i<parent_.size(); ++i) {
-        Label root = representative(parent_[i]);
-        res += std::to_string(i) + "->" + std::to_string(root) + "\n";
-        //connected_components[root].push_back(i);
+    // std::vector<std::vector<Label>> connected_components(parent_.size());
+    for (int i = 0; i < parent_.size(); ++i) {
+      Label root = representative(parent_[i]);
+      res += std::to_string(i) + "->" + std::to_string(root) + "\n";
+      // connected_components[root].push_back(i);
     }
 
     /*
@@ -75,15 +74,11 @@ public:
     */
 
     return res;
-
   }
 
   const std::vector<Label>& getParents() const {
-      return parent_;
+    return parent_;
   }
-
-
-
 
 private:
   std::vector<Label> parent_;
@@ -94,52 +89,47 @@ inline HookTree::HookTree(const Label n, const bool parallel) : parent_(n) {
     std::iota(parent_.begin(), parent_.end(), 0);
   }
   else {
-    #pragma omp parallel for
+#pragma omp parallel for
     for (int i = 0; i < n; ++i) {
-        parent_[i] = i;
+      parent_[i] = i;
     }
   }
 }
 
 inline HookTree::HookTree(graph::Label* parent, int n) {
-    parent_.resize(n);
-    #pragma omp parallel for
-    for (int i = 0; i < n; ++i) {
-        parent_[i] = parent[i];
-    }
+  parent_.resize(n);
+#pragma omp parallel for
+  for (int i = 0; i < n; ++i) {
+    parent_[i] = parent[i];
+  }
 }
 
 inline HookTree& HookTree::operator+=(const HookTree& rhs) {
+  // extend this trees size to atleast size of other tree
+  for (int i = this->parent_.size(); i < rhs.parent_.size(); ++i) {
+    this->parent_.push_back(i);
+  }
 
-    // extend this trees size to atleast size of other tree
-    for(int i=this->parent_.size(); i<rhs.parent_.size(); ++i) {
-        this->parent_.push_back(i);
+  // loop over all nodes in other tree
+  for (int i = 0; i < rhs.parent_.size(); ++i) {
+    // there is nothing we need to do if i is already the root
+    if (rhs.isRoot(i)) {
+      continue;
     }
 
-    // loop over all nodes in other tree
-    for(int i=0; i<rhs.parent_.size(); ++i) {
+    Label other_representative = rhs.representative(i);
+    Label this_other_representative_representative = this->representative(other_representative);
+    Label this_representative = this->representative(i);
 
-        // there is nothing we need to do if i is already the root
-        if(rhs.isRoot(i)) {
-            continue;
-        }
-
-        Label other_representative = rhs.representative(i);
-        Label this_other_representative_representative = this->representative(other_representative);
-        Label this_representative = this->representative(i);
-
-        // edge already exists in this tree => there is nothing to do
-        if(this_representative == this_other_representative_representative) {
-            continue;
-        }
-
-        this->hook(std::max(this_representative, this_other_representative_representative), std::min(this_representative, this_other_representative_representative));
-
-
+    // edge already exists in this tree => there is nothing to do
+    if (this_representative == this_other_representative_representative) {
+      continue;
     }
 
-
-
+    this->hook(std::max(this_representative, this_other_representative_representative),
+               std::min(this_representative, this_other_representative_representative));
+  }
+  return *this;
 }
 
 inline void HookTree::hook(Label i, Label j) {
