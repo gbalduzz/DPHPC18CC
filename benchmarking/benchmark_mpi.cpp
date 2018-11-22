@@ -30,8 +30,9 @@ int main(int argc, char** argv) {
 
   for (auto& result : results) {
     auto edge_copy(edges);
-    auto ret = algorithms::parallelMpiConnectedComponents(edge_copy, n_threads);
-    result = ret.second;
+    double compute_time;
+    auto ret = algorithms::parallelMpiConnectedComponents(edge_copy, n_threads, &compute_time);
+    result = compute_time;
   }
 
   if (concurrency.id() == 0) {

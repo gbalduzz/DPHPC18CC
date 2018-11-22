@@ -9,8 +9,11 @@
 
 namespace algorithms {
 
-std::pair<graph::HookTree, double> parallelMpiConnectedComponents(std::vector<graph::Edge>& all_edges,
-                                                                  int n_threads_per_node) {
+graph::HookTree parallelMpiConnectedComponents(std::vector<graph::Edge>& all_edges,
+                                               int n_threads_per_node, double* computation_time,
+                                               double* total_time) {
+  const auto start = util::getTime();
+
   // get MPI params
   int rank;
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
@@ -29,7 +32,7 @@ std::pair<graph::HookTree, double> parallelMpiConnectedComponents(std::vector<gr
 
   // Start the timer.
   MPI_Barrier(MPI_COMM_WORLD);
-  const auto start = util::getTime();
+  const auto start_computation = util::getTime();
 
   // scatter edges to all nodes
 
@@ -85,29 +88,10 @@ std::pair<graph::HookTree, double> parallelMpiConnectedComponents(std::vector<gr
   }
   n_my_nodes++;  // the number of nodes is one more than the maximum node id
 
-  /*
-  printf("P_%d: num nodes = %d\n", rank, n_my_nodes);
-  for(int i=0; i<my_edges.size(); ++i) {
-      printf("P_%d: %d - %d\n", rank, my_edges[i].first, my_edges[i].second);
-  }
-  */
-
   // compute connected components
   printf("P_%d: start parallel contractions\n", rank);
   graph::HookTree myHookTree = parallelConnectedComponents(n_my_nodes, my_edges, n_threads_per_node);
   printf("P_%d: end parallel contractions\n", rank);
-
-  /*
-  MPI_Barrier(MPI_COMM_WORLD);
-  for(int i=0; i<comm_size; ++i) {
-      if (rank == i) {
-          printf("P_%d:\n%s", rank, myHookTree.toString().c_str());
-      }
-      MPI_Barrier(MPI_COMM_WORLD);
-  }
-
-  printf("\n");
-   */
 
   // combine results
   int n_active_nodes = comm_size;
@@ -144,22 +128,16 @@ std::pair<graph::HookTree, double> parallelMpiConnectedComponents(std::vector<gr
     }
 
     n_active_nodes = (int)ceil((float)n_active_nodes / 2);
-
-    /*
-    for(int i=0; i<n_active_nodes; ++i) {
-        if(!done) {
-            if (rank == i) {
-                printf("P_%d:\n %s\n", rank, myHookTree.toString().c_str());
-            }
-        }
-        MPI_Barrier(MPI_COMM_WORLD);
-    }
-     */
   }
 
   const auto end = util::getTime();
 
-  return std::make_pair(myHookTree, util::getDiff(start, end));
+  if (computation_time)
+    *computation_time = util::getDiff(start_computation, end);
+  if (total_time)
+    *total_time = util::getDiff(start, end);
+
+  return myHookTree;
 }
 
 }  // algorithms
