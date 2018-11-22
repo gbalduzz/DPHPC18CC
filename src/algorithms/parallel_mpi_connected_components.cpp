@@ -11,6 +11,10 @@
 
 namespace algorithms {
 
+inline int ceilDiv(int a, int b) {
+  return (a + b - 1) / b;
+}
+
 graph::HookTree parallelMpiConnectedComponents(std::vector<graph::Edge>& all_edges,
                                                int n_threads_per_node, double* computation_time,
                                                double* total_time) {
@@ -29,51 +33,40 @@ graph::HookTree parallelMpiConnectedComponents(std::vector<graph::Edge>& all_edg
   }
 
   // broadcast number of edges
-  MPI_Bcast(&n_edges, 1, MPI_INT, 0, MPI_COMM_WORLD);
+  int ret;
+  ret = MPI_Bcast(&n_edges, 1, MPI_INT, 0, MPI_COMM_WORLD);
+
+  assert(ret == MPI_SUCCESS);
   // printf("P_%d: n_edges = %d\n", rank, n_edges);
 
   // scatter edges to all nodes
-  int buff_size = 2.0f * std::ceil((float)n_edges / comm_size);
-  std::vector<int> sendbuff;
-  std::vector<int> recvbuff(buff_size);
+  const int buff_size = ceilDiv(n_edges, comm_size);
+  std::vector<graph::Edge> recvbuff(buff_size);
   if (rank == 0) {
     printf("start scattering\n");
 
-    // create send buffer
+    // Pad the edges with -1.
     int sendbuffsize = comm_size * buff_size;
-    sendbuff.resize(sendbuffsize);
-
-    // write edges into send buffer
-    for (int i = 0; i < n_edges; ++i) {
-      sendbuff[2 * i + 0] = all_edges[i].first;
-      sendbuff[2 * i + 1] = all_edges[i].second;
-
-      if (sendbuff[2 * i + 0] == -1 or sendbuff[2 * i + 1] == -1) {
-        printf("wrong edge written to sendbuff\n");
-      }
-    }
-
-    // padd send buffer with -1
-    for (int i = (2 * n_edges); i < sendbuffsize; ++i) {
-      sendbuff[i] = -1;
-    }
+    auto old_end = all_edges.end();
+    all_edges.resize(sendbuffsize);
+    std::fill(old_end, all_edges.end(), graph::Edge(-1, -1));
   }
 
   // scatter edges
-  MPI_Scatter(sendbuff.data(), buff_size, MPI_INT, recvbuff.data(), buff_size, MPI_INT, 0,
-              MPI_COMM_WORLD);
+  // TODO : consider an MPI custom type.
+  MPI_Scatter(all_edges.data(), 2 * buff_size, MPI_UNSIGNED, recvbuff.data(), 2 * buff_size,
+              MPI_UNSIGNED, 0, MPI_COMM_WORLD);
 
   if (rank == 0) {
     printf("finished scattering\n");
   }
 
+  // TODO: avoid copy.
   // assemble edges from recvbuffer
   int n_my_edges = buff_size / 2;
   int n_my_nodes = 0;
   std::vector<graph::Edge> my_edges;
-  for (int i = 0; i < n_my_edges; ++i) {
-    graph::Edge e(recvbuff[2 * i + 0], recvbuff[2 * i + 1]);
-
+  for (const auto& e : recvbuff) {
     if (e.first != -1 and e.second != -1) {
       if (n_my_nodes < e.first || n_my_nodes < e.second) {
         n_my_nodes = std::max(e.first, e.second);
@@ -100,36 +93,33 @@ graph::HookTree parallelMpiConnectedComponents(std::vector<graph::Edge>& all_edg
   const int TAG_N_NODES = 10;
   const int TAG_DATA = 20;
   bool done = false;
-  while (n_active_nodes > 1) {
-    // if there is an odd number of active nodes the root node skipps this step
-    if (not(rank == 0 && n_active_nodes % 2 == 1) && !done) {
-      if (rank < (float)n_active_nodes / 2) {
-        // we are the receiver
-        int peer_rank = rank + floor((float)n_active_nodes / 2);
-        int n_peer_nodes;
-        MPI_Recv(&n_peer_nodes, 1, MPI_INT, peer_rank, TAG_N_NODES, MPI_COMM_WORLD,
-                 MPI_STATUS_IGNORE);
+  while (n_active_nodes > 1 && !done) {
+    if (rank < n_active_nodes / 2) {
+      // we are the receiver
+      int peer_rank = rank + n_active_nodes / 2;
+      int n_peer_nodes;
+      MPI_Recv(&n_peer_nodes, 1, MPI_INT, peer_rank, TAG_N_NODES, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
-        unsigned peer_parents[n_peer_nodes];
-        MPI_Recv(peer_parents, n_peer_nodes, MPI_UNSIGNED, peer_rank, TAG_DATA, MPI_COMM_WORLD,
-                 MPI_STATUS_IGNORE);
-        graph::HookTree peerHookTree(peer_parents, n_peer_nodes);
+      std::vector<graph::Label> peer_parents(n_peer_nodes);
+      MPI_Recv(peer_parents.data(), n_peer_nodes, MPI_UNSIGNED, peer_rank, TAG_DATA, MPI_COMM_WORLD,
+               MPI_STATUS_IGNORE);
+      graph::HookTree peerHookTree(std::move(peer_parents));
 
-        myHookTree += peerHookTree;
-        myHookTree.compress();
-      }
-      else {
-        // we are the sender
-        int peer_rank = rank - floor((float)n_active_nodes / 2);
-        MPI_Send(&n_my_nodes, 1, MPI_INT, peer_rank, TAG_N_NODES, MPI_COMM_WORLD);
-        MPI_Send(myHookTree.getParents().data(), n_my_nodes, MPI_UNSIGNED, peer_rank, TAG_DATA,
-                 MPI_COMM_WORLD);
-        done = true;
-        printf("P_%d: done\n", rank);
-      }
+      myHookTree += peerHookTree;
+      myHookTree.compress();
     }
-
-    n_active_nodes = (int)ceil((float)n_active_nodes / 2);
+    else {
+      // we are the sender
+      int peer_rank = rank - n_active_nodes / 2;
+      if (peer_rank < 0)  // In case of odd number of ranks, there could be no process to receive.
+        continue;
+      MPI_Send(&n_my_nodes, 1, MPI_INT, peer_rank, TAG_N_NODES, MPI_COMM_WORLD);
+      MPI_Send(myHookTree.getParents().data(), n_my_nodes, MPI_UNSIGNED, peer_rank, TAG_DATA,
+               MPI_COMM_WORLD);
+      done = true;
+      printf("P_%d: done\n", rank);
+    }
+    n_active_nodes = ceilDiv(n_active_nodes, 2);
   }
 
   const auto end = util::getTime();
