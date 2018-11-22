@@ -1,11 +1,13 @@
 #include "algorithms/parallel_mpi_connected_components.hpp"
-#include "algorithms/parallel_connected_components.hpp"
-#include "util/timer.hpp"
+
+#include <cmath>
+#include <vector>
 
 #include <mpi.h>
-
 #include <omp.h>
-#include <math.h>
+
+#include "algorithms/parallel_connected_components.hpp"
+#include "util/timer.hpp"
 
 namespace algorithms {
 
@@ -30,21 +32,16 @@ graph::HookTree parallelMpiConnectedComponents(std::vector<graph::Edge>& all_edg
   MPI_Bcast(&n_edges, 1, MPI_INT, 0, MPI_COMM_WORLD);
   // printf("P_%d: n_edges = %d\n", rank, n_edges);
 
-  // Start the timer.
-  MPI_Barrier(MPI_COMM_WORLD);
-  const auto start_computation = util::getTime();
-
   // scatter edges to all nodes
-
   int buff_size = 2.0f * std::ceil((float)n_edges / comm_size);
-  int* sendbuff = nullptr;
-  int recvbuff[buff_size];
+  std::vector<int> sendbuff;
+  std::vector<int> recvbuff(buff_size);
   if (rank == 0) {
     printf("start scattering\n");
 
     // create send buffer
     int sendbuffsize = comm_size * buff_size;
-    sendbuff = new int[sendbuffsize];
+    sendbuff.resize(sendbuffsize);
 
     // write edges into send buffer
     for (int i = 0; i < n_edges; ++i) {
@@ -63,7 +60,8 @@ graph::HookTree parallelMpiConnectedComponents(std::vector<graph::Edge>& all_edg
   }
 
   // scatter edges
-  MPI_Scatter(sendbuff, buff_size, MPI_INT, recvbuff, buff_size, MPI_INT, 0, MPI_COMM_WORLD);
+  MPI_Scatter(sendbuff.data(), buff_size, MPI_INT, recvbuff.data(), buff_size, MPI_INT, 0,
+              MPI_COMM_WORLD);
 
   if (rank == 0) {
     printf("finished scattering\n");
@@ -87,6 +85,10 @@ graph::HookTree parallelMpiConnectedComponents(std::vector<graph::Edge>& all_edg
     }
   }
   n_my_nodes++;  // the number of nodes is one more than the maximum node id
+
+  // Start the timer.
+  MPI_Barrier(MPI_COMM_WORLD);
+  const auto start_computation = util::getTime();
 
   // compute connected components
   printf("P_%d: start parallel contractions\n", rank);
