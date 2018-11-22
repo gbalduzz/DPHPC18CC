@@ -19,23 +19,12 @@ graphNr is the number of the generated graph
 NrOfConnectedComponents is the number of connected components in the respective graph. 
 
 """
+nr_graphs = 1
+if (len(sys.argv) > 1 and sys.argv[1].isdigit()):
+	nr_graphs = int(sys.argv[1]) 
+else: 
+	print("Choose default and create 1 graph")
 
-if (len(sys.argv) == 1): 
-	print("Requires the number of graphs to generate as an argument. ")
-	print("Try something like ")
-	print("python3 generate.py 10")
-	quit()
-if (sys.argv[1].isdigit() == False): 
-	print("Nr of graphs should be an int")
-	print("Try something like ")
-	print("python3 generate.py 10")
-	quit()
-
-nr_graphs = int(sys.argv[1])
-print(nr_graphs)
-"""
-	
-"""
 for i in range(nr_graphs): 
 	#generate graph size
 	nr_edges = random.randint(20,20)
@@ -48,21 +37,10 @@ for i in range(nr_graphs):
 	graph_name = "graph_" + str(i)
 	nx.write_adjlist(G,graph_name +".adjlist")
 
-	connected_components = nx.connected_components(G)
-
-	
-	component_list = []
-	with io.open(graph_name + "_info.json", 'w', encoding='utf-8') as f:
-		for i in connected_components: 
-			component_list += [list(i)]
-		json.dump(component_list, f, ensure_ascii=False, separators=(',', ': '))
-	f.close()
-
 	"""
 	Choose first node of each connected component as representative and write it into the info.txt file. 
 	Line x with number z means that node x belongs to the graph with representative z. 	
 	"""
-	
 	connected_components = nx.connected_components(G) #### NECESSARY !!!
 	representatives = [None] * nr_nodes
 	for connected_component in connected_components: 

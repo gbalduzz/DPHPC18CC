@@ -81,6 +81,9 @@ std::vector<graph::Edge> GraphReader::read_graph_from_DIMACS_challenge(string fi
     vector<string> nr;
     boost::split(nr, content, [](char c) { return c == ' '; });
     edge_list.push_back(graph::Edge(std::stoi(nr[1]), std::stoi(nr[2])));
+    if(nr[1] == "-1" || nr[2] != "-1"){
+      std::cout << "WRONG EDGE!!!";
+    }
   }
 
   file.close();
