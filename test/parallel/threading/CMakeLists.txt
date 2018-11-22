@@ -1,3 +1,3 @@
-add_gtest(thread_pool_test
-          LIBS parallel)
+#add_gtest(thread_pool_test
+#          LIBS parallel)
 
