@@ -19,6 +19,19 @@ void checkMPI(int ret) {
   assert(ret == MPI_SUCCESS);
 }
 
+// compute the next highest power of 2 of 32-bit v
+unsigned int nextPowerOf2(unsigned int v) {
+  v--;
+  v |= v >> 1;
+  v |= v >> 2;
+  v |= v >> 4;
+  v |= v >> 8;
+  v |= v >> 16;
+  v++;
+
+  return v;
+}
+
 graph::HookTree parallelMpiConnectedComponents(std::vector<graph::Edge>& all_edges,
                                                int n_threads_per_node, double* computation_time,
                                                double* total_time) {
@@ -90,7 +103,7 @@ graph::HookTree parallelMpiConnectedComponents(std::vector<graph::Edge>& all_edg
   printf("P_%d: end parallel contractions\n", rank);
 
   // combine results
-  int n_active_nodes = comm_size;
+  int n_active_nodes = nextPowerOf2(comm_size);
   const int TAG_N_NODES = 10;
   const int TAG_DATA = 20;
   bool done = false;
@@ -100,26 +113,25 @@ graph::HookTree parallelMpiConnectedComponents(std::vector<graph::Edge>& all_edg
     if (rank < n_active_nodes / 2) {
       // we are the receiver
       int peer_rank = rank + n_active_nodes / 2;
+      if (peer_rank < comm_size) {
+        peer_parents.resize(n_nodes);
+        MPI_Recv(peer_parents.data(), n_nodes, MPI_UNSIGNED, peer_rank, TAG_DATA, MPI_COMM_WORLD,
+                 MPI_STATUS_IGNORE);
+        graph::HookTree peerHookTree(std::move(peer_parents));
 
-      peer_parents.resize(n_nodes);
-      MPI_Recv(peer_parents.data(), n_nodes, MPI_UNSIGNED, peer_rank, TAG_DATA, MPI_COMM_WORLD,
-               MPI_STATUS_IGNORE);
-      graph::HookTree peerHookTree(std::move(peer_parents));
-
-      myHookTree += peerHookTree;
-      myHookTree.compress();
+        myHookTree += peerHookTree;
+        myHookTree.compress();
+      }
     }
     else {
       // we are the sender
       int peer_rank = rank - n_active_nodes / 2;
-      if (peer_rank < 0)  // In case of odd number of ranks, there could be no process to receive.
-        continue;
       MPI_Send(myHookTree.getParents().data(), n_nodes, MPI_UNSIGNED, peer_rank, TAG_DATA,
                MPI_COMM_WORLD);
       done = true;
       printf("P_%d: done\n", rank);
     }
-    n_active_nodes = ceilDiv(n_active_nodes, 2);
+    n_active_nodes = n_active_nodes / 2;
   }
 
   const auto end = util::getTime();
