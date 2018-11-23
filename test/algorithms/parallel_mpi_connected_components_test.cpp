@@ -1,6 +1,7 @@
 #include "algorithms/parallel_mpi_connected_components.hpp"
 
 #include <fstream>
+#include <memory>
 #include <gtest/gtest.h>
 
 #include "graph/generate_random_graph.hpp"
@@ -10,6 +11,8 @@
 void performTest(int n, std::vector<graph::Edge>& edges, const std::vector<int>& expected);
 
 using graph::Edge;
+
+std::unique_ptr<parallel::MpiConcurrency> concurrency;
 
 TEST(ParallelConnectedComponentsTest, Simple) {
   const int n = 5;
@@ -62,9 +65,10 @@ TEST(ParallelMpiConnectedComponents, Random) {
 }
 
 void performTest(int n, std::vector<graph::Edge>& edges, const std::vector<int>& expected) {
-  static parallel::MpiConcurrency concurrency;
-
   constexpr int n_threads = 1;
+  if (concurrency->id() != 0)
+    edges.clear();
+
   auto forest = algorithms::parallelMpiConnectedComponents(edges, n_threads);
 
   auto are_connected = [&](int i, int j) {
@@ -72,9 +76,17 @@ void performTest(int n, std::vector<graph::Edge>& edges, const std::vector<int>&
   };
   auto expect_connected = [&](int i, int j) { return expected[i] == expected[j]; };
 
-  if (concurrency.id() == 0) {
+  if (concurrency->id() == 0) {
     for (int i = 0; i < n; ++i)
       for (int j = 0; j < n; ++j)
         EXPECT_EQ(expect_connected(i, j), are_connected(i, j));
   }
+}
+
+int main(int argc, char** argv) {
+  concurrency = std::make_unique<parallel::MpiConcurrency>(argc, argv);
+  ::testing::InitGoogleTest(&argc, argv);
+  const auto result = RUN_ALL_TESTS();
+  concurrency.release();
+  return result;
 }

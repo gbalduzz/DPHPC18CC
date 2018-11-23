@@ -16,7 +16,7 @@ public:
   HookTree(Label n, bool parallel = false);
 
   // constructor to initialize hooktree from parent array
-  HookTree(Label* parent, int n);
+  HookTree(std::vector<Label>&& labels);
 
   HookTree& operator+=(const HookTree& rhs);
 
@@ -82,9 +82,6 @@ public:
 
   const unsigned getNumConnectedComponents() const;
 
-
-
-
 private:
   std::vector<Label> parent_;
 };
@@ -101,12 +98,8 @@ inline HookTree::HookTree(const Label n, const bool parallel) : parent_(n) {
   }
 }
 
-inline HookTree::HookTree(graph::Label* parent, int n) {
-  parent_.resize(n);
-#pragma omp parallel for
-  for (int i = 0; i < n; ++i) {
-    parent_[i] = parent[i];
-  }
+inline HookTree::HookTree(std::vector<Label>&& labels) {
+  parent_ = std::move(labels);
 }
 
 inline HookTree& HookTree::operator+=(const HookTree& rhs) {
@@ -175,21 +168,19 @@ inline void HookTree::compress() {
 }
 
 inline const unsigned HookTree::getNumConnectedComponents() const {
+  const int n = parent_.size();
+  std::vector<bool> is_rep(n, false);
 
-    const int n = parent_.size();
-    std::vector<bool> is_rep(n, false);
+  for (int i = 0; i < n; ++i) {
+    is_rep[representative(i)] = true;
+  }
 
-    for(int i=0; i<n; ++i) {
-        is_rep[representative(i)] = true;
-    }
+  unsigned result = 0;
+  for (int i = 0; i < n; ++i) {
+    result += is_rep[i] ? 1 : 0;
+  }
 
-    unsigned result = 0;
-    for(int i=0; i<n; ++i) {
-        result += is_rep[i] ? 1 : 0;
-    }
-
-    return result;
-
+  return result;
 }
 
 }  // graph
