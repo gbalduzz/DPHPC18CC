@@ -16,7 +16,7 @@ inline int ceilDiv(int a, int b) {
 }
 
 void checkMPI(int ret) {
-    assert(ret == MPI_SUCCESS);
+  assert(ret == MPI_SUCCESS);
 }
 
 graph::HookTree parallelMpiConnectedComponents(std::vector<graph::Edge>& all_edges,
@@ -54,9 +54,8 @@ graph::HookTree parallelMpiConnectedComponents(std::vector<graph::Edge>& all_edg
 
     // Pad the edges with -1.
     int sendbuffsize = comm_size * buff_size;
-    auto old_end = all_edges.end();
     all_edges.resize(sendbuffsize);
-    std::fill(old_end, all_edges.end(), graph::Edge(-1, -1));
+    std::fill(all_edges.begin() + n_edges, all_edges.end(), graph::Edge(-1, -1));
   }
 
   // scatter edges

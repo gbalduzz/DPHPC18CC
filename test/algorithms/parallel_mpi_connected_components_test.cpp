@@ -32,56 +32,56 @@ TEST(ParallelConnectedComponentsTest, LessSimple) {
   performTest(n, edges, expected);
 }
 
-//TEST(ParallelConnectedComponentsTest, Precomputed) {
-//  const int n = 200;
-//  const int m = 150;
-//  auto edges = graph::generateRandomGraph(n, m);
-//
-//  std::vector<int> expected(n);
-//  std::ifstream inp("labels.txt");
-//  for (auto& label : expected)
-//    inp >> label;
-//  inp.close();
-//
-//  performTest(n, edges, expected);
-//}
-//
-//TEST(ParallelMpiConnectedComponents, Random) {
-//  // Load random graph
-//  const std::string filename = "graph_0_info.txt";
-//  std::ifstream inp(filename);
-//  std::vector<int> expected;
-//
-//  std::string content;
-//  while (std::getline(inp, content)) {
-//    expected.push_back(std::stoi(content));
-//  }
-//  inp.close();
-//
-//  util::GraphReader reader;
-//  auto edges = reader.read_graph_from_adjacency_list("graph_0.adjlist");
-//
-//  performTest(expected.size(), edges, expected);
-//}
-//
-//void performTest(int n, std::vector<graph::Edge>& edges, const std::vector<int>& expected) {
-//  constexpr int n_threads = 1;
-//  if (concurrency->id() != 0)
-//    edges.clear();
-//
-//  auto forest = algorithms::parallelMpiConnectedComponents(edges, n_threads);
-//
-//  auto are_connected = [&](int i, int j) {
-//    return forest.representative(i) == forest.representative(j);
-//  };
-//  auto expect_connected = [&](int i, int j) { return expected[i] == expected[j]; };
-//
-//  if (concurrency->id() == 0) {
-//    for (int i = 0; i < n; ++i)
-//      for (int j = 0; j < n; ++j)
-//        EXPECT_EQ(expect_connected(i, j), are_connected(i, j));
-//  }
-//}
+TEST(ParallelConnectedComponentsTest, Precomputed) {
+  const int n = 200;
+  const int m = 150;
+  auto edges = graph::generateRandomGraph(n, m);
+
+  std::vector<int> expected(n);
+  std::ifstream inp("labels.txt");
+  for (auto& label : expected)
+    inp >> label;
+  inp.close();
+
+  performTest(n, edges, expected);
+}
+
+TEST(ParallelMpiConnectedComponents, Random) {
+  // Load random graph
+  const std::string filename = "graph_0_info.txt";
+  std::ifstream inp(filename);
+  std::vector<int> expected;
+
+  std::string content;
+  while (std::getline(inp, content)) {
+    expected.push_back(std::stoi(content));
+  }
+  inp.close();
+
+  util::GraphReader reader;
+  auto edges = reader.read_graph_from_adjacency_list("graph_0.adjlist");
+
+  performTest(expected.size(), edges, expected);
+}
+
+void performTest(int n, std::vector<graph::Edge>& edges, const std::vector<int>& expected) {
+  constexpr int n_threads = 1;
+  if (concurrency->id() != 0)
+    edges.clear();
+
+  auto forest = algorithms::parallelMpiConnectedComponents(edges, n_threads);
+
+  auto are_connected = [&](int i, int j) {
+    return forest.representative(i) == forest.representative(j);
+  };
+  auto expect_connected = [&](int i, int j) { return expected[i] == expected[j]; };
+
+  if (concurrency->id() == 0) {
+    for (int i = 0; i < n; ++i)
+      for (int j = 0; j < n; ++j)
+        EXPECT_EQ(expect_connected(i, j), are_connected(i, j));
+  }
+}
 
 int main(int argc, char** argv) {
   concurrency = std::make_unique<parallel::MpiConcurrency>(argc, argv);
