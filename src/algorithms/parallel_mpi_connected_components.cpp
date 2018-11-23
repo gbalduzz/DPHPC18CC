@@ -15,6 +15,10 @@ inline int ceilDiv(int a, int b) {
   return (a + b - 1) / b;
 }
 
+checkMPI(int ret) {
+    assert(ret == MPI_SUCCESS);
+}
+
 graph::HookTree parallelMpiConnectedComponents(std::vector<graph::Edge>& all_edges,
                                                int n_threads_per_node, double* computation_time,
                                                double* total_time) {
@@ -27,17 +31,20 @@ graph::HookTree parallelMpiConnectedComponents(std::vector<graph::Edge>& all_edg
   MPI_Comm_size(MPI_COMM_WORLD, &comm_size);
 
   int n_edges = -1;
+  unsigned int n_nodes = 0;
 
   if (rank == 0) {
     n_edges = all_edges.size();
+    for (const auto& e : all_edges) {
+      n_nodes = std::max(n_nodes, std::max(e.first, e.second));
+    }
+    ++n_nodes;
   }
 
   // broadcast number of edges
-  int ret;
-  ret = MPI_Bcast(&n_edges, 1, MPI_INT, 0, MPI_COMM_WORLD);
 
-  assert(ret == MPI_SUCCESS);
-  // printf("P_%d: n_edges = %d\n", rank, n_edges);
+  checkMPI(MPI_Bcast(&n_edges, 1, MPI_INT, 0, MPI_COMM_WORLD));
+  checkMPI(MPI_Bcast(&n_nodes, 1, MPI_UNSIGNED, 0, MPI_COMM_WORLD));
 
   // scatter edges to all nodes
   const int buff_size = ceilDiv(n_edges, comm_size);
@@ -64,20 +71,15 @@ graph::HookTree parallelMpiConnectedComponents(std::vector<graph::Edge>& all_edg
   // TODO: avoid copy.
   // assemble edges from recvbuffer
   int n_my_edges = buff_size / 2;
-  int n_my_nodes = 0;
   std::vector<graph::Edge> my_edges;
   for (const auto& e : recvbuff) {
     if (e.first != -1 and e.second != -1) {
-      if (n_my_nodes < e.first || n_my_nodes < e.second) {
-        n_my_nodes = std::max(e.first, e.second);
-      }
       my_edges.push_back(e);
     }
     else if (e.first != -1 or e.second != -1) {
       printf("P_%d: Invalid edge %d - %d detected\n", rank, e.first, e.second);
     }
   }
-  n_my_nodes++;  // the number of nodes is one more than the maximum node id
 
   // Start the timer.
   MPI_Barrier(MPI_COMM_WORLD);
@@ -85,7 +87,7 @@ graph::HookTree parallelMpiConnectedComponents(std::vector<graph::Edge>& all_edg
 
   // compute connected components
   printf("P_%d: start parallel contractions\n", rank);
-  graph::HookTree myHookTree = parallelConnectedComponents(n_my_nodes, my_edges, n_threads_per_node);
+  graph::HookTree myHookTree = parallelConnectedComponents(n_nodes, my_edges, n_threads_per_node);
   printf("P_%d: end parallel contractions\n", rank);
 
   // combine results
@@ -93,15 +95,15 @@ graph::HookTree parallelMpiConnectedComponents(std::vector<graph::Edge>& all_edg
   const int TAG_N_NODES = 10;
   const int TAG_DATA = 20;
   bool done = false;
+  std::vector<graph::Label> peer_parents;
+
   while (n_active_nodes > 1 && !done) {
     if (rank < n_active_nodes / 2) {
       // we are the receiver
       int peer_rank = rank + n_active_nodes / 2;
-      int n_peer_nodes;
-      MPI_Recv(&n_peer_nodes, 1, MPI_INT, peer_rank, TAG_N_NODES, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
-      std::vector<graph::Label> peer_parents(n_peer_nodes);
-      MPI_Recv(peer_parents.data(), n_peer_nodes, MPI_UNSIGNED, peer_rank, TAG_DATA, MPI_COMM_WORLD,
+      peer_parents.resize(n_nodes);
+      MPI_Recv(peer_parents.data(), n_nodes, MPI_UNSIGNED, peer_rank, TAG_DATA, MPI_COMM_WORLD,
                MPI_STATUS_IGNORE);
       graph::HookTree peerHookTree(std::move(peer_parents));
 
@@ -113,8 +115,7 @@ graph::HookTree parallelMpiConnectedComponents(std::vector<graph::Edge>& all_edg
       int peer_rank = rank - n_active_nodes / 2;
       if (peer_rank < 0)  // In case of odd number of ranks, there could be no process to receive.
         continue;
-      MPI_Send(&n_my_nodes, 1, MPI_INT, peer_rank, TAG_N_NODES, MPI_COMM_WORLD);
-      MPI_Send(myHookTree.getParents().data(), n_my_nodes, MPI_UNSIGNED, peer_rank, TAG_DATA,
+      MPI_Send(myHookTree.getParents().data(), n_nodes, MPI_UNSIGNED, peer_rank, TAG_DATA,
                MPI_COMM_WORLD);
       done = true;
       printf("P_%d: done\n", rank);
