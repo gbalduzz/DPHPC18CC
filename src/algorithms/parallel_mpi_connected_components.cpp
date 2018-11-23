@@ -15,7 +15,7 @@ inline int ceilDiv(int a, int b) {
   return (a + b - 1) / b;
 }
 
-checkMPI(int ret) {
+void checkMPI(int ret) {
     assert(ret == MPI_SUCCESS);
 }
 
