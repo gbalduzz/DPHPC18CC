@@ -65,7 +65,7 @@ TEST(ParallelMpiConnectedComponents, Random) {
 }
 
 void performTest(int n, std::vector<graph::Edge>& edges, const std::vector<int>& expected) {
-  constexpr int n_threads = 1;
+  constexpr int n_threads = 4;
   if (concurrency->id() != 0)
     edges.clear();
 
