@@ -17,7 +17,9 @@ int main(int argc, char** argv) {
   parallel::MpiConcurrency concurrency(argc, argv);
 
   const int n_threads = argc > 1 ? std::atoi(argv[1]) : 1;
-  std::cout << "Running with " << n_threads << " threads / process.\n";
+
+  if (concurrency.id() == 0)
+    std::cout << "Running with " << n_threads << " threads / process.\n";
 
   const std::string filename = "USA-road-t.USA.gr";
 

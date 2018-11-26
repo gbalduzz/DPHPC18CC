@@ -7,6 +7,7 @@
 #include <omp.h>
 
 #include "algorithms/parallel_connected_components.hpp"
+#include "algorithms/serial_connected_components.hpp"
 #include "util/timer.hpp"
 
 namespace algorithms {
@@ -63,7 +64,7 @@ graph::HookTree parallelMpiConnectedComponents(std::vector<graph::Edge>& all_edg
   const int buff_size = ceilDiv(n_edges, comm_size);
   std::vector<graph::Edge> recvbuff(buff_size);
   if (rank == 0) {
-    printf("start scattering\n");
+    //      printf("start scattering\n");
 
     // Pad the edges with -1.
     int sendbuffsize = comm_size * buff_size;
@@ -76,21 +77,21 @@ graph::HookTree parallelMpiConnectedComponents(std::vector<graph::Edge>& all_edg
   MPI_Scatter(all_edges.data(), 2 * buff_size, MPI_UNSIGNED, recvbuff.data(), 2 * buff_size,
               MPI_UNSIGNED, 0, MPI_COMM_WORLD);
 
-  if (rank == 0) {
-    printf("finished scattering\n");
-  }
+  // if (rank == 0) {
+  //  printf("finished scattering\n");
+  //}
 
   // TODO: avoid copy.
   // assemble edges from recvbuffer
-  int n_my_edges = buff_size / 2;
+
   std::vector<graph::Edge> my_edges;
   for (const auto& e : recvbuff) {
     if (e.first != -1 and e.second != -1) {
       my_edges.push_back(e);
     }
-    else if (e.first != -1 or e.second != -1) {
-      printf("P_%d: Invalid edge %d - %d detected\n", rank, e.first, e.second);
-    }
+    //    else if (e.first != -1 or e.second != -1) {
+    //      printf("P_%d: Invalid edge %d - %d detected\n", rank, e.first, e.second);
+    //    }
   }
 
   // Start the timer.
@@ -98,14 +99,13 @@ graph::HookTree parallelMpiConnectedComponents(std::vector<graph::Edge>& all_edg
   const auto start_computation = util::getTime();
 
   // compute connected components
-  printf("P_%d: start parallel contractions\n", rank);
-  graph::HookTree myHookTree = parallelConnectedComponents(n_nodes, my_edges, n_threads_per_node);
-  printf("P_%d: end parallel contractions\n", rank);
+  graph::HookTree myHookTree =
+      n_threads_per_node > 1 ? parallelConnectedComponents(n_nodes, my_edges, n_threads_per_node)
+                             : serialConnectedComponents(n_nodes, my_edges);
 
   // combine results
   int n_active_nodes = nextPowerOf2(comm_size);
-  const int TAG_N_NODES = 10;
-  const int TAG_DATA = 20;
+  constexpr int TAG_DATA = 20;
   bool done = false;
   std::vector<graph::Label> peer_parents;
 
@@ -129,7 +129,7 @@ graph::HookTree parallelMpiConnectedComponents(std::vector<graph::Edge>& all_edg
       MPI_Send(myHookTree.getParents().data(), n_nodes, MPI_UNSIGNED, peer_rank, TAG_DATA,
                MPI_COMM_WORLD);
       done = true;
-      printf("P_%d: done\n", rank);
+      //      printf("P_%d: done\n", rank);
     }
     n_active_nodes = n_active_nodes / 2;
   }
