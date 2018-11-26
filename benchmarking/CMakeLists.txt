@@ -16,7 +16,7 @@ ExternalProject_Add(
 )
 
 add_custom_target(USA-road-t.USA.gr
-        COMMAND gunzip -k USA_road_archieve/src/USA-road-t.USA.gr.gz && mv USA_road_archieve/src/USA-road-t.USA.gr ./
+        COMMAND [ -f \"USA-road-t.USA.gr\" ] && echo \"skipping $file\" || gunzip -k USA_road_archieve/src/USA-road-t.USA.gr.gz; mv USA_road_archieve/src/USA-road-t.USA.gr ./
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
         DEPENDS USA_road_archieve)
 

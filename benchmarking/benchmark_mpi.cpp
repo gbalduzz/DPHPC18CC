@@ -21,15 +21,18 @@ int main(int argc, char** argv) {
 
   const std::string filename = "USA-road-t.USA.gr";
 
-  const auto edges = util::GraphReader().read_graph_from_DIMACS_challenge(filename);
-  const int n = util::GraphReader().vertexNumber(edges);
-  std::cout << "Loaded graph.\n";
+  std::vector<graph::Edge> edges;
+  if (concurrency.id() == 0) {
+    edges = util::GraphReader().read_graph_from_DIMACS_challenge(filename);
+    const int n = util::GraphReader().vertexNumber(edges);
+    std::cout << "Loaded graph.\n";
+  }
 
   constexpr int n_times = 10;
   std::vector<double> results(n_times);
 
   for (auto& result : results) {
-    auto edge_copy(edges);
+    std::vector<graph::Edge> edge_copy(edges);
     double compute_time;
     auto ret = algorithms::parallelMpiConnectedComponents(edge_copy, n_threads, &compute_time);
     result = compute_time;
