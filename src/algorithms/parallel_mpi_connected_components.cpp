@@ -62,7 +62,7 @@ graph::HookTree parallelMpiConnectedComponents(std::vector<graph::Edge>& all_edg
 
   // scatter edges to all nodes
   const int buff_size = ceilDiv(n_edges, comm_size);
-  std::vector<graph::Edge> recvbuff(buff_size);
+  std::vector<graph::Edge> my_edges(buff_size);
   if (rank == 0) {
     //      printf("start scattering\n");
 
@@ -74,25 +74,12 @@ graph::HookTree parallelMpiConnectedComponents(std::vector<graph::Edge>& all_edg
 
   // scatter edges
   // TODO : consider an MPI custom type.
-  MPI_Scatter(all_edges.data(), 2 * buff_size, MPI_UNSIGNED, recvbuff.data(), 2 * buff_size,
+  MPI_Scatter(all_edges.data(), 2 * buff_size, MPI_UNSIGNED, my_edges.data(), 2 * buff_size,
               MPI_UNSIGNED, 0, MPI_COMM_WORLD);
 
   // if (rank == 0) {
   //  printf("finished scattering\n");
   //}
-
-  // TODO: avoid copy.
-  // assemble edges from recvbuffer
-
-  std::vector<graph::Edge> my_edges;
-  for (const auto& e : recvbuff) {
-    if (e.first != -1 and e.second != -1) {
-      my_edges.push_back(e);
-    }
-    //    else if (e.first != -1 or e.second != -1) {
-    //      printf("P_%d: Invalid edge %d - %d detected\n", rank, e.first, e.second);
-    //    }
-  }
 
   // Start the timer.
   MPI_Barrier(MPI_COMM_WORLD);

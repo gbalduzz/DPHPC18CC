@@ -103,7 +103,8 @@ inline HookTree::HookTree(std::vector<Label>&& labels) {
 }
 
 inline HookTree& HookTree::operator+=(const HookTree& rhs) {
-  // loop over all nodes in other tree
+  assert(parent_.size() == rhs.parent_.size());
+// loop over all nodes in other tree
   for (int i = 0; i < rhs.parent_.size(); ++i) {
     // there is nothing we need to do if i is already the root
     if (rhs.isRoot(i)) {
