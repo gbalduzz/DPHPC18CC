@@ -10,10 +10,10 @@ using namespace std;
 
 namespace util {
 
-//Read graph from adjacency list
-//Ignore lines that start with '#', as those are comments. 
-//If not # or number, will throw error!
-//Does not check for duplicates and similar. 
+// Read graph from adjacency list
+// Ignore lines that start with '#', as those are comments.
+// If not # or number, will throw error!
+// Does not check for duplicates and similar.
 vector<graph::Edge> GraphReader::read_graph_from_adjacency_list(string filename) {
   ifstream adjacency_list;
 
@@ -28,13 +28,14 @@ vector<graph::Edge> GraphReader::read_graph_from_adjacency_list(string filename)
     getline(adjacency_list, content);
     vector<string> nr;
 
-    //Comment
+    // Comment
     if (content.front() == '#') {
-      continue; 
+      continue;
     }
-    //If there is no 'space' in a certain line, then the nr array will be empty -> Nodes without connections don't have to be handled seperatly
-    boost::split(nr, content, [](char c) { return c == ' '; }); 
-  
+    // If there is no 'space' in a certain line, then the nr array will be empty -> Nodes without
+    // connections don't have to be handled seperatly
+    boost::split(nr, content, [](char c) { return c == ' '; });
+
     for (int i = 1; i < nr.size(); i++) {
       edge_list.push_back(graph::Edge(std::stoi(nr[0]), std::stoi(nr[i])));
     }
@@ -93,9 +94,7 @@ std::vector<graph::Edge> GraphReader::read_graph_from_DIMACS_challenge(string fi
     vector<string> nr;
     boost::split(nr, content, [](char c) { return c == ' '; });
     edge_list.push_back(graph::Edge(std::stoi(nr[1]), std::stoi(nr[2])));
-    if(nr[1] == "-1" || nr[2] != "-1"){
-      std::cout << "WRONG EDGE!!!";
-    }
+    assert(nr[1] != "-1" || nr[2] != "-1");
   }
 
   file.close();
@@ -103,13 +102,11 @@ std::vector<graph::Edge> GraphReader::read_graph_from_DIMACS_challenge(string fi
   return edge_list;
 }
 
-
 void GraphReader::read_graph_from_DIMACS_challenge_to_file(string filename) {
   ifstream file;
   ofstream outfile;
 
   file.open(filename);
-  
 
   if (!file) {
     exit(1);  // terminate with error
@@ -119,45 +116,40 @@ void GraphReader::read_graph_from_DIMACS_challenge_to_file(string filename) {
     exit(1);
   }
 
-
   outfile << endl;
   while (!file.eof()) {
     string content;
     getline(file, content);
 
-
-	// read number of vertices and nodes
-	// currently only taking edge in one direction into account
-	if (content.front() == 'p') {
-      int nodes, edges; 
-	    getline(file, content);
+    // read number of vertices and nodes
+    // currently only taking edge in one direction into account
+    if (content.front() == 'p') {
+      int nodes, edges;
+      getline(file, content);
       vector<string> nr;
       boost::split(nr, content, [](char c) { return c == ' '; });
       nodes = stoi(nr[3]);
-      edges = stoi(nr[6])/2; // only half of the edges get read
+      edges = stoi(nr[6]) / 2;  // only half of the edges get read
       outfile << nodes << " " << edges << endl;
     }
 
-	  if (content.front() != 'a') {
-        continue;
+    if (content.front() != 'a') {
+      continue;
     }
-    
-	 
+
     // if the first char in one line is an a, then the line describes an edge
 
     vector<string> nr;
     boost::split(nr, content, [](char c) { return c == ' '; });
-    //Hack. DIMAC files have the first node at 1, the min communication expects first number to be 0. 
-    outfile << (stoi(nr[1]) -1)<< " " << (stoi(nr[2]) -1) << " " << nr[3] << endl;
-    getline(file, content); // only half of the edges get read
-  
+    // Hack. DIMAC files have the first node at 1, the min communication expects first number to be
+    // 0.
+    outfile << (stoi(nr[1]) - 1) << " " << (stoi(nr[2]) - 1) << " " << nr[3] << endl;
+    getline(file, content);  // only half of the edges get read
   }
 
   file.close();
   outfile.close();
-
 }
-
 
 int GraphReader::vertexNumber(const std::vector<graph::Edge>& edges) {
   graph::Label max_id = 0;
