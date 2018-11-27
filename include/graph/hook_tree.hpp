@@ -159,6 +159,7 @@ inline Label HookTree::representative(Label index) const {
 }
 
 inline void HookTree::compress() {
+#pragma omp parallel for schedule(dynamic, 5000)
   for (std::size_t i = 0; i < parent_.size(); ++i) {
     compress(i);
   }

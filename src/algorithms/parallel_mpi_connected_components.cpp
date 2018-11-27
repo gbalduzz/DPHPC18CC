@@ -105,7 +105,6 @@ graph::HookTree parallelMpiConnectedComponents(std::vector<graph::Edge>& all_edg
         MPI_Recv(peer_parents.data(), n_nodes, MPI_UNSIGNED, peer_rank, TAG_DATA, MPI_COMM_WORLD,
                  MPI_STATUS_IGNORE);
         graph::HookTree peerHookTree(std::move(peer_parents));
-
         myHookTree += peerHookTree;
         myHookTree.compress();
       }
