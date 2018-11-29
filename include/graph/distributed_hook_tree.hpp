@@ -47,6 +47,7 @@ public:
   //  Label representative(Label i) const;
 
   void compressLocal();
+  void compress();
 
   const Label* data() const {
     return parent_.data();
@@ -126,6 +127,13 @@ inline void DistributedHookTree::compressLocal() {
   }
 }
 
+inline void DistributedHookTree::compress() {
+#pragma omp parallel for num_threads(n_threads_) schedule(dynamic, 5000)
+  for (std::size_t i = 0; i < parent_.size(); ++i) {
+    parent_[i] = representative(i);
+  }
+}
+
 inline Label DistributedHookTree::representative(Label label) const {
   Label repr = label;
 
@@ -147,16 +155,16 @@ inline bool DistributedHookTree::hook(graph::Label i, graph::Label j) {
   const auto repr_i = representative(i);
   const auto repr_j = representative(j);
 
-  if(repr_i == repr_j)
+  if (repr_i == repr_j)
     return true;
 
   const auto min = std::min(repr_i, repr_j);
   const auto max = std::max(repr_i, repr_j);
 
-  if(isLocal(max)){ // Hook local to remote.
+  if (isLocal(max)) {  // Hook local to remote.
     return hookAtomicLocal(max, min);
   }
-  else { // Hook remote max to min.
+  else {  // Hook remote max to min.
     return parent_.atomicCAS(max, max, min);
   }
 }

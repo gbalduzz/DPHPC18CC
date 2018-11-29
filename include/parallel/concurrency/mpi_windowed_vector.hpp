@@ -9,7 +9,9 @@
 
 namespace parallel {
 
-void checkMPI(int ret) {
+// TODO: check if synchronization is necessary.
+
+inline void checkMPI(int ret) {
   if (ret != MPI_SUCCESS)
     throw(std::runtime_error("MPI error."));
 }
@@ -107,12 +109,11 @@ bool MPIWindowedVector<T>::atomicCAS(Label rank, Label idx, Label old_val, Label
   Label pre_swap_val;
 
   MPI_Win_lock(MPI_LOCK_EXCLUSIVE, rank, 0, window_);
-      checkMPI(MPI_Compare_and_swap(&new_val, &old_val, &pre_swap_val, MPI_UNSIGNED, rank,
-              idx, window_));
-      MPI_Win_unlock(rank, window_);
+  checkMPI(MPI_Compare_and_swap(&new_val, &old_val, &pre_swap_val, MPI_UNSIGNED, rank, idx, window_));
+  MPI_Win_unlock(rank, window_);
 
-      // TODO: maybe. Use the pre swap value to retry in case of failure.
-      return pre_swap_val == old_val;
+  // TODO: maybe. Use the pre swap value to retry in case of failure.
+  return pre_swap_val == old_val;
 }
 
 template <class T>

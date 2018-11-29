@@ -52,13 +52,13 @@ graph::DistributedHookTree nodeDistributedConnectedComponents(std::vector<graph:
 
   for (const auto& e : all_edges) {
     if (is_internal(e.first) && is_internal(e.second)) {
-        internal_edges.push_back(e);
+      internal_edges.push_back(e);
     }
     else if (is_internal(e.first) || is_internal(e.second)) {
-        auto min = std::min(e.first, e.second);
-        auto max = std::max(e.first, e.second);
-        if(is_internal(max))
-            boundary_edges.push_back(graph::Edge(min, max));
+      auto min = std::min(e.first, e.second);
+      auto max = std::max(e.first, e.second);
+      if (is_internal(max))
+        boundary_edges.push_back(graph::Edge(min, max));
     }
   }
 
@@ -93,14 +93,33 @@ graph::DistributedHookTree nodeDistributedConnectedComponents(std::vector<graph:
         }
         else {
           failures = true;
-          continue;
         }
       }
     }
   }
   tree.compressLocal();
 
-  // TODO: take care of external edges.
+  // Again, but with boundary edges.
+  failures = true;
+  while (failures) {
+    failures = false;
+#pragma omp parallel for num_threads(n_threads_per_node) schedule(dynamic, 5000)
+    for (unsigned int e_id = 0; e_id < boundary_edges.size(); ++e_id) {
+      auto& edge = boundary_edges[e_id];
+      if (!edge.isValid())
+        continue;
+
+      const bool hooked = tree.hook(edge.first, edge.second);
+
+      if (hooked) {
+        edge.markInvalid();
+      }
+      else {
+        failures = true;
+      }
+    }
+  }
+  tree.compress();
 
   const auto end = util::getTime();
 
