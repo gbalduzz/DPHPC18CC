@@ -2,9 +2,6 @@
 # Enables testing.
 # References: - https://github.com/ALPSCore/ALPSCore
 
-set(GTEST_LIB_DIR ${PROJECT_SOURCE_DIR}/libs/googletest-1.8.0/build/
-    CACHE STRING "Location of gtest compiled library.")
-
 set(TEST_RUNNER "mpirun" CACHE STRING "Command to launch test")
 
 set(MPIEXEC_NUMPROC_FLAG "--np" CACHE STRING "Flag to set number of processes.")
@@ -36,8 +33,7 @@ function(add_gtest name)
   target_compile_definitions(${name} PRIVATE SOURCE_DIR=\"${PROJECT_SOURCE_DIR}\")
 
   # Use gtest main.
-  target_link_libraries(${name} ${ADD_GTEST_LIBS}
-                        ${GTEST_LIB_DIR}/libgtest.a ${GTEST_LIB_DIR}/libgtest_main.a)
+  target_link_libraries(${name} ${ADD_GTEST_LIBS} gtest gtest_main)
 
   target_include_directories(${name} PRIVATE
     ${gtest_SOURCE_DIR}/include

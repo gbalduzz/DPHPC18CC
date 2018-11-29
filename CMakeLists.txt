@@ -1,10 +1,12 @@
-cmake_minimum_required(VERSION 3.9)
+cmake_minimum_required(VERSION 3.5)
 project(MinCut)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 14)
 
-# set mpi compiler
-set(CMAKE_CXX_COMPILER mpicxx)
+# find mpi compiler
+find_package(MPI)
+include_directories(${MPI_C_INCLUDE_PATH})
+link_libraries(${MPI_C_LIBRARIES})
 
 #Threading options
 SET(CMAKE_CXX_FLAGS "-pthread -fopenmp")
@@ -16,9 +18,6 @@ include_directories(${BOOST_DIR}/include)
 #include_directories(${BOOST_DIR})
 link_directories(${BOOST_DIR}/lib)
 
-# MPI
-set(MPI_DIR "/usr/include/mpi" CACHE STRING "Path to MPI.")
-include_directories(${MPI_DIR})
 
 # Local libraries.
 include_directories(${PROJECT_SOURCE_DIR}/include)
@@ -32,6 +31,6 @@ add_subdirectory(applications)
 add_subdirectory(benchmarking)
 
 # Testing.
-enable_testing()
+add_subdirectory(libs/googletest-1.8.0)
 include(cmake/testing.cmake)
 add_subdirectory(test)
