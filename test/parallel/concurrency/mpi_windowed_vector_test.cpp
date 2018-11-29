@@ -19,11 +19,8 @@ TEST(MPIWindowedVector, All) {
   v.sync();
 
   const int other_rank = concurrency->id() == 0 ? 1 :0;
-  auto result = v.get(other_rank, 0);
 
-  // TODO: remove second sync.
-  v.sync();
-  EXPECT_EQ(other_rank, result);
+  EXPECT_EQ(other_rank, v.get(other_rank, 0));
 }
 
 int main(int argc, char** argv) {

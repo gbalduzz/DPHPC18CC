@@ -63,7 +63,7 @@ MPIWindowedObject<T>::MPIWindowedObject(const std::size_t size) : size_(size) {
   checkMPI(MPI_Alloc_mem(sizeof(T) * size, MPI_INFO_NULL, &data_));
 
   // TODO: set the appropriate MPI_INFO.
-  checkMPI(MPI_Win_create(data_, size, sizeof(T), MPI_INFO_NULL, MPI_COMM_WORLD, &window_));
+  checkMPI(MPI_Win_create(data_, size * sizeof(T), sizeof(T), MPI_INFO_NULL, MPI_COMM_WORLD, &window_));
 }
 
 template <class T>
@@ -77,8 +77,12 @@ T MPIWindowedObject<T>::get(const unsigned int target_rank, const std::size_t id
   assert(idx < size_);
 
   T result;
+  // TODO: check if lock are required on cluster.
+  MPI_Win_lock(MPI_LOCK_SHARED, target_rank, 0, window_);
   checkMPI(MPI_Get(&result, 1, MPITypeMap<T>::value(), target_rank, idx, 1, MPITypeMap<T>::value(),
                    window_));
+  MPI_Win_unlock(target_rank, window_);
+
   return result;
 }
 
