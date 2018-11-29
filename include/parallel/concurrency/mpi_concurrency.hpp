@@ -10,7 +10,7 @@ namespace parallel {
 class MpiConcurrency {
 public:
   MpiConcurrency(int argc = 1, char** argv = nullptr) {
-    constexpr int required = MPI_THREAD_FUNNELED;
+    constexpr int required = MPI_THREAD_MULTIPLE;
     int provided;
     MPI_Init_thread(&argc, &argv, required, &provided);
 

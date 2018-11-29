@@ -10,6 +10,7 @@
 #include <mpi.h>
 
 #include "graph/edge.hpp"
+#include "parallel/concurrency/mpi_windowed_vector.hpp"
 
 namespace graph {
 
@@ -54,6 +55,10 @@ public:
     return parent_.size();
   }
 
+  void sync() const {
+    parent_.sync();
+  }
+
 private:
   const Label n_vertices_;
   const Label vertices_per_rank_;
@@ -65,7 +70,7 @@ private:
 
   const unsigned int n_threads_;
 
-  std::vector<Label> parent_;
+  parallel::MPIWindowedVector<Label> parent_;
 };
 
 inline DistributedHookTree::DistributedHookTree(graph::Label n_vertices, graph::RankLabel rank_id,
@@ -85,13 +90,11 @@ inline DistributedHookTree::DistributedHookTree(graph::Label n_vertices, graph::
     parent_[i] = range_start_ + i;
 }
 
-
-inline bool DistributedHookTree::hookAtomicLocal(Label i, Label j) {
-  //  assert(isRoot(i) && isRoot(j));
-  Label repr_i = parent_[i - range_start_];
-  const Label repr_j = parent_[j - range_start_];
+// Hook i to j.
+inline bool DistributedHookTree::hookAtomicLocal(Label repr_i, Label repr_j) {
+  //  assert(isRoot(repr_i) && isRoot(repr_j));
   return std::atomic_compare_exchange_weak(
-      reinterpret_cast<std::atomic<Label>*>(&parent_[i - range_start_]), &repr_i, repr_j);
+      reinterpret_cast<std::atomic<Label>*>(&parent_[repr_i - range_start_]), &repr_i, repr_j);
 }
 
 inline bool DistributedHookTree::isRoot(Label l) const {
@@ -133,8 +136,7 @@ inline Label DistributedHookTree::representative(Label label) const {
       repr = parent_[label - range_start_];
     }
     else {
-      const RankLabel owner = ownerRank(label);
-//      MPI_Get(&repr, 1, MPI_UNSIGNED, owner, label - owner * size(), 1, MPI_UNSIGNED, parent_);
+      repr = parent_.globalGet(label);
     }
   } while (label != repr);
 
@@ -142,7 +144,21 @@ inline Label DistributedHookTree::representative(Label label) const {
 }
 
 inline bool DistributedHookTree::hook(graph::Label i, graph::Label j) {
-    throw("");
+  const auto repr_i = representative(i);
+  const auto repr_j = representative(j);
+
+  if(repr_i == repr_j)
+    return true;
+
+  const auto min = std::min(repr_i, repr_j);
+  const auto max = std::max(repr_i, repr_j);
+
+  if(isLocal(max)){ // Hook local to remote.
+    return hookAtomicLocal(max, min);
+  }
+  else { // Hook remote max to min.
+    return parent_.atomicCAS(max, max, min);
+  }
 }
 
 }  // graph
