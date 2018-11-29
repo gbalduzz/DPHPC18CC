@@ -85,10 +85,6 @@ inline DistributedHookTree::DistributedHookTree(graph::Label n_vertices, graph::
     parent_[i] = range_start_ + i;
 }
 
-inline void DistributedHookTree::hookLocal(Label i, Label j) {
-  assert(isRoot(i) && isRoot(j));
-  parent_[i - range_start_] = j;
-}
 
 inline bool DistributedHookTree::hookAtomicLocal(Label i, Label j) {
   //  assert(isRoot(i) && isRoot(j));
@@ -138,13 +134,15 @@ inline Label DistributedHookTree::representative(Label label) const {
     }
     else {
       const RankLabel owner = ownerRank(label);
-      MPI_Get(&repr, 1, MPI_UNSIGNED, owner, label - owner * size(), 1, MPI_UNSIGNED, parent_);
+//      MPI_Get(&repr, 1, MPI_UNSIGNED, owner, label - owner * size(), 1, MPI_UNSIGNED, parent_);
     }
   } while (label != repr);
 
   return label;
 }
 
-inline bool DistributedHookTree::hook(graph::Label i, graph::Label j) {}
+inline bool DistributedHookTree::hook(graph::Label i, graph::Label j) {
+    throw("");
+}
 
 }  // graph
