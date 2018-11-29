@@ -21,7 +21,8 @@ void checkMPI(int ret) {
   assert(ret == MPI_SUCCESS);
 }
 
-graph::DistributedHookTree nodeDistributedConnectedComponents(std::vector<graph::Edge>& all_edges,
+graph::DistributedHookTree nodeDistributedConnectedComponents(const int n_vertices,
+                                                              std::vector<graph::Edge>& all_edges,
                                                               int n_threads_per_node,
                                                               double* computation_time,
                                                               double* total_time) {
@@ -33,32 +34,24 @@ graph::DistributedHookTree nodeDistributedConnectedComponents(std::vector<graph:
   int comm_size;
   MPI_Comm_size(MPI_COMM_WORLD, &comm_size);
 
-  int n_edges = -1;
-  unsigned int n_vertices = 0;
-
-  n_edges = all_edges.size();
-  for (const auto& e : all_edges) {
-    n_vertices = std::max(n_vertices, std::max(e.first, e.second));
-  }
-  ++n_vertices;
+  const std::size_t n_edges = all_edges.size();
 
   std::vector<graph::Edge> internal_edges;
   std::vector<graph::Edge> boundary_edges;
 
   using graph::Label;
-  const Label start_index = (n_vertices / comm_size) * rank;
-  const Label end_index = (n_vertices / comm_size) * (rank + 1);
+  const unsigned int vertices_per_rank = ceilDiv(n_vertices, comm_size);
+  const Label start_index = vertices_per_rank * rank;
+  const Label end_index = vertices_per_rank * (rank + 1);
   auto is_internal = [=](Label l) { return l >= start_index && l < end_index; };
 
   for (const auto& e : all_edges) {
     if (is_internal(e.first) && is_internal(e.second)) {
       internal_edges.push_back(e);
     }
-    else if (is_internal(e.first) || is_internal(e.second)) {
-      auto min = std::min(e.first, e.second);
-      auto max = std::max(e.first, e.second);
-      if (is_internal(max))
-        boundary_edges.push_back(graph::Edge(min, max));
+    // TODO: consider ordering.
+    else if (is_internal(e.first)) {
+      boundary_edges.push_back(e);
     }
   }
 
@@ -66,7 +59,7 @@ graph::DistributedHookTree nodeDistributedConnectedComponents(std::vector<graph:
   MPI_Barrier(MPI_COMM_WORLD);
   const auto start_computation = util::getTime();
 
-  graph::DistributedHookTree tree(n_vertices, rank, comm_size, n_threads_per_node);
+  graph::DistributedHookTree tree(vertices_per_rank, rank, comm_size, n_threads_per_node);
 
   // Create local forest.
   bool failures = true;
@@ -81,23 +74,27 @@ graph::DistributedHookTree nodeDistributedConnectedComponents(std::vector<graph:
       const auto repr_i = tree.representativeLocal(edge.first);
       const auto repr_j = tree.representativeLocal(edge.second);
 
-      if (repr_i != repr_j) {
-        bool hooked;
-        if (repr_i > repr_j)
-          hooked = tree.hookAtomicLocal(repr_i, repr_j);
-        else
-          hooked = tree.hookAtomicLocal(repr_j, repr_i);
+      bool hooked;
 
-        if (hooked) {
-          edge.markInvalid();
-        }
-        else {
-          failures = true;
-        }
+      if (repr_i == repr_j)
+        hooked = true;
+      else if (repr_i > repr_j)
+        hooked = tree.hookAtomicLocal(repr_i, repr_j);
+      else
+        hooked = tree.hookAtomicLocal(repr_j, repr_i);
+
+      if (hooked) {
+        edge.markInvalid();
+      }
+      else {
+        failures = true;
       }
     }
   }
+
   tree.compressLocal();
+
+  tree.sync();
 
   // Again, but with boundary edges.
   failures = true;
@@ -121,6 +118,7 @@ graph::DistributedHookTree nodeDistributedConnectedComponents(std::vector<graph:
   }
   tree.compress();
 
+  MPI_Barrier(MPI_COMM_WORLD);
   const auto end = util::getTime();
 
   if (computation_time)
@@ -131,17 +129,20 @@ graph::DistributedHookTree nodeDistributedConnectedComponents(std::vector<graph:
   return tree;
 }
 
-graph::HookTree gatherTree(const graph::DistributedHookTree& local_tree) {
+graph::HookTree gatherTree(const graph::DistributedHookTree& local_tree, const int n_vertices) {
   int rank;
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   int comm_size;
   MPI_Comm_size(MPI_COMM_WORLD, &comm_size);
 
+
   std::vector<graph::Label> representatives((rank == 0) * (comm_size * local_tree.size()));
 
-  MPI_Gather(local_tree.data(), local_tree.size(), MPI_UNSIGNED, representatives.data(),
-             local_tree.size(), MPI_UNSIGNED, 0, MPI_COMM_WORLD);
+  checkMPI(MPI_Gather(local_tree.data(), local_tree.size(), MPI_UNSIGNED, representatives.data(),
+                      local_tree.size(), MPI_UNSIGNED, 0, MPI_COMM_WORLD));
 
+  if (n_vertices != -1)
+    representatives.resize(n_vertices);
   return graph::HookTree(std::move(representatives));
 }
 

@@ -18,7 +18,8 @@ using RankLabel = Label;
 
 class DistributedHookTree {
 public:
-  DistributedHookTree(Label n_vertices, RankLabel rank_id, RankLabel n_ranks, unsigned int n_threads);
+  DistributedHookTree(Label vertices_per_rank, RankLabel rank_id, RankLabel n_ranks,
+                      unsigned int n_threads);
 
   Label representativeLocal(Label l) const;
 
@@ -61,7 +62,6 @@ public:
   }
 
 private:
-  const Label n_vertices_;
   const Label vertices_per_rank_;
   const RankLabel n_ranks_;
   const RankLabel rank_;
@@ -74,26 +74,25 @@ private:
   parallel::MPIWindowedVector<Label> parent_;
 };
 
-inline DistributedHookTree::DistributedHookTree(graph::Label n_vertices, graph::RankLabel rank_id,
-                                                graph::RankLabel n_ranks, unsigned int n_threads)
-    : n_vertices_(n_vertices),
-      vertices_per_rank_(n_vertices / n_ranks),
+inline DistributedHookTree::DistributedHookTree(graph::Label vertices_per_rank,
+                                                graph::RankLabel rank_id, graph::RankLabel n_ranks,
+                                                unsigned int n_threads)
+    : vertices_per_rank_(vertices_per_rank),
       n_ranks_(n_ranks),
       rank_(rank_id),
       range_start_(vertices_per_rank_ * rank_id),
       range_end_(vertices_per_rank_ * (rank_id + 1)),
       n_threads_(n_threads),
       parent_(vertices_per_rank_) {
-  assert((n_vertices % n_ranks) == 0);  // TODO support general case.
-
 #pragma omp parallel for num_threads(n_threads_)
-  for (int i = 0; i < vertices_per_rank_; ++i)
+  for (int i = 0; i < vertices_per_rank_; ++i) {
     parent_[i] = range_start_ + i;
+  }
 }
 
 // Hook i to j.
 inline bool DistributedHookTree::hookAtomicLocal(Label repr_i, Label repr_j) {
-  //  assert(isRoot(repr_i) && isRoot(repr_j));
+  assert(isLocal(repr_i));
   return std::atomic_compare_exchange_weak(
       reinterpret_cast<std::atomic<Label>*>(&parent_[repr_i - range_start_]), &repr_i, repr_j);
 }
@@ -113,8 +112,8 @@ inline RankLabel DistributedHookTree::ownerRank(graph::Label l) const {
 
 inline Label DistributedHookTree::representativeLocal(Label l) const {
   assert(isLocal(l));
-  while (l != parent_[l]) {
-    l = parent_[l];
+  while (l != parent_[l - range_start_]) {
+    l = parent_[l - range_start_];
     assert(isLocal(l));
   }
   return l;
@@ -122,15 +121,15 @@ inline Label DistributedHookTree::representativeLocal(Label l) const {
 
 inline void DistributedHookTree::compressLocal() {
 #pragma omp parallel for num_threads(n_threads_) schedule(dynamic, 5000)
-  for (std::size_t i = 0; i < parent_.size(); ++i) {
-    parent_[i] = representativeLocal(i);
+  for (Label i = 0; i < parent_.size(); ++i) {
+    parent_[i] = representativeLocal(i + range_start_);
   }
 }
 
 inline void DistributedHookTree::compress() {
 #pragma omp parallel for num_threads(n_threads_) schedule(dynamic, 5000)
   for (std::size_t i = 0; i < parent_.size(); ++i) {
-    parent_[i] = representative(i);
+    parent_[i] = representative(i + range_start_);
   }
 }
 

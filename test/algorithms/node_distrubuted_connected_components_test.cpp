@@ -7,6 +7,7 @@
 #include "graph/generate_random_graph.hpp"
 #include "parallel/concurrency/mpi_concurrency.hpp"
 #include "util/graph_reader.hpp"
+#include "testing/minimalist_printer.hpp"
 
 void performTest(int n, std::vector<graph::Edge>& edges, const std::vector<int>& expected);
 
@@ -65,12 +66,12 @@ TEST(ParallelMpiConnectedComponents, Random) {
 }
 
 void performTest(int n, std::vector<graph::Edge>& edges, const std::vector<int>& expected) {
-  constexpr int n_threads = 4;
-  if (concurrency->id() != 0)
-    edges.clear();
+  constexpr int n_threads = 3;
 
-  auto forest =
-      algorithms::gatherTree(algorithms::nodeDistributedConnectedComponents(edges, n_threads));
+  const auto n_vertices = expected.size();
+
+  auto forest = algorithms::gatherTree(
+      algorithms::nodeDistributedConnectedComponents(n_vertices, edges, n_threads), n_vertices);
 
   auto are_connected = [&](int i, int j) {
     return forest.representative(i) == forest.representative(j);
@@ -80,13 +81,20 @@ void performTest(int n, std::vector<graph::Edge>& edges, const std::vector<int>&
   if (concurrency->id() == 0) {
     for (int i = 0; i < n; ++i)
       for (int j = 0; j < n; ++j)
-        EXPECT_EQ(expect_connected(i, j), are_connected(i, j));
+        ASSERT_EQ(expect_connected(i, j), are_connected(i, j));
   }
 }
 
 int main(int argc, char** argv) {
   concurrency = std::make_unique<parallel::MpiConcurrency>(argc, argv);
   ::testing::InitGoogleTest(&argc, argv);
+
+  ::testing::TestEventListeners& listeners = ::testing::UnitTest::GetInstance()->listeners();
+  if (concurrency->id() != 0) {
+    delete listeners.Release(listeners.default_result_printer());
+    listeners.Append(new ::testing::MinimalistPrinter);
+  }
+
   const auto result = RUN_ALL_TESTS();
   concurrency.release();
   return result;

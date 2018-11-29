@@ -5,6 +5,7 @@
 #include <gtest/gtest.h>
 
 #include "parallel/concurrency/mpi_concurrency.hpp"
+#include "testing/minimalist_printer.hpp"
 
 std::unique_ptr<parallel::MpiConcurrency> concurrency;
 
@@ -50,8 +51,15 @@ TEST(MPIWindowedVector, AtomicCAS) {
 }
 
 int main(int argc, char** argv) {
-  concurrency = std::make_unique<parallel::MpiConcurrency>(argc, argv);
-  ::testing::InitGoogleTest(&argc, argv);
+    ::testing::InitGoogleTest(&argc, argv);
+    concurrency = std::make_unique<parallel::MpiConcurrency>(argc, argv);
+
+  ::testing::TestEventListeners& listeners = ::testing::UnitTest::GetInstance()->listeners();
+  if (concurrency->id() != 0) {
+    delete listeners.Release(listeners.default_result_printer());
+    listeners.Append(new ::testing::MinimalistPrinter);
+  }
+
   const auto result = RUN_ALL_TESTS();
   concurrency.release();
   return result;
