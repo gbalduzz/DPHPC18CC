@@ -23,14 +23,12 @@ public:
   // Hooks i to j. No check is performed on the inputs.
   void hook(Label i, Label j);
 
+  // Find the representatives of i and j, and hook the maximum representative to the minimum in a
+  // thread safe manner.
+  void hookToMinSafe(Label i, Label j);
+
   // As above, but skip the connection of nodes i and j to their representative.
   void hookAndUpdate(Label repr_i, Label repr_j, Label i, Label j);
-
-  // Same as hook, but it is atomic and allowed to fail.
-  bool hookAtomic(Label i, Label j);
-
-  // As above, but skip the connection of nodes i and j.
-  bool hookAtomicAndUpdate(Label repr_i, Label repr_j, Label i, Label j);
 
   Label representative(Label i) const;
   inline void setRepresentative(Label i, Label repr) {
@@ -51,29 +49,7 @@ public:
     return i == parent_[i];
   }
 
-  std::string toString() {
-    std::string res = "";
-
-    // std::vector<std::vector<Label>> connected_components(parent_.size());
-    for (int i = 0; i < parent_.size(); ++i) {
-      Label root = representative(parent_[i]);
-      res += std::to_string(i) + "->" + std::to_string(root) + "\n";
-      // connected_components[root].push_back(i);
-    }
-
-    /*
-    for(int i=0; i<connected_components.size(); ++i) {
-        if(connected_components[i].size() > 0) {
-            for(int j=0; j<connected_components[i].size(); ++j) {
-                res += std::to_string(connected_components[i][j]) + " | ";
-            }
-            res += "\n";
-        }
-    }
-    */
-
-    return res;
-  }
+  std::string toString() const;
 
   const std::vector<Label>& getParents() const {
     return parent_;
@@ -82,6 +58,9 @@ public:
   const unsigned getNumConnectedComponents() const;
 
 private:
+  // Same as hook, but it is atomic and allowed to fail.
+  bool hookAtomic(Label i, Label j);
+
   std::vector<Label> parent_;
 };
 
@@ -142,12 +121,21 @@ inline bool HookTree::hookAtomic(Label i, Label j) {
   return std::atomic_compare_exchange_weak(reinterpret_cast<std::atomic<Label>*>(&parent_[i]), &i, j);
 }
 
-inline bool HookTree::hookAtomicAndUpdate(Label repr_i, Label repr_j, Label i, Label j) {
-  const bool result = std::atomic_compare_exchange_weak(
-      reinterpret_cast<std::atomic<Label>*>(&parent_[repr_i]), &repr_i, repr_j);
-  parent_[i] = result ? repr_j : repr_i;
-  parent_[j] = repr_j;
-  return result;
+inline void HookTree::hookToMinSafe(graph::Label i, graph::Label j) {
+  bool hooked = false;
+  Label repr_i(i), repr_j(j);
+
+  while (!hooked) {
+    repr_i = representative(repr_i);
+    repr_j = representative(repr_j);
+
+    if (repr_i > repr_j)
+      hooked = hookAtomic(repr_i, repr_j);
+    else if (repr_i < repr_j)
+      hooked = hookAtomic(repr_j, repr_i);
+    else
+      hooked = true;
+  }
 }
 
 inline Label HookTree::representative(Label index) const {
@@ -178,6 +166,19 @@ inline const unsigned HookTree::getNumConnectedComponents() const {
   }
 
   return result;
+}
+
+inline std::string HookTree::toString() const {
+  std::string res = "";
+
+  // std::vector<std::vector<Label>> connected_components(parent_.size());
+  for (int i = 0; i < parent_.size(); ++i) {
+    Label root = representative(parent_[i]);
+    res += std::to_string(i) + "->" + std::to_string(root) + "\n";
+    // connected_components[root].push_back(i);
+  }
+
+  return res;
 }
 
 }  // graph
