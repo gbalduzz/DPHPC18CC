@@ -1,6 +1,7 @@
 #pragma once
 
 #include <atomic>
+#include <iostream>
 #include <cassert>
 #include <numeric>
 #include <vector>
@@ -82,26 +83,16 @@ inline HookTree::HookTree(std::vector<Label>&& labels) {
 
 inline HookTree& HookTree::operator+=(const HookTree& rhs) {
   assert(parent_.size() == rhs.parent_.size());
-// loop over all nodes in other tree
-// TODO: check correctness of parallel execution.
 #pragma omp parallel for schedule(static)
-  for (int i = 0; i < rhs.parent_.size(); ++i) {
-    // there is nothing we need to do if i is already the root
-    if (rhs.isRoot(i)) {
-      continue;
+  for (int i = 0; i < parent_.size(); ++i) {
+    // If the representation in the two three (repr1 and repr2) is different hook the two
+    // representatives.
+    const Label repr1 = parent_[i];
+    const Label repr2 = rhs.parent_[i];
+
+    if (repr1 != repr2) {
+      hookToMinSafe(repr1, repr2);
     }
-
-    Label other_representative = rhs.representative(i);
-    Label this_other_representative_representative = this->representative(other_representative);
-    Label this_representative = this->representative(i);
-
-    // edge already exists in this tree => there is nothing to do
-    if (this_representative == this_other_representative_representative) {
-      continue;
-    }
-
-    this->hook(std::max(this_representative, this_other_representative_representative),
-               std::min(this_representative, this_other_representative_representative));
   }
   return *this;
 }
