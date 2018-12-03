@@ -20,11 +20,10 @@ public:
 
   HookTree& operator+=(const HookTree& rhs);
 
-  // Hooks i to j.
-  // Precondition: i and j are roots.
+  // Hooks i to j. No check is performed on the inputs.
   void hook(Label i, Label j);
 
-  // As above, but skip the connection of nodes i and j.
+  // As above, but skip the connection of nodes i and j to their representative.
   void hookAndUpdate(Label repr_i, Label repr_j, Label i, Label j);
 
   // Same as hook, but it is atomic and allowed to fail.
@@ -105,6 +104,7 @@ inline HookTree::HookTree(std::vector<Label>&& labels) {
 inline HookTree& HookTree::operator+=(const HookTree& rhs) {
   assert(parent_.size() == rhs.parent_.size());
 // loop over all nodes in other tree
+// TODO: check correctness of parallel execution.
 #pragma omp parallel for schedule(static)
   for (int i = 0; i < rhs.parent_.size(); ++i) {
     // there is nothing we need to do if i is already the root
@@ -128,7 +128,6 @@ inline HookTree& HookTree::operator+=(const HookTree& rhs) {
 }
 
 inline void HookTree::hook(Label i, Label j) {
-  assert(isRoot(i) && isRoot(j));
   parent_[i] = j;
 }
 
