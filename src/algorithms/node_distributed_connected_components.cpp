@@ -64,9 +64,9 @@ graph::DistributedHookTree nodeDistributedConnectedComponents(const int n_vertic
 // Create local forest.
 #pragma omp parallel for num_threads(n_threads_per_node) schedule(dynamic, 5000)
   for (unsigned int e_id = 0; e_id < internal_edges.size(); ++e_id) {
-    auto& edge = internal_edges[e_id];
-    if (!edge.isValid())
-      continue;
+    const auto& edge = internal_edges[e_id];
+    //    if (!edge.isValid())
+    //      continue;
 
     tree.hookToMinSafeLocal(edge.first, edge.second);
   }
@@ -75,26 +75,16 @@ graph::DistributedHookTree nodeDistributedConnectedComponents(const int n_vertic
 
   tree.sync();
 
-  // Again, but with boundary edges.
-  bool failures = true;
-  while (failures) {
-    failures = false;
+// Again, but with boundary edges.
 #pragma omp parallel for num_threads(n_threads_per_node) schedule(dynamic, 5000)
-    for (unsigned int e_id = 0; e_id < boundary_edges.size(); ++e_id) {
-      auto& edge = boundary_edges[e_id];
-      if (!edge.isValid())
-        continue;
+  for (unsigned int e_id = 0; e_id < boundary_edges.size(); ++e_id) {
+    const auto& edge = boundary_edges[e_id];
+    //    if (!edge.isValid())
+    //      continue;
 
-      const bool hooked = tree.hook(edge.first, edge.second);
-
-      if (hooked) {
-        edge.markInvalid();
-      }
-      else {
-        failures = true;
-      }
-    }
+    tree.hookToMinSafe(edge.first, edge.second);
   }
+
   tree.compress();
 
   MPI_Barrier(MPI_COMM_WORLD);

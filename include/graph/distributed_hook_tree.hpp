@@ -30,11 +30,10 @@ public:
   bool isLocal(Label i) const;
   RankLabel ownerRank(Label i) const;
 
-  void hookToMinSafeLocal(Label i, Label j);
+  // Hooks the representative with highest index to the lowest one.
   void hookToMinSafe(Label i, Label j);
 
-  // Hooks the representative with highest index to the lowest one.
-  bool hook(Label i, Label j);
+  void hookToMinSafeLocal(Label i, Label j);
 
   void compressLocal();
   void compress();
@@ -158,21 +157,26 @@ inline Label DistributedHookTree::representative(Label label) const {
   return label;
 }
 
-inline bool DistributedHookTree::hook(graph::Label i, graph::Label j) {
-  const auto repr_i = representative(i);
-  const auto repr_j = representative(j);
+inline void DistributedHookTree::hookToMinSafe(const Label i, const Label j) {
+  bool hooked = false;
+  Label repr_i(i), repr_j(j);
 
-  if (repr_i == repr_j)
-    return true;
+  while (!hooked) {
+    if (repr_i == repr_j)
+      break;
 
-  const auto min = std::min(repr_i, repr_j);
-  const auto max = std::max(repr_i, repr_j);
+    repr_i = representative(repr_i);
+    repr_j = representative(repr_j);
 
-  if (isLocal(max)) {  // Hook local to remote.
-    return hookAtomicLocal(max, min);
-  }
-  else {  // Hook remote max to min.
-    return parent_.atomicCAS(max, max, min);
+    const Label min = std::min(repr_i, repr_j);
+    const Label max = std::max(repr_i, repr_j);
+
+    if (isLocal(max)) {  // Hook local to remote.
+      hooked = hookAtomicLocal(max, min);
+    }
+    else {  // Hook remote max to min.
+      hooked = parent_.atomicCAS(max, max, min);
+    }
   }
 }
 
