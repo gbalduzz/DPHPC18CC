@@ -61,35 +61,14 @@ graph::DistributedHookTree nodeDistributedConnectedComponents(const int n_vertic
 
   graph::DistributedHookTree tree(vertices_per_rank, rank, comm_size, n_threads_per_node);
 
-  // Create local forest.
-  bool failures = true;
-  while (failures) {
-    failures = false;
+// Create local forest.
 #pragma omp parallel for num_threads(n_threads_per_node) schedule(dynamic, 5000)
-    for (unsigned int e_id = 0; e_id < internal_edges.size(); ++e_id) {
-      auto& edge = internal_edges[e_id];
-      if (!edge.isValid())
-        continue;
+  for (unsigned int e_id = 0; e_id < internal_edges.size(); ++e_id) {
+    auto& edge = internal_edges[e_id];
+    if (!edge.isValid())
+      continue;
 
-      const auto repr_i = tree.representativeLocal(edge.first);
-      const auto repr_j = tree.representativeLocal(edge.second);
-
-      bool hooked;
-
-      if (repr_i == repr_j)
-        hooked = true;
-      else if (repr_i > repr_j)
-        hooked = tree.hookAtomicLocal(repr_i, repr_j);
-      else
-        hooked = tree.hookAtomicLocal(repr_j, repr_i);
-
-      if (hooked) {
-        edge.markInvalid();
-      }
-      else {
-        failures = true;
-      }
-    }
+    tree.hookToMinSafeLocal(edge.first, edge.second);
   }
 
   tree.compressLocal();
@@ -97,7 +76,7 @@ graph::DistributedHookTree nodeDistributedConnectedComponents(const int n_vertic
   tree.sync();
 
   // Again, but with boundary edges.
-  failures = true;
+  bool failures = true;
   while (failures) {
     failures = false;
 #pragma omp parallel for num_threads(n_threads_per_node) schedule(dynamic, 5000)
@@ -134,7 +113,6 @@ graph::HookTree gatherTree(const graph::DistributedHookTree& local_tree, const i
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   int comm_size;
   MPI_Comm_size(MPI_COMM_WORLD, &comm_size);
-
 
   std::vector<graph::Label> representatives((rank == 0) * (comm_size * local_tree.size()));
 

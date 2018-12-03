@@ -25,27 +25,16 @@ public:
 
   Label representative(Label l) const;
 
-  // Precondition: i and j are roots
-  bool hookAtomicLocal(Label i, Label j);
-
   bool isRoot(Label i) const;
 
   bool isLocal(Label i) const;
   RankLabel ownerRank(Label i) const;
 
+  void hookToMinSafeLocal(Label i, Label j);
+  void hookToMinSafe(Label i, Label j);
+
   // Hooks the representative with highest index to the lowest one.
   bool hook(Label i, Label j);
-
-  //    // As above, but skip the connection of nodes i and j.
-  //    void hookAndUpdate(Label repr_i, Label repr_j, Label i, Label j);
-  //
-  //    // Same as hook, but it is atomic and allowed to fail.
-  //    bool hookAtomic(Label i, Label j);
-  //
-  //  // As above, but skip the connection of nodes i and j.
-  //  bool hookAtomicAndUpdate(Label repr_i, Label repr_j, Label i, Label j);
-  //
-  //  Label representative(Label i) const;
 
   void compressLocal();
   void compress();
@@ -62,6 +51,8 @@ public:
   }
 
 private:
+  bool hookAtomicLocal(Label i, Label j);
+
   const Label vertices_per_rank_;
   const RankLabel n_ranks_;
   const RankLabel rank_;
@@ -95,6 +86,23 @@ inline bool DistributedHookTree::hookAtomicLocal(Label repr_i, Label repr_j) {
   assert(isLocal(repr_i));
   return std::atomic_compare_exchange_weak(
       reinterpret_cast<std::atomic<Label>*>(&parent_[repr_i - range_start_]), &repr_i, repr_j);
+}
+
+inline void DistributedHookTree::hookToMinSafeLocal(Label i, Label j) {
+  bool hooked = false;
+  Label repr_i(i), repr_j(j);
+
+  while (!hooked) {
+    repr_i = representativeLocal(repr_i);
+    repr_j = representativeLocal(repr_j);
+
+    if (repr_i > repr_j)
+      hooked = hookAtomicLocal(repr_i, repr_j);
+    else if (repr_i < repr_j)
+      hooked = hookAtomicLocal(repr_j, repr_i);
+    else
+      hooked = true;
+  }
 }
 
 inline bool DistributedHookTree::isRoot(Label l) const {
