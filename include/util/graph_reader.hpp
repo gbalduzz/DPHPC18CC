@@ -37,6 +37,8 @@ public:
 
 
 	void read_graph_from_DIMACS_challenge_to_file(string filename);
+
+    std::vector<graph::Edge> read_graph_from_paramat(string filename);
 };
 }  // namespace graph
 

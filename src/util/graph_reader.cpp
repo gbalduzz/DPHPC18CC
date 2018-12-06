@@ -66,6 +66,29 @@ vector<vector<graph::Label>> GraphReader::read_connected_components_from_json(st
   return edges;
 }
 
+
+std::vector<graph::Edge> GraphReader::read_graph_from_paramat(string filename) {
+  ifstream file;
+
+  file.open(filename);
+  if(!file) {
+    exit(1);
+  }
+
+  vector<graph::Edge> edge_list;
+  string content;
+  getline(file,content);
+  getline(file, content);
+  while(!file.eof()){
+    vector<string> nr;
+    boost::split(nr, content, [](char c){return c == ' ';});
+    edge_list.push_back(graph::Edge(std::stoi(nr[0]), std::stoi(nr[1])));
+  }
+
+  file.close();
+
+  return edge_list;
+}
 /**
  * if the first char in one line is an a, then the line describes an edge
  * Otherwise: Comment or similar

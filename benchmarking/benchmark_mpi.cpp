@@ -18,16 +18,16 @@ int main(int argc, char** argv) {
 
   const int n_threads = argc > 1 ? std::atoi(argv[1]) : 1;
 
-  if (concurrency.id() == 0)
-    std::cout << "Running with " << n_threads << " threads / process.\n";
-
-  const std::string filename = "USA-road-t.USA.gr";
+  if (concurrency.id() == 0) {
+    std::cout << "Nodes:" << concurrency.size() << " Threads:" << n_threads << std::endl;
+  }
+  const std::string filename = argc > 2 ? std::string(argv[2]) : "rmat_1024k_128.in";
 
   std::vector<graph::Edge> edges;
   if (concurrency.id() == 0) {
-    edges = util::GraphReader().read_graph_from_DIMACS_challenge(filename);
+    edges = util::GraphReader().read_graph_from_paramat(filename);
     const int n = util::GraphReader().vertexNumber(edges);
-    std::cout << "Loaded graph.\n";
+    //std::cout << "Loaded graph.\n";
   }
 
   constexpr int n_times = 10;
