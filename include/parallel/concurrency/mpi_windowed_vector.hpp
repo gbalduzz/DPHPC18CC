@@ -108,7 +108,7 @@ bool MPIWindowedVector<T>::atomicCAS(Label rank, Label idx, Label old_val, Label
   assert(idx < size_);
   Label pre_swap_val;
 
-  MPI_Win_lock(MPI_LOCK_EXCLUSIVE, rank, 0, window_);
+  MPI_Win_lock(MPI_LOCK_SHARED, rank, 0, window_);
   checkMPI(MPI_Compare_and_swap(&new_val, &old_val, &pre_swap_val, MPI_UNSIGNED, rank, idx, window_));
   MPI_Win_unlock(rank, window_);
 
@@ -124,7 +124,6 @@ bool MPIWindowedVector<T>::atomicCAS(Label global_idx, Label old_val, Label new_
 
 template <class T>
 void MPIWindowedVector<T>::sync() const {
-  // TODO: set the appropriate assert.
   MPI_Win_fence(0, window_);
 }
 
