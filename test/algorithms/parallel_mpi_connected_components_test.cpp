@@ -8,7 +8,7 @@
 #include "parallel/concurrency/mpi_concurrency.hpp"
 #include "util/graph_reader.hpp"
 
-void performTest(int n, std::vector<graph::Edge>& edges, const std::vector<int>& expected);
+void performTest(int n, const std::vector<graph::Edge>& edges, const std::vector<int>& expected);
 
 using graph::Edge;
 
@@ -64,22 +64,26 @@ TEST(ParallelMpiConnectedComponents, Random) {
   performTest(expected.size(), edges, expected);
 }
 
-void performTest(int n, std::vector<graph::Edge>& edges, const std::vector<int>& expected) {
-  constexpr int n_threads = 4;
-  if (concurrency->id() != 0)
-    edges.clear();
+void performTest(int n, const std::vector<graph::Edge>& edges, const std::vector<int>& expected) {
+  std::vector<graph::Edge> edges_copy;
 
-  auto forest = algorithms::parallelMpiConnectedComponents(edges, n_threads);
+  for (const int n_threads : std::array<int, 2>{1, 4}) {
+    if (concurrency->id() == 0) {
+      edges_copy = edges;
+    }
 
-  auto are_connected = [&](int i, int j) {
-    return forest.representative(i) == forest.representative(j);
-  };
-  auto expect_connected = [&](int i, int j) { return expected[i] == expected[j]; };
+    auto forest = algorithms::parallelMpiConnectedComponents(edges_copy, n_threads);
 
-  if (concurrency->id() == 0) {
-    for (int i = 0; i < n; ++i)
-      for (int j = 0; j < n; ++j)
-        EXPECT_EQ(expect_connected(i, j), are_connected(i, j));
+    auto are_connected = [&](int i, int j) {
+      return forest.representative(i) == forest.representative(j);
+    };
+    auto expect_connected = [&](int i, int j) { return expected[i] == expected[j]; };
+
+    if (concurrency->id() == 0) {
+      for (int i = 0; i < n; ++i)
+        for (int j = 0; j < n; ++j)
+          EXPECT_EQ(expect_connected(i, j), are_connected(i, j));
+    }
   }
 }
 

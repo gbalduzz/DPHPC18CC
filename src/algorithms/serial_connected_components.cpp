@@ -10,6 +10,9 @@ graph::HookTree serialConnectedComponents(const unsigned n, std::vector<graph::E
   graph::HookTree tree(n);
 
   for (auto& edge : edges) {
+    if(!edge.isValid())
+      continue;
+
     const auto repr_i = tree.representative(edge.first);
     const auto repr_j = tree.representative(edge.second);
 
