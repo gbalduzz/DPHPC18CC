@@ -2,7 +2,6 @@ cmake_minimum_required(VERSION 3.5)
 project(MinCut)
 
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_COMPILER mpicxx)
 
 # find mpi compiler
 find_package(MPI)
@@ -32,6 +31,6 @@ add_subdirectory(applications)
 add_subdirectory(benchmarking)
 
 # Testing.
-#add_subdirectory(libs/googletest-1.8.0)
-#include(cmake/testing.cmake)
-#add_subdirectory(test)
+add_subdirectory(libs/googletest-1.8.0)
+include(cmake/testing.cmake)
+add_subdirectory(test)
