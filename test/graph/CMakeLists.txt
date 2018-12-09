@@ -1,1 +1,2 @@
 add_gtest(generate_random_graph_test)
+add_gtest(grid_graph_test)
