@@ -27,7 +27,7 @@ link_directories(${BOOST_DIR}/lib)
 # Local libraries.
 include_directories(${PROJECT_SOURCE_DIR}/include)
 add_subdirectory(src)
-set(LIBS algorithms;io;parallel;util)
+set(LIBS algorithms;io;util)
 
 # Main application
 add_subdirectory(applications)
