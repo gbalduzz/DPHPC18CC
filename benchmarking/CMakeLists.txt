@@ -15,3 +15,5 @@ add_custom_target(USA-road-t.USA.gr
 
 add_dependencies(benchmark USA-road-t.USA.gr)
 add_dependencies(benchmark_mpi USA-road-t.USA.gr)
+
+add_subdirectory(node_distributed)

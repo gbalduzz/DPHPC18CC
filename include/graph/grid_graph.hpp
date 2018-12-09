@@ -3,7 +3,9 @@
 
 #pragma once
 
+#include <limits>
 #include <vector>
+#include <stdexcept>
 
 #include "graph/edge.hpp"
 #include "util/ceil_div.hpp"
@@ -40,6 +42,9 @@ GridGraph::GridGraph(int grid_size, int n_tiles, double prob_connection, Rng& rn
       n_tiles_per_dim_(n_tiles),
       tile_size_(util::ceilDiv(grid_size, n_tiles)),
       nodes_(grid_size_ * grid_size_) {
+  if (grid_size >= (std::numeric_limits<Label>::max() - 1) / grid_size)
+    throw(std::out_of_range("Use a bigger representation."));
+
   auto generate_connection = [&](Label x1, Label y1, Label x2, Label y2) {
     if (rng() < prob_connection) {  // Insert an edge with probability prob connection.
       edges_.push_back(Edge(coordinatesToId(x1, y1), coordinatesToId(x2, y2)));

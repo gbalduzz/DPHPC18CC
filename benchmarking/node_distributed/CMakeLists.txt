@@ -1,0 +1,4 @@
+add_executable(benchmark_mpi_node_distributed benchmark_mpi_node_distributed.cpp)
+target_link_libraries(benchmark_mpi_node_distributed algorithms)
+
+#add_dependencies(benchmark_mpi_node_distributed USA-road-t.USA.gr)
