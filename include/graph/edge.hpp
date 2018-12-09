@@ -11,7 +11,7 @@ public:
   Edge() = default;
   Edge(const Label i, const Label j) : first(i), second(j) {}
 
-  bool operator==(const Edge& rhs) {
+  bool operator==(const Edge& rhs) const {
     return first == rhs.first && second == rhs.second;
   }
 
