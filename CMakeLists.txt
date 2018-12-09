@@ -9,7 +9,12 @@ include_directories(${MPI_C_INCLUDE_PATH})
 link_libraries(${MPI_C_LIBRARIES})
 
 #Threading options
-SET(CMAKE_CXX_FLAGS "-pthread -fopenmp")
+# Cray compiler
+if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Cray")
+    set(CMAKE_CXX_FLAGS "-h omp")
+else()
+    set(CMAKE_CXX_FLAGS "-pthread -fopenmp")
+endif ()
 
 # System libraries.
 set(BOOST_DIR "/usr/local/boost" CACHE STRING "Path to boost.")
