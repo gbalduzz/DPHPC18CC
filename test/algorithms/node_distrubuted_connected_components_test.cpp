@@ -86,7 +86,7 @@ void performTest(int n, std::vector<graph::Edge>& edges, const std::vector<int>&
 }
 
 int main(int argc, char** argv) {
-  concurrency = std::make_unique<parallel::MpiConcurrency>(argc, argv);
+  concurrency = std::make_unique<parallel::MpiConcurrency>(argc, argv, MPI_THREAD_MULTIPLE);
   ::testing::InitGoogleTest(&argc, argv);
 
   ::testing::TestEventListeners& listeners = ::testing::UnitTest::GetInstance()->listeners();

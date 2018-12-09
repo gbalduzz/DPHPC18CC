@@ -9,12 +9,11 @@ namespace parallel {
 
 class MpiConcurrency {
 public:
-  MpiConcurrency(int argc = 1, char** argv = nullptr) {
-    constexpr int required = MPI_THREAD_MULTIPLE;
+  MpiConcurrency(int argc = 1, char** argv = nullptr, int required_flag = MPI_THREAD_FUNNELED) {
     int provided;
-    MPI_Init_thread(&argc, &argv, required, &provided);
+    MPI_Init_thread(&argc, &argv, required_flag, &provided);
 
-    if (required > provided) {
+    if (required_flag > provided) {
       throw(std::runtime_error("MPI initialization failed."));
     }
 

@@ -28,7 +28,7 @@ private:
 };
 
 int main(int argc, char** argv) {
-  parallel::MpiConcurrency concurrency(argc, argv);
+  parallel::MpiConcurrency concurrency(argc, argv, MPI_THREAD_MULTIPLE);
 
   if (argc <= 3) {
     std::cout << "Usage: $0 threads linear_grid_size probability [output file]\n";
