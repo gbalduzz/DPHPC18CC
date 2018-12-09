@@ -65,17 +65,19 @@ int main(int argc, char** argv) {
   if (concurrency.id() == 0) {
     out.open(filename);
     out << "# threads " << n_threads << " processes " << concurrency.size() << " vertices "
-        << grid.get_nodes() << " edges " << grid.get_edges().size() << "\n";
+        << grid.get_nodes() << " edges " << grid.get_edges().size() << "\n"
+        << "# algorithm_time \t total_time\n";
   }
 
   for (auto& result : results) {
     std::vector<graph::Edge> edge_copy(grid.get_edges());
     double compute_time;
-    auto ret = algorithms::nodeDistributedConnectedComponents(grid.get_nodes(), edge_copy,
-                                                              n_threads, &compute_time);
+    double total_time;
+    auto ret = algorithms::nodeDistributedConnectedComponents(
+        grid.get_nodes(), edge_copy, n_threads, &compute_time, &total_time);
     result = compute_time;
     if (concurrency.id() == 0)
-      out << compute_time << "\n";
+      out << compute_time << "\t" << total_time << "\n";
   }
 
   if (concurrency.id() == 0) {
