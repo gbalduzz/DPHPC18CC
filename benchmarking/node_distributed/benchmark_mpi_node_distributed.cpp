@@ -36,14 +36,14 @@ int main(int argc, char** argv) {
   }
 
   const int n_threads = std::atoi(argv[1]);
-  const int grid_linsize = std::atoi(argv[2]);
+  const unsigned int grid_linsize = std::atoi(argv[2]);
   const double edge_probability = std::atof(argv[3]);
 
   const std::string filename = argc > 4 ? std::string(argv[4]) : "distributed_times.txt";
 
   if (concurrency.id() == 0) {
-    std::cout << "Processes:" << concurrency.size() << " Threads:" << n_threads << std::endl;
-    std::cout << "Nodes:" << grid_linsize * grid_linsize << std::endl;
+    std::cout << "Processes: " << concurrency.size() << " Threads: " << n_threads << std::endl;
+    std::cout << "Nodes: " << grid_linsize * grid_linsize << std::endl;
   }
 
   Rng rng(0);
