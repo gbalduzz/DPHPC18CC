@@ -9,7 +9,7 @@
 #include "util/graph_reader.hpp"
 #include "testing/minimalist_printer.hpp"
 
-void performTest(int n, std::vector<graph::Edge>& edges, const std::vector<int>& expected);
+void performTest(int n, const std::vector<graph::Edge>& edges, const std::vector<int>& expected);
 
 using graph::Edge;
 
@@ -65,7 +65,7 @@ TEST(ParallelMpiConnectedComponents, Random) {
   performTest(expected.size(), edges, expected);
 }
 
-void performTest(int n, std::vector<graph::Edge>& edges, const std::vector<int>& expected) {
+void performTest(int n, const std::vector<graph::Edge>& edges, const std::vector<int>& expected) {
   constexpr int n_threads = 3;
 
   const auto n_vertices = expected.size();

@@ -11,7 +11,7 @@ namespace algorithms {
 
 // Returns a distributed compressed hooked tree and the time after the distribution of the edges.
 graph::DistributedHookTree nodeDistributedConnectedComponents(int n_vertices,
-                                                              std::vector<graph::Edge>& all_edges,
+                                                              const std::vector<graph::Edge>& all_edges,
                                                               int n_threads_per_node,
                                                               double* computation_time = nullptr,
                                                               double* total_time = nullptr);

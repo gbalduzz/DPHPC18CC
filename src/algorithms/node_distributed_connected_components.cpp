@@ -22,7 +22,7 @@ void checkMPI(int ret) {
 }
 
 graph::DistributedHookTree nodeDistributedConnectedComponents(const int n_vertices,
-                                                              std::vector<graph::Edge>& all_edges,
+                                                              const std::vector<graph::Edge>& all_edges,
                                                               int n_threads_per_node,
                                                               double* computation_time,
                                                               double* total_time) {
