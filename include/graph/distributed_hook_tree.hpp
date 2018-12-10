@@ -146,7 +146,7 @@ inline void DistributedHookTree::compressLocal() {
 }
 
 inline void DistributedHookTree::compress() {
-//#pragma omp parallel for num_threads(n_threads_) schedule(dynamic, 5000)
+#pragma omp parallel for num_threads(n_threads_) schedule(dynamic, 5000)
   for (std::size_t i = 0; i < parent_.size(); ++i) {
     parent_[i] = representative(i + range_start_);
   }
