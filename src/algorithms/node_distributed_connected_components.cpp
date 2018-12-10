@@ -76,8 +76,6 @@ graph::DistributedHookTree nodeDistributedConnectedComponents(
 #pragma omp parallel for num_threads(n_threads_per_node) schedule(dynamic, 5000)
   for (unsigned int e_id = 0; e_id < boundary_edges.size(); ++e_id) {
     const auto& edge = boundary_edges[e_id];
-    //    if (!edge.isValid())
-    //      continue;
 
     tree.hookToMinSafe(edge.first, edge.second);
   }

@@ -5,7 +5,7 @@
 #include <random>
 
 #include "algorithms/node_distributed_connected_components.hpp"
-#include "graph/grid_graph.hpp"
+#include "graph/grid_graph_distributed.hpp"
 #include "parallel/concurrency/mpi_concurrency.hpp"
 #include "util/partition.hpp"
 #include "util/timer.hpp"
@@ -58,12 +58,17 @@ int main(int argc, char** argv) {
     std::cout << "Nodes: " << size_x * size_y << std::endl;
   }
 
-  Rng rng(0);
+  Rng rng(concurrency.id());
 
-  graph::GridGraph grid(std::array<int, 2>{size_x, size_y}, n_tiles_per_dim, edge_probability, rng);
+  graph::GridGraphDistributed grid(std::array<int, 2>{size_x, size_y}, n_tiles_per_dim,
+                                   edge_probability, rng);
+
+  std::size_t n_edges(0);
+  std::size_t n_local_edges = grid.get_edges().size();
+  MPI_Reduce(&n_local_edges, &n_edges, 1, MPI_UNSIGNED_LONG, MPI_SUM, 0, MPI_COMM_WORLD);
 
   if (concurrency.id() == 0)
-    std::cout << "Generated " << grid.get_edges().size() << " edges.\n";
+    std::cout << "Generated " << n_edges << " edges.\n";
 
   constexpr int n_times = 10;
   std::vector<double> results(n_times);
@@ -72,16 +77,15 @@ int main(int argc, char** argv) {
   if (concurrency.id() == 0) {
     out.open(filename);
     out << "# threads " << n_threads << " processes " << concurrency.size() << " vertices "
-        << grid.get_nodes() << " edges " << grid.get_edges().size() << "\n"
+        << grid.get_nodes() << " edges " << n_edges << "\n"
         << "# algorithm_time \t total_time\n";
   }
 
   for (auto& result : results) {
-    std::vector<graph::Edge> edge_copy(grid.get_edges());
     double compute_time;
     double total_time;
     auto ret = algorithms::nodeDistributedConnectedComponents(
-        grid.get_nodes(), edge_copy, n_threads, &compute_time, &total_time);
+        grid.get_nodes(), grid.get_edges(), n_threads, &compute_time, &total_time);
     result = compute_time;
     if (concurrency.id() == 0)
       out << compute_time << "\t" << total_time << "\n";

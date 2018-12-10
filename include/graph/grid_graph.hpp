@@ -17,7 +17,7 @@ class GridGraph {
 public:
   template <class Rng>
   GridGraph(std::array<int, 2> grid_length, std::array<int, 2> n_tiles, double prob_connection,
-            Rng& rng);
+            Rng& rng, bool construct = true);
 
   template <class Rng>
   GridGraph(int grid_length, int n_tiles, double prob_connection, Rng& rng);
@@ -30,8 +30,10 @@ public:
     return nodes_;
   }
 
-private:
+protected:
   Label coordinatesToId(Label x, Label y) const;
+  template <class Rng>
+  void buildGraph(Label x_min, Label x_max, Label y_min, Label y_max, Rng& rng, double prob);
 
   const std::array<int, 2> grid_size_;
   const std::array<int, 2> tile_size_;
@@ -48,7 +50,7 @@ GridGraph::GridGraph(int grid_length, int n_tiles, double prob_connection, Rng& 
 
 template <class Rng>
 GridGraph::GridGraph(std::array<int, 2> grid_size, std::array<int, 2> n_tiles,
-                     double prob_connection, Rng& rng)
+                     double prob_connection, Rng& rng, bool construct)
     : grid_size_(grid_size),
       n_tiles_per_dim_(n_tiles),
       tile_size_{util::ceilDiv(grid_size[0], n_tiles[0]), util::ceilDiv(grid_size[1], n_tiles[1])},
@@ -56,17 +58,24 @@ GridGraph::GridGraph(std::array<int, 2> grid_size, std::array<int, 2> n_tiles,
   if (grid_size[0] >= (std::numeric_limits<Label>::max() - 1) / grid_size[1])
     throw(std::out_of_range("Use a bigger representation."));
 
+  if (construct)
+    buildGraph(0, grid_size_[0], 0, grid_size_[1], rng, prob_connection);
+}
+
+template <class Rng>
+void GridGraph::buildGraph(Label x_min, Label x_max, Label y_min, Label y_max, Rng& rng,
+                           double prob_connection) {
   auto generate_connection = [&](Label x1, Label y1, Label x2, Label y2) {
     if (rng() < prob_connection) {  // Insert an edge with probability prob connection.
       edges_.push_back(Edge(coordinatesToId(x1, y1), coordinatesToId(x2, y2)));
     }
   };
 
-  for (Label y = 0; y < grid_size[1]; ++y)
-    for (Label x = 0; x < grid_size[0]; ++x) {
-      if (x + 1 < grid_size[0])
+  for (Label y = y_min; y < y_max; ++y)
+    for (Label x = x_min; x < x_max; ++x) {
+      if (x + 1 < grid_size_[0])
         generate_connection(x, y, x + 1, y);
-      if (y + 1 < grid_size[1])
+      if (y + 1 < grid_size_[1])
         generate_connection(x, y, x, y + 1);
     }
 }
