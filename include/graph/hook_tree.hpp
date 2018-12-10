@@ -112,7 +112,7 @@ inline bool HookTree::hookAtomic(Label i, Label j) {
   return std::atomic_compare_exchange_weak(reinterpret_cast<std::atomic<Label>*>(&parent_[i]), &i, j);
 }
 
-inline void HookTree::hookToMinSafe(graph::Label i, graph::Label j) {
+inline void HookTree::hookToMinSafe(const Label i, const Label j) {
   bool hooked = false;
   Label repr_i(i), repr_j(j);
 
@@ -127,6 +127,11 @@ inline void HookTree::hookToMinSafe(graph::Label i, graph::Label j) {
     else
       hooked = true;
   }
+
+  if (i != repr_i)
+    parent_[i] = repr_i;
+  if (j != repr_j)
+    parent_[j] = repr_j;
 }
 
 inline Label HookTree::representative(Label index) const {
