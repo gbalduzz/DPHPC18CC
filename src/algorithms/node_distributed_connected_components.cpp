@@ -61,14 +61,18 @@ graph::DistributedHookTree nodeDistributedConnectedComponents(const int n_vertic
 
   graph::DistributedHookTree tree(vertices_per_rank, rank, comm_size, n_threads_per_node);
 
-// Create local forest.
+  // Create local forest.
+  if (n_threads_per_node > 1) {
 #pragma omp parallel for num_threads(n_threads_per_node) schedule(dynamic, 5000)
-  for (unsigned int e_id = 0; e_id < internal_edges.size(); ++e_id) {
-    const auto& edge = internal_edges[e_id];
-    //    if (!edge.isValid())
-    //      continue;
+    for (unsigned int e_id = 0; e_id < internal_edges.size(); ++e_id) {
+      const auto& edge = internal_edges[e_id];
 
-    tree.hookToMinSafeLocal(edge.first, edge.second);
+      tree.hookToMinSafeLocal<true>(edge.first, edge.second);
+    }
+  }
+  else {
+    for (const auto& edge : internal_edges)
+      tree.hookToMinSafeLocal<false>(edge.first, edge.second);
   }
 
   tree.compressLocal();
@@ -76,7 +80,7 @@ graph::DistributedHookTree nodeDistributedConnectedComponents(const int n_vertic
   tree.sync();
 
 // Again, but with boundary edges.
-#pragma omp parallel for num_threads(n_threads_per_node) schedule(dynamic, 5000)
+//#pragma omp parallel for num_threads(n_threads_per_node) schedule(dynamic, 5000)
   for (unsigned int e_id = 0; e_id < boundary_edges.size(); ++e_id) {
     const auto& edge = boundary_edges[e_id];
     //    if (!edge.isValid())
