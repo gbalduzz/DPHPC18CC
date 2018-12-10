@@ -1,6 +1,7 @@
 #include "parallel/concurrency/mpi_windowed_vector.hpp"
 
 #include <memory>
+#include <future>
 
 #include <gtest/gtest.h>
 
@@ -50,9 +51,25 @@ TEST(MPIWindowedVector, AtomicCAS) {
   }
 }
 
+TEST(MPIWindowedVector, Multithread) {
+  parallel::MPIWindowedVector<int> v(2);
+  for (int i = 0; i < 2; ++i)
+    v[i] = concurrency->id();
+
+  v.sync();
+
+  if (concurrency->id() == 0) {
+    std::future<int> f1 = std::async(std::launch::async, [&]() { return v.get(1, 0); });
+    std::future<int> f2 = std::async(std::launch::async, [&]() { return v.get(1, 1); });
+
+    EXPECT_EQ(1, f1.get());
+    EXPECT_EQ(1, f2.get());
+  }
+}
+
 int main(int argc, char** argv) {
-    ::testing::InitGoogleTest(&argc, argv);
-    concurrency = std::make_unique<parallel::MpiConcurrency>(argc, argv);
+  ::testing::InitGoogleTest(&argc, argv);
+  concurrency = std::make_unique<parallel::MpiConcurrency>(argc, argv);
 
   ::testing::TestEventListeners& listeners = ::testing::UnitTest::GetInstance()->listeners();
   if (concurrency->id() != 0) {
