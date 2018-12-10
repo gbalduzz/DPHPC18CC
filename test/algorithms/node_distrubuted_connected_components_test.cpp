@@ -66,22 +66,22 @@ TEST(ParallelMpiConnectedComponents, Random) {
 }
 
 void performTest(int n, const std::vector<graph::Edge>& edges, const std::vector<int>& expected) {
-  constexpr int n_threads = 3;
+  for (const int n_threads : std::array<int, 2>{1, 3}) {
+    const auto n_vertices = expected.size();
 
-  const auto n_vertices = expected.size();
+    auto forest = algorithms::gatherTree(
+        algorithms::nodeDistributedConnectedComponents(n_vertices, edges, n_threads), n_vertices);
 
-  auto forest = algorithms::gatherTree(
-      algorithms::nodeDistributedConnectedComponents(n_vertices, edges, n_threads), n_vertices);
+    auto are_connected = [&](int i, int j) {
+      return forest.representative(i) == forest.representative(j);
+    };
+    auto expect_connected = [&](int i, int j) { return expected[i] == expected[j]; };
 
-  auto are_connected = [&](int i, int j) {
-    return forest.representative(i) == forest.representative(j);
-  };
-  auto expect_connected = [&](int i, int j) { return expected[i] == expected[j]; };
-
-  if (concurrency->id() == 0) {
-    for (int i = 0; i < n; ++i)
-      for (int j = 0; j < n; ++j)
-        ASSERT_EQ(expect_connected(i, j), are_connected(i, j));
+    if (concurrency->id() == 0) {
+      for (int i = 0; i < n; ++i)
+        for (int j = 0; j < n; ++j)
+          ASSERT_EQ(expect_connected(i, j), are_connected(i, j));
+    }
   }
 }
 

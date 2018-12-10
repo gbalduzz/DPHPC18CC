@@ -21,11 +21,9 @@ void checkMPI(int ret) {
   assert(ret == MPI_SUCCESS);
 }
 
-graph::DistributedHookTree nodeDistributedConnectedComponents(const int n_vertices,
-                                                              const std::vector<graph::Edge>& all_edges,
-                                                              int n_threads_per_node,
-                                                              double* computation_time,
-                                                              double* total_time) {
+graph::DistributedHookTree nodeDistributedConnectedComponents(
+    const int n_vertices, const std::vector<graph::Edge>& all_edges, int n_threads_per_node,
+    double* computation_time, double* total_time) {
   const auto start = util::getTime();
 
   // get MPI params
@@ -61,18 +59,13 @@ graph::DistributedHookTree nodeDistributedConnectedComponents(const int n_vertic
 
   graph::DistributedHookTree tree(vertices_per_rank, rank, comm_size, n_threads_per_node);
 
-  // Create local forest.
-  if (n_threads_per_node > 1) {
-#pragma omp parallel for num_threads(n_threads_per_node) schedule(dynamic, 5000)
-    for (unsigned int e_id = 0; e_id < internal_edges.size(); ++e_id) {
-      const auto& edge = internal_edges[e_id];
+// Create local forest.
 
-      tree.hookToMinSafeLocal<true>(edge.first, edge.second);
-    }
-  }
-  else {
-    for (const auto& edge : internal_edges)
-      tree.hookToMinSafeLocal<false>(edge.first, edge.second);
+#pragma omp parallel for num_threads(n_threads_per_node) schedule(dynamic, 5000)
+  for (unsigned int e_id = 0; e_id < internal_edges.size(); ++e_id) {
+    const auto& edge = internal_edges[e_id];
+
+    tree.hookToMinSafeLocal(edge.first, edge.second);
   }
 
   tree.compressLocal();

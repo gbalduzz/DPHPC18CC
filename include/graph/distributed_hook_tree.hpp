@@ -33,7 +33,6 @@ public:
   // Hooks the representative with highest index to the lowest one.
   void hookToMinSafe(Label i, Label j);
 
-  template <bool atomic>
   void hookToMinSafeLocal(Label i, Label j);
 
   void compressLocal();
@@ -88,31 +87,20 @@ inline bool DistributedHookTree::hookAtomicLocal(Label repr_i, Label repr_j) {
       reinterpret_cast<std::atomic<Label>*>(&parent_[repr_i - range_start_]), &repr_i, repr_j);
 }
 
-template <bool atomic>
 inline void DistributedHookTree::hookToMinSafeLocal(Label i, Label j) {
-  if constexpr(atomic) {
-      bool hooked = false;
-      Label repr_i(i), repr_j(j);
+  bool hooked = false;
+  Label repr_i(i), repr_j(j);
 
-      while (!hooked) {
-        repr_i = representativeLocal(repr_i);
-        repr_j = representativeLocal(repr_j);
+  while (!hooked) {
+    repr_i = representativeLocal(repr_i);
+    repr_j = representativeLocal(repr_j);
 
-        if (repr_i > repr_j)
-          hooked = hookAtomicLocal(repr_i, repr_j);
-        else if (repr_i < repr_j)
-          hooked = hookAtomicLocal(repr_j, repr_i);
-        else
-          hooked = true;
-      }
-    }
-  else {
-    const Label repr_i = representativeLocal(i);
-    const Label repr_j = representativeLocal(j);
     if (repr_i > repr_j)
-      parent_[repr_i] = repr_j;
-    else if (repr_j > repr_i)
-      parent_[repr_j] = repr_i;
+      hooked = hookAtomicLocal(repr_i, repr_j);
+    else if (repr_i < repr_j)
+      hooked = hookAtomicLocal(repr_j, repr_i);
+    else
+      hooked = true;
   }
 }
 
