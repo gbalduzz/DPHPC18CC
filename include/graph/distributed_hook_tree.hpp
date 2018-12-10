@@ -178,6 +178,11 @@ inline void DistributedHookTree::hookToMinSafe(const Label i, const Label j) {
       hooked = parent_.atomicCAS(max, max, min);
     }
   }
+
+  if (isLocal(i) && i != repr_i)
+    parent_[i - range_start_] = repr_i;
+  if (isLocal(j) && j != repr_j)
+    parent_[j - range_start_] = repr_j;
 }
 
 }  // graph

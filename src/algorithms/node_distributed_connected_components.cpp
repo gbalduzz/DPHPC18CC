@@ -6,8 +6,6 @@
 #include <mpi.h>
 #include <omp.h>
 
-#include "algorithms/parallel_connected_components.hpp"
-#include "algorithms/serial_connected_components.hpp"
 #include "graph/distributed_hook_tree.hpp"
 #include "util/timer.hpp"
 
