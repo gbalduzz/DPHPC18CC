@@ -3,7 +3,7 @@
 
 #include <stdexcept>
 
-#include "mpi.h"
+#include "fompi_wrapper.hpp"
 
 namespace parallel {
 
@@ -11,7 +11,7 @@ class MpiConcurrency {
 public:
   MpiConcurrency(int argc = 1, char** argv = nullptr, int required_flag = MPI_THREAD_FUNNELED) {
     int provided;
-    MPI_Init_thread(&argc, &argv, required_flag, &provided);
+    MMPI_INIT_THREAD(&argc, &argv, required_flag, &provided);
 
     if (required_flag > provided) {
       throw(std::runtime_error("MPI initialization failed."));
@@ -22,7 +22,7 @@ public:
   }
 
   ~MpiConcurrency() {
-    MPI_Finalize();
+    MMPI_FINALIZE();
   }
 
   int id() const {

@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include "fompi_wrapper.hpp"
+
 #include <cassert>
 #include <iostream>
 #include <mpi.h>
@@ -63,6 +65,8 @@ private:
 
   std::size_t size_;
   T* data_ = nullptr;
+
+public:
   MPI_Win window_;
 };
 
@@ -70,15 +74,17 @@ template <class T>
 MPIWindowedVector<T>::MPIWindowedVector(const std::size_t size) : size_(size) {
   MPI_Comm_size(MPI_COMM_WORLD, &n_ranks_);
 
-  checkMPI(MPI_Alloc_mem(sizeof(T) * size, MPI_INFO_NULL, &data_));
+  checkMPI(MMPI_ALLOC_MEM(sizeof(T) * size, MPI_INFO_NULL, &data_));
 
-  // TODO: set the appropriate MPI_INFO.
   checkMPI(
-      MPI_Win_create(data_, size * sizeof(T), sizeof(T), MPI_INFO_NULL, MPI_COMM_WORLD, &window_));
+      MMPI_WIN_CREATE(data_, size * sizeof(T), sizeof(T), MPI_INFO_NULL, MPI_COMM_WORLD, &window_));
+
+  //    checkMPI(MMPI_WIN_LOCK_ALL(0, window_));
 }
 
 template <class T>
 MPIWindowedVector<T>::~MPIWindowedVector() {
+  //  MMPI_WIN_UNLOCK_ALL(window_);
   MPI_Win_free(&window_);
   MPI_Free_mem((void*)data_);
 }
@@ -88,11 +94,13 @@ T MPIWindowedVector<T>::get(const Label target_rank, const std::size_t idx) cons
   assert(idx < size_);
 
   T result;
-  // TODO: check if lock are required on cluster.
-  MPI_Win_lock(MPI_LOCK_SHARED, target_rank, 0, window_);
-  checkMPI(MPI_Get(&result, 1, MPITypeMap<T>::value(), target_rank, idx, 1, MPITypeMap<T>::value(),
-                   window_));
-  MPI_Win_unlock(target_rank, window_);
+
+  //  checkMPI(MMPI_WIN_LOCK_ALL(0, window_));
+  checkMPI(MMPI_WIN_LOCK(MPI_LOCK_SHARED, target_rank, 0, window_));
+  checkMPI(MMPI_GET(&result, 1, MPITypeMap<T>::value(), target_rank, idx, 1, MPITypeMap<T>::value(),
+                    window_));
+  //  checkMPI(MMPI_WIN_UNLOCK_ALL(window_));
+  checkMPI(MMPI_WIN_UNLOCK(target_rank, window_));
 
   return result;
 }
@@ -108,9 +116,9 @@ bool MPIWindowedVector<T>::atomicCAS(Label rank, Label idx, Label old_val, Label
   assert(idx < size_);
   Label pre_swap_val;
 
-  MPI_Win_lock(MPI_LOCK_SHARED, rank, 0, window_);
-  checkMPI(MPI_Compare_and_swap(&new_val, &old_val, &pre_swap_val, MPI_UNSIGNED, rank, idx, window_));
-  MPI_Win_unlock(rank, window_);
+  checkMPI(MMPI_WIN_LOCK(MPI_LOCK_SHARED, rank, 0, window_));
+  checkMPI(MMPI_COMPARE_AND_SWAP(&new_val, &old_val, &pre_swap_val, MPI_UNSIGNED, rank, idx, window_));
+  checkMPI(MMPI_WIN_UNLOCK(rank, window_));
 
   // TODO: maybe. Use the pre swap value to retry in case of failure.
   return pre_swap_val == old_val;
@@ -124,7 +132,9 @@ bool MPIWindowedVector<T>::atomicCAS(Label global_idx, Label old_val, Label new_
 
 template <class T>
 void MPIWindowedVector<T>::sync() const {
-  MPI_Win_fence(0, window_);
+  //  MMPI_WIN_UNLOCK_ALL(window_);
+  MMPI_WIN_FENCE(0, window_);
+  //  MMPI_WIN_LOCK_ALL(0, window_);
 }
 
 // template <class T>
