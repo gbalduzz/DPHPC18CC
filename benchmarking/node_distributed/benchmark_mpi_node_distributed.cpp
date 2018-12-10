@@ -7,6 +7,7 @@
 #include "algorithms/node_distributed_connected_components.hpp"
 #include "graph/grid_graph.hpp"
 #include "parallel/concurrency/mpi_concurrency.hpp"
+#include "util/partition.hpp"
 #include "util/timer.hpp"
 #include "util/stddev.hpp"
 
@@ -30,30 +31,36 @@ private:
 int main(int argc, char** argv) {
   parallel::MpiConcurrency concurrency(argc, argv, MPI_THREAD_MULTIPLE);
 
-  if (argc <= 3) {
-    std::cout << "Usage: $0 threads linear_grid_size probability [output file]\n";
+  if (argc <= 4) {
+    if (concurrency.id() == 0)
+      std::cout << "Usage: $0 threads grid_size _x grid_size_y probability [output file]\n";
     std::exit(-5);
   }
 
   const int n_threads = std::atoi(argv[1]);
-  const unsigned int grid_linsize = std::atoi(argv[2]);
-  const double edge_probability = std::atof(argv[3]);
+  const int size_x = std::atoi(argv[2]);
+  const int size_y = std::atoi(argv[3]);
+  const double edge_probability = std::atof(argv[4]);
 
-  const std::string filename = argc > 4 ? std::string(argv[4]) : "distributed_times.txt";
+  const std::string filename = argc > 5 ? std::string(argv[5]) : "distributed_times.txt";
 
-  if (concurrency.id() == 0) {
-    std::cout << "Processes: " << concurrency.size() << " Threads: " << n_threads << std::endl;
-    std::cout << "Nodes: " << grid_linsize * grid_linsize << std::endl;
-  }
+  const std::array<int, 2> n_tiles_per_dim = util::partition(size_x, size_y, concurrency.size());
 
-  Rng rng(0);
-  const int n_tiles_per_dim = std::sqrt(concurrency.size());
-  if (n_tiles_per_dim * n_tiles_per_dim != concurrency.size()) {
-    std::cout << "Number of ranks is not a square.\n";
+  if (n_tiles_per_dim[0] * n_tiles_per_dim[1] != concurrency.size()) {
+    if (concurrency.id() == 0)
+      std::cout << "Tiling failed.\n";
     std::exit(-1);
   }
 
-  graph::GridGraph grid(grid_linsize, n_tiles_per_dim, edge_probability, rng);
+  if (concurrency.id() == 0) {
+    std::cout << "Processes: " << n_tiles_per_dim[0] * n_tiles_per_dim[1]
+              << " Threads: " << n_threads << std::endl;
+    std::cout << "Nodes: " << size_x * size_y << std::endl;
+  }
+
+  Rng rng(0);
+
+  graph::GridGraph grid(std::array<int, 2>{size_x, size_y}, n_tiles_per_dim, edge_probability, rng);
 
   if (concurrency.id() == 0)
     std::cout << "Generated " << grid.get_edges().size() << " edges.\n";
