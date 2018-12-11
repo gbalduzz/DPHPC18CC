@@ -75,7 +75,7 @@ inline DistributedHookTree::DistributedHookTree(graph::Label vertices_per_rank,
       n_threads_(n_threads),
       parent_(vertices_per_rank_) {
 #pragma omp parallel for num_threads(n_threads_)
-  for (int i = 0; i < vertices_per_rank_; ++i) {
+  for (Label i = 0; i < vertices_per_rank_; ++i) {
     parent_[i] = range_start_ + i;
   }
 }

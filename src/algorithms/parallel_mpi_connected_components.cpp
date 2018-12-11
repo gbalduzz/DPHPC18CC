@@ -5,6 +5,7 @@
 
 #include <mpi.h>
 #include <omp.h>
+#include <parallel/concurrency/mpi_type_map.hpp>
 
 #include "algorithms/parallel_connected_components.hpp"
 #include "algorithms/serial_connected_components.hpp"
@@ -44,8 +45,9 @@ graph::HookTree parallelMpiConnectedComponents(std::vector<graph::Edge>& all_edg
   int comm_size;
   MPI_Comm_size(MPI_COMM_WORLD, &comm_size);
 
-  int n_edges = -1;
-  unsigned int n_nodes = 0;
+  using graph::Label;
+  Label n_edges = -1;
+  Label n_nodes = 0;
 
   if (rank == 0) {
     n_edges = all_edges.size();
@@ -57,8 +59,9 @@ graph::HookTree parallelMpiConnectedComponents(std::vector<graph::Edge>& all_edg
 
   // broadcast number of edges
 
-  checkMPI(MPI_Bcast(&n_edges, 1, MPI_INT, 0, MPI_COMM_WORLD));
-  checkMPI(MPI_Bcast(&n_nodes, 1, MPI_UNSIGNED, 0, MPI_COMM_WORLD));
+  auto MPI_type = parallel::MPITypeMap<Label>::value();
+  checkMPI(MPI_Bcast(&n_edges, 1, MPI_type, 0, MPI_COMM_WORLD));
+  checkMPI(MPI_Bcast(&n_nodes, 1, MPI_type, 0, MPI_COMM_WORLD));
 
   // scatter edges to all nodes
   const int buff_size = ceilDiv(n_edges, comm_size);
@@ -74,8 +77,8 @@ graph::HookTree parallelMpiConnectedComponents(std::vector<graph::Edge>& all_edg
 
   // scatter edges
   // TODO : consider an MPI custom type.
-  MPI_Scatter(all_edges.data(), 2 * buff_size, MPI_UNSIGNED, my_edges.data(), 2 * buff_size,
-              MPI_UNSIGNED, 0, MPI_COMM_WORLD);
+  MPI_Scatter(all_edges.data(), 2 * buff_size, MPI_type, my_edges.data(), 2 * buff_size,
+              MPI_type, 0, MPI_COMM_WORLD);
 
   // if (rank == 0) {
   //  printf("finished scattering\n");
@@ -102,7 +105,7 @@ graph::HookTree parallelMpiConnectedComponents(std::vector<graph::Edge>& all_edg
       int peer_rank = rank + n_active_nodes / 2;
       if (peer_rank < comm_size) {
         peer_parents.resize(n_nodes);
-        MPI_Recv(peer_parents.data(), n_nodes, MPI_UNSIGNED, peer_rank, TAG_DATA, MPI_COMM_WORLD,
+        MPI_Recv(peer_parents.data(), n_nodes, MPI_type, peer_rank, TAG_DATA, MPI_COMM_WORLD,
                  MPI_STATUS_IGNORE);
         graph::HookTree peerHookTree(std::move(peer_parents));
         myHookTree += peerHookTree;
@@ -112,7 +115,7 @@ graph::HookTree parallelMpiConnectedComponents(std::vector<graph::Edge>& all_edg
     else {
       // we are the sender
       int peer_rank = rank - n_active_nodes / 2;
-      MPI_Send(myHookTree.getParents().data(), n_nodes, MPI_UNSIGNED, peer_rank, TAG_DATA,
+      MPI_Send(myHookTree.getParents().data(), n_nodes, MPI_type, peer_rank, TAG_DATA,
                MPI_COMM_WORLD);
       done = true;
       //      printf("P_%d: done\n", rank);

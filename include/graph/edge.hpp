@@ -4,7 +4,7 @@
 
 namespace graph {
 
-using Label = unsigned int;
+using Label = unsigned long int;
 
 class Edge {
 public:
