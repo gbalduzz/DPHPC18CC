@@ -16,11 +16,11 @@ namespace graph {
 class GridGraph {
 public:
   template <class Rng>
-  GridGraph(std::array<int, 2> grid_length, std::array<int, 2> n_tiles, double prob_connection,
+  GridGraph(std::array<Label, 2> grid_length, std::array<Label, 2> n_tiles, double prob_connection,
             Rng& rng, bool construct = true);
 
   template <class Rng>
-  GridGraph(int grid_length, int n_tiles, double prob_connection, Rng& rng);
+  GridGraph(Label grid_length, Label n_tiles, double prob_connection, Rng& rng);
 
   const std::vector<Edge>& get_edges() const {
     return edges_;
@@ -35,21 +35,21 @@ protected:
   template <class Rng>
   void buildGraph(Label x_min, Label x_max, Label y_min, Label y_max, Rng& rng, double prob);
 
-  const std::array<int, 2> grid_size_;
-  const std::array<int, 2> tile_size_;
-  const std::array<int, 2> n_tiles_per_dim_;
+  const std::array<Label, 2> grid_size_;
+  const std::array<Label, 2> tile_size_;
+  const std::array<Label, 2> n_tiles_per_dim_;
 
   std::vector<Edge> edges_;
   const Label nodes_;
 };
 
 template <class Rng>
-GridGraph::GridGraph(int grid_length, int n_tiles, double prob_connection, Rng& rng)
-    : GridGraph(std::array<int, 2>{grid_length, grid_length}, std::array<int, 2>{n_tiles, n_tiles},
-                prob_connection, rng) {}
+GridGraph::GridGraph(Label grid_length, Label n_tiles, double prob_connection, Rng& rng)
+    : GridGraph(std::array<Label, 2>{grid_length, grid_length},
+                std::array<Label, 2>{n_tiles, n_tiles}, prob_connection, rng) {}
 
 template <class Rng>
-GridGraph::GridGraph(std::array<int, 2> grid_size, std::array<int, 2> n_tiles,
+GridGraph::GridGraph(std::array<Label, 2> grid_size, std::array<Label, 2> n_tiles,
                      double prob_connection, Rng& rng, bool construct)
     : grid_size_(grid_size),
       n_tiles_per_dim_(n_tiles),

@@ -6,22 +6,26 @@
 #include <cmath>
 #include <cassert>
 
+#include "graph/edge.hpp"
+
 namespace util {
 
-inline std::array<int, 2> partition(int nx, int ny, int p) {
-  auto round = [](float x) {
-    if (x - int(x) >= 0.5)
-      return int(x) + 1;
+inline std::array<graph::Label, 2> partition(graph::Label nx, graph::Label ny, int p) {
+  using graph::Label;
+
+  auto round = [](double x) {
+    if (x - Label(x) >= 0.5)
+      return Label(x) + 1;
     else
-      return int(x);
+      return Label(x);
   };
 
-  const float tx_f = std::sqrt(float(nx) * p / float(ny));
-  const float ty_f = float(p) / tx_f;
+  const double tx_f = std::sqrt(double(nx) * p / double(ny));
+  const double ty_f = double(p) / tx_f;
 
-  int tx, ty;
+  Label tx, ty;
 
-  if (std::abs(tx_f - int(tx_f)) > std::abs(ty_f - int(ty_f))) {
+  if (std::abs(tx_f - Label(tx_f)) > std::abs(ty_f - Label(ty_f))) {
     tx = round(tx_f);
     ty = tx > tx_f ? std::floor(ty_f) : std::ceil(ty_f);
   }
@@ -42,7 +46,7 @@ inline std::array<int, 2> partition(int nx, int ny, int p) {
   }
 
   assert(tx >= 1 && ty >= 1);
-  return std::array<int, 2>{tx, ty};
+  return std::array<Label, 2>{tx, ty};
 }
 
 }  // util

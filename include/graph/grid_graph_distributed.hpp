@@ -11,22 +11,23 @@ class GridGraphDistributed final : public GridGraph {
 public:
   // Only the local or boundary edges are stored.
   template <class Rng>
-  GridGraphDistributed(std::array<int, 2> grid_length, std::array<int, 2> n_tiles,
+  GridGraphDistributed(std::array<Label, 2> grid_length, std::array<Label, 2> n_tiles,
                        double prob_connection, Rng& rng);
 
   template <class Rng>
-  GridGraphDistributed(int grid_length, int n_tiles, double prob_connection, Rng& rng);
+  GridGraphDistributed(Label grid_length, Label n_tiles, double prob_connection, Rng& rng);
 };
 
 template <class Rng>
-GridGraphDistributed::GridGraphDistributed(int grid_length, int n_tiles, double prob_connection,
+GridGraphDistributed::GridGraphDistributed(Label grid_length, Label n_tiles, double prob_connection,
                                            Rng& rng)
-    : GridGraphDistributed(std::array<int, 2>{grid_length, grid_length},
-                           std::array<int, 2>{n_tiles, n_tiles}, prob_connection, rng) {}
+    : GridGraphDistributed(std::array<Label, 2>{grid_length, grid_length},
+                           std::array<Label, 2>{n_tiles, n_tiles}, prob_connection, rng) {}
 
 template <class Rng>
-GridGraphDistributed::GridGraphDistributed(std::array<int, 2> grid_size, std::array<int, 2> n_tiles,
-                                           double prob_connection, Rng& rng)
+GridGraphDistributed::GridGraphDistributed(std::array<Label, 2> grid_size,
+                                           std::array<Label, 2> n_tiles, double prob_connection,
+                                           Rng& rng)
     : GridGraph(grid_size, n_tiles, prob_connection, rng, false) {
   if (grid_size[0] >= (std::numeric_limits<Label>::max() - 1) / grid_size[1])
     throw(std::out_of_range("Use a bigger representation."));
