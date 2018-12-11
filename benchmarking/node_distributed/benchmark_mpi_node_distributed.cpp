@@ -29,6 +29,7 @@ private:
 };
 
 int main(int argc, char** argv) {
+  using edge::Label;
   parallel::MpiConcurrency concurrency(argc, argv, MPI_THREAD_MULTIPLE);
 
   if (argc <= 4) {
@@ -38,13 +39,13 @@ int main(int argc, char** argv) {
   }
 
   const int n_threads = std::atoi(argv[1]);
-  const int size_x = std::atoi(argv[2]);
-  const int size_y = std::atoi(argv[3]);
+  const Label size_x = std::atoi(argv[2]);
+  const Label size_y = std::atoi(argv[3]);
   const double edge_probability = std::atof(argv[4]);
 
   const std::string filename = argc > 5 ? std::string(argv[5]) : "distributed_times.txt";
 
-  const std::array<int, 2> n_tiles_per_dim = util::partition(size_x, size_y, concurrency.size());
+  const std::array<Label, 2> n_tiles_per_dim = util::partition(size_x, size_y, concurrency.size());
 
   if (n_tiles_per_dim[0] * n_tiles_per_dim[1] != concurrency.size()) {
     if (concurrency.id() == 0)
@@ -60,7 +61,7 @@ int main(int argc, char** argv) {
 
   Rng rng(concurrency.id());
 
-  graph::GridGraphDistributed grid(std::array<int, 2>{size_x, size_y}, n_tiles_per_dim,
+  graph::GridGraphDistributed grid(std::array<Label, 2>{size_x, size_y}, n_tiles_per_dim,
                                    edge_probability, rng);
 
   std::size_t n_edges(0);
