@@ -6,8 +6,8 @@
 #SBATCH --time=00:30:00
 #SBATCH --constraint=mc
 #SBATCH --account=s299m
-#SBATCH --output=out.%j.txt
-#SBATCH --error=err.%j.txt
+#SBATCH --output=out___PROCS__.txt
+#SBATCH --error=err___PROCS__.txt
 
 source $SCRATCH/DPHPC/environment.bash
 
