@@ -87,7 +87,7 @@ int main(int argc, char** argv) {
         grid.get_nodes(), grid.get_edges(), n_threads, &compute_time, &total_time);
     result = compute_time;
     if (concurrency.id() == 0)
-      out << compute_time << "\t" << total_time << "\t" << n_local_edges << "\n";
+      out << compute_time << "\t" << total_time << "\t" << n_edges << "\n";
   }
 
   if (concurrency.id() == 0) {
