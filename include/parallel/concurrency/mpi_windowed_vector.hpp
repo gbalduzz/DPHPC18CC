@@ -24,6 +24,9 @@ private:
 public:
   MPIWindowedVector(std::size_t size);
 
+  MPIWindowedVector(const MPIWindowedVector<T>&) = delete;
+  MPIWindowedVector(MPIWindowedVector<T>&& rhs);
+
   ~MPIWindowedVector();
 
   T get(Label rank, std::size_t idx) const;
@@ -61,7 +64,7 @@ private:
 
   std::size_t size_;
   T* data_ = nullptr;
-  MPI_Win window_;
+  MPI_Win window_ = MPI_WIN_NULL;
 };
 
 template <class T>
@@ -77,10 +80,21 @@ MPIWindowedVector<T>::MPIWindowedVector(const std::size_t size) : size_(size) {
 }
 
 template <class T>
+MPIWindowedVector<T>::MPIWindowedVector(MPIWindowedVector<T>&& rhs) {
+  std::swap(size_, rhs.size_);
+  std::swap(data_, rhs.data_);
+  std::swap(window_, rhs.window_);
+}
+
+template <class T>
 MPIWindowedVector<T>::~MPIWindowedVector() {
-  MPI_Win_unlock_all(window_);
-  MPI_Win_free(&window_);
-  MPI_Free_mem((void*)data_);
+  if (window_ != MPI_WIN_NULL) {
+    MPI_Win_unlock_all(window_);
+    MPI_Win_free(&window_);
+  }
+  if (data_ != nullptr) {
+    MPI_Free_mem((void*)data_);
+  }
 }
 
 template <class T>
