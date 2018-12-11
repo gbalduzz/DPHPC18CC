@@ -60,7 +60,7 @@ int main(int argc, char** argv) {
 
   Rng rng(concurrency.id());
 
-  constexpr int n_times = 10;
+  constexpr int n_times = 21;
   std::vector<double> results(n_times);
 
   std::ofstream out;
