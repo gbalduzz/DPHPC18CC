@@ -4,6 +4,6 @@ target_link_libraries(benchmark_mpi_node_distributed algorithms)
 add_executable(benchmark_mpi_distributed_multiinput benchmark_mpi_distributed_multiinput.cpp)
 target_link_libraries(benchmark_mpi_distributed_multiinput algorithms)
 
-configure_file(job_daint.pbs ./ COPYONLY)
+configure_file(job_daint.pbs.in ./ COPYONLY)
+configure_file(submit_weak_scaling.py ./ COPYONLY)
 
-#add_dependencies(benchmark_mpi_node_distributed USA-road-t.USA.gr)
