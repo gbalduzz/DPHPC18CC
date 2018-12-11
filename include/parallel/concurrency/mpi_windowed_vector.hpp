@@ -122,7 +122,8 @@ bool MPIWindowedVector<T>::atomicCAS(Label rank, Label idx, Label old_val, Label
   assert(idx < size_);
   Label pre_swap_val;
 
-  checkMPI(MPI_Compare_and_swap(&new_val, &old_val, &pre_swap_val, MPI_UNSIGNED, rank, idx, window_));
+  checkMPI(MPI_Compare_and_swap(&new_val, &old_val, &pre_swap_val, MPITypeMap<Label>::value(), rank,
+                                idx, window_));
   MPI_Win_flush_local(rank, window_);
 
   // TODO: maybe. Use the pre swap value to retry in case of failure.
