@@ -29,7 +29,7 @@ private:
 };
 
 int main(int argc, char** argv) {
-  using edge::Label;
+  using graph::Label;
   parallel::MpiConcurrency concurrency(argc, argv, MPI_THREAD_MULTIPLE);
 
   if (argc <= 4) {
