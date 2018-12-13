@@ -3,7 +3,7 @@
 
 namespace algorithms {
 
-graph::HookTree serialConnectedComponents(const unsigned n, std::vector<graph::Edge>& edges,
+graph::HookTree serialConnectedComponents(const unsigned n, const std::vector<graph::Edge>& edges,
                                           int /*n_threads*/) {
   const unsigned int m = edges.size();
 

@@ -50,6 +50,10 @@ public:
     return i == parent_[i];
   }
 
+  std::size_t size() const {
+    return parent_.size();
+  }
+
   std::string toString() const;
 
   const std::vector<Label>& getParents() const {

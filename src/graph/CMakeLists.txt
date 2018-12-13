@@ -1,1 +1,1 @@
-#add_library(graph grid_graph.cpp)
+add_library(graph connected_components_analysis.cpp)
