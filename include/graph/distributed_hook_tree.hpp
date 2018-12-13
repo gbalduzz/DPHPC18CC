@@ -102,6 +102,11 @@ inline void DistributedHookTree::hookToMinSafeLocal(Label i, Label j) {
     else
       hooked = true;
   }
+
+  if (i != repr_i)
+    parent_[i - range_start_] = repr_i;
+  if (j != repr_j)
+    parent_[j - range_start_] = repr_j;
 }
 
 inline bool DistributedHookTree::isRoot(Label l) const {
@@ -179,10 +184,17 @@ inline void DistributedHookTree::hookToMinSafe(const Label i, const Label j) {
     }
   }
 
-  if (isLocal(i) && i != repr_i)
-    parent_[i - range_start_] = repr_i;
-  if (isLocal(j) && j != repr_j)
-    parent_[j - range_start_] = repr_j;
+  auto skip_connection = [&](Label vertex, Label repr) {
+    if (vertex != repr) {
+      if (isLocal(vertex))
+        parent_[vertex - range_start_] = repr;
+      else
+        parent_.immediateGlobalWrite(vertex, repr);
+    }
+  };
+
+  skip_connection(i, repr_i);
+  skip_connection(j, repr_j);
 }
 
 }  // graph

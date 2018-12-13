@@ -31,6 +31,9 @@ public:
 
   T get(Label rank, std::size_t idx) const;
 
+  void immediateWrite(Label rank, std::size_t idx, T val);
+  void immediateGlobalWrite(std::size_t idx, T val);
+
   T globalGet(std::size_t idx) const;
 
   bool atomicCAS(Label rank, Label idx, Label old_val, Label new_val);
@@ -109,6 +112,23 @@ T MPIWindowedVector<T>::get(const Label target_rank, const std::size_t idx) cons
   MPI_Win_flush_local(target_rank, window_);
 
   return result;
+}
+
+template <class T>
+void MPIWindowedVector<T>::immediateWrite(const Label target_rank, const std::size_t idx,
+                                          const T val) {
+  assert(idx < size_);
+
+  T result;
+
+  checkMPI(MPI_Put(&val, 1, MPITypeMap<T>::value(), target_rank, idx, 1, MPITypeMap<T>::value(),
+                   window_));
+}
+
+template <class T>
+void MPIWindowedVector<T>::immediateGlobalWrite(const std::size_t idx, const T val) {
+  const Label owner = idx / size_;
+  immediateWrite(owner, idx - size_ * owner, val);
 }
 
 template <class T>
