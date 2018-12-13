@@ -2,7 +2,9 @@
 #
 #SBATCH --job-name="weak___PROCS__"
 #SBATCH --ntasks=__PROCS__
+#SBATCH --nodes=__NODES__
 #SBATCH --cpus-per-task=__THREADS__
+#SBATCH --threads-per-core=1
 #SBATCH --time=00:30:00
 #SBATCH --constraint=mc
 #SBATCH --account=s299m
@@ -13,10 +15,10 @@ source $SCRATCH/DPHPC/environment.bash
 
 date
 
-prob=0.5
+prob=0.25
 cmd="./benchmark_mpi_distributed_multiinput __THREADS__ __SIZE_X__ __SIZE_Y__ $prob __OUTNAME__"
 
-srun -n ${SLURM_NTASKS}  $cmd >> out.txt
+srun -n __PROCS__ -c __THREADS__  $cmd
 
 #--ntasks-per-core=$SLURM_NTASKS_PER_CORE
 
