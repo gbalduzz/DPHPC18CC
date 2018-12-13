@@ -76,6 +76,7 @@ graph::DistributedHookTree nodeDistributedConnectedComponents(
     tree.hookToMinSafe(edge.first, edge.second);
   }
 
+  tree.sync();
   tree.compress();
 
   MPI_Barrier(MPI_COMM_WORLD);
