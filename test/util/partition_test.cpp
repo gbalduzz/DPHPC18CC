@@ -19,4 +19,6 @@ TEST(PartitionTest, All) {
   EXPECT_TRUE(check_eq(5, 2, partition(999, 400, 10)));
 
   EXPECT_TRUE(check_eq(10, 1, partition(1000, 100, 10)));
+
+  EXPECT_TRUE(check_eq(6, 4, partition(100, 100, 24)) || check_eq(4, 6, partition(100, 100, 24)));
 }

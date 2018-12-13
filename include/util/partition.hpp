@@ -23,29 +23,26 @@ inline std::array<graph::Label, 2> partition(graph::Label nx, graph::Label ny, i
   const double tx_f = std::sqrt(double(nx) * p / double(ny));
   const double ty_f = double(p) / tx_f;
 
-  Label tx, ty;
+  Label tx = round(tx_f);
+  int ty = p / tx;
 
-  if (std::abs(tx_f - Label(tx_f)) > std::abs(ty_f - Label(ty_f))) {
-    tx = round(tx_f);
-    ty = tx > tx_f ? std::floor(ty_f) : std::ceil(ty_f);
-  }
-  else {
-    ty = round(ty_f);
-    tx = ty > ty_f ? std::floor(tx_f) : std::ceil(tx_f);
-  }
+  // Ensure tx and ty are divisiors of p.
+  if (tx * ty != p) {
+    auto divisor = [](Label a, Label b) -> bool { return a / b * b == a; };
 
-  while (tx * ty > p) {
-    if (tx > ty) {
-      ++tx;
-      --ty;
-    }
-    else {
-      --tx;
-      ++ty;
-    }
-  }
+    const int first_guess = tx > tx_f ? -1 : 1;
 
-  assert(tx >= 1 && ty >= 1);
+    for (int delta = 1; delta < p / 2; ++delta)
+      for (int sign : std::array<int, 2>{first_guess, -first_guess})
+        if (divisor(p, (tx + sign * delta))) {
+          tx = tx + sign * delta;
+          ty = p / tx;
+          goto loop_exit;
+        }
+  }
+loop_exit:
+
+  assert(tx >= 1 && ty >= 1 && tx * ty == p);
   return std::array<Label, 2>{tx, ty};
 }
 
