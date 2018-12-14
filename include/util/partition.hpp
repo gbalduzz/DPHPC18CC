@@ -24,7 +24,7 @@ inline std::array<graph::Label, 2> partition(graph::Label nx, graph::Label ny, i
   const double ty_f = double(p) / tx_f;
 
   Label tx = round(tx_f);
-  int ty = p / tx;
+  Label ty = p / tx;
 
   // Ensure tx and ty are divisiors of p.
   if (tx * ty != p) {

@@ -34,7 +34,7 @@ unsigned int nextPowerOf2(unsigned int v) {
   return v;
 }
 
-graph::HookTree parallelMpiConnectedComponents(std::vector<graph::Edge>& all_edges,
+graph::HookTree parallelMpiConnectedComponents(graph::Label n_nodes, std::vector<graph::Edge>& all_edges,
                                                int n_threads_per_node, double* computation_time,
                                                double* total_time) {
   const auto start = util::getTime();
@@ -46,22 +46,12 @@ graph::HookTree parallelMpiConnectedComponents(std::vector<graph::Edge>& all_edg
   MPI_Comm_size(MPI_COMM_WORLD, &comm_size);
 
   using graph::Label;
-  Label n_edges = -1;
-  Label n_nodes = 0;
-
-  if (rank == 0) {
-    n_edges = all_edges.size();
-    for (const auto& e : all_edges) {
-      n_nodes = std::max(n_nodes, std::max(e.first, e.second));
-    }
-    ++n_nodes;
-  }
+  Label n_edges = all_edges.size();
 
   // broadcast number of edges
 
   auto MPI_type = parallel::MPITypeMap<Label>::value();
   checkMPI(MPI_Bcast(&n_edges, 1, MPI_type, 0, MPI_COMM_WORLD));
-  checkMPI(MPI_Bcast(&n_nodes, 1, MPI_type, 0, MPI_COMM_WORLD));
 
   // scatter edges to all nodes
   const int buff_size = ceilDiv(n_edges, comm_size);

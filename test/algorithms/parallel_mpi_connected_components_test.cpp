@@ -72,7 +72,7 @@ void performTest(int n, const std::vector<graph::Edge>& edges, const std::vector
       edges_copy = edges;
     }
 
-    auto forest = algorithms::parallelMpiConnectedComponents(edges_copy, n_threads);
+    auto forest = algorithms::parallelMpiConnectedComponents(n, edges_copy, n_threads);
 
     auto are_connected = [&](int i, int j) {
       return forest.representative(i) == forest.representative(j);

@@ -4,6 +4,8 @@ add_gtest(parallel_mpi_connected_components_test LIBS algorithms;util
           MPI_NUMPROC 4)
 add_gtest(node_distrubuted_connected_components_test LIBS algorithms;util
         MPI_NUMPROC 4)
+add_gtest(node_distributed_test2 LIBS algorithms;util;graph
+          MPI_NUMPROC 4)
 
 configure_file("${PROJECT_SOURCE_DIR}/test/algorithms/labels.txt"
         "${CMAKE_BINARY_DIR}/test/algorithms/labels.txt" COPYONLY)

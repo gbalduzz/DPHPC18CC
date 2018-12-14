@@ -12,9 +12,10 @@
 
 namespace algorithms {
 
-
+namespace {
 void checkMPI(int ret) {
   assert(ret == MPI_SUCCESS);
+}
 }
 
 graph::DistributedHookTree nodeDistributedConnectedComponents(
@@ -58,7 +59,7 @@ graph::DistributedHookTree nodeDistributedConnectedComponents(
 // Create local forest.
 
 #pragma omp parallel for num_threads(n_threads_per_node) schedule(dynamic, 5000)
-  for (Label  e_id = 0; e_id < internal_edges.size(); ++e_id) {
+  for (Label e_id = 0; e_id < internal_edges.size(); ++e_id) {
     const auto& edge = internal_edges[e_id];
 
     tree.hookToMinSafeLocal(edge.first, edge.second);
@@ -69,7 +70,7 @@ graph::DistributedHookTree nodeDistributedConnectedComponents(
   tree.sync();
 
 // Again, but with boundary edges.
-#pragma omp parallel for num_threads(n_threads_per_node) schedule(dynamic, 5000)
+#pragma omp parallel for num_threads(n_threads_per_node) schedule(dynamic, 500)
   for (Label e_id = 0; e_id < boundary_edges.size(); ++e_id) {
     const auto& edge = boundary_edges[e_id];
 
@@ -79,7 +80,7 @@ graph::DistributedHookTree nodeDistributedConnectedComponents(
   tree.sync();
   tree.compress();
 
-  MPI_Barrier(MPI_COMM_WORLD);
+  tree.sync();//MPI_Barrier(MPI_COMM_WORLD);
   const auto end = util::getTime();
 
   if (computation_time)
