@@ -36,8 +36,10 @@ public:
 
   T globalGet(std::size_t idx) const;
 
-  bool atomicCAS(Label rank, Label idx, Label old_val, Label new_val);
-  bool atomicCAS(Label global_idx, Label old_val, Label new_val);
+  // Try to change at rank "rank" data_[idx] from old_val to new_val.
+  // The old value of data_[idx] is returned.
+  T atomicCAS(Label rank, Label idx, T old_val, T new_val);
+  T atomicCAS(Label global_idx, T old_val, T new_val);
 
   void sync() const;
 
@@ -138,7 +140,7 @@ T MPIWindowedVector<T>::globalGet(const std::size_t idx) const {
 }
 
 template <class T>
-bool MPIWindowedVector<T>::atomicCAS(Label rank, Label idx, Label old_val, Label new_val) {
+T MPIWindowedVector<T>::atomicCAS(Label rank, Label idx, T old_val, T new_val) {
   assert(idx < size_);
   Label pre_swap_val;
 
@@ -146,12 +148,11 @@ bool MPIWindowedVector<T>::atomicCAS(Label rank, Label idx, Label old_val, Label
                                 idx, window_));
   MPI_Win_flush_local(rank, window_);
 
-  // TODO: maybe. Use the pre swap value to retry in case of failure.
-  return pre_swap_val == old_val;
+  return pre_swap_val;
 }
 
 template <class T>
-bool MPIWindowedVector<T>::atomicCAS(Label global_idx, Label old_val, Label new_val) {
+T MPIWindowedVector<T>::atomicCAS(Label global_idx, T old_val, T new_val) {
   const Label rank = global_idx / size_;
   return atomicCAS(rank, global_idx - rank * size_, old_val, new_val);
 }

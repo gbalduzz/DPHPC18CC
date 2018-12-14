@@ -167,20 +167,24 @@ inline void DistributedHookTree::hookToMinSafe(const Label i, const Label j) {
   Label repr_i(i), repr_j(j);
 
   while (!hooked) {
-    if (repr_i == repr_j)
-      break;
-
     repr_i = representative(repr_i);
     repr_j = representative(repr_j);
 
-    const Label min = std::min(repr_i, repr_j);
-    const Label max = std::max(repr_i, repr_j);
+    if (repr_i == repr_j)
+      break;
 
-    if (isLocal(max)) {  // Hook local to remote.
-      hooked = hookAtomicLocal(max, min);
+    Label& from = repr_i > repr_j ? repr_i : repr_j;
+    const Label& to = repr_i > repr_j ? repr_j : repr_i;
+
+    if (isLocal(from)) {  // Hook local to remote.
+      hooked = hookAtomicLocal(from, to);
     }
     else {  // Hook remote max to min.
-      hooked = parent_.atomicCAS(max, max, min);
+      Label result = parent_.atomicCAS(from, from, to);
+      if (result == from)
+        hooked = true;
+      else
+        from = result;
     }
   }
 
