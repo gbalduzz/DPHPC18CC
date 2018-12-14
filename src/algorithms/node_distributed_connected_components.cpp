@@ -70,7 +70,7 @@ graph::DistributedHookTree nodeDistributedConnectedComponents(
   tree.sync();
 
 // Again, but with boundary edges.
-#pragma omp parallel for num_threads(n_threads_per_node) schedule(dynamic, 500)
+#pragma omp parallel for num_threads(n_threads_per_node) schedule(dynamic, 100)
   for (Label e_id = 0; e_id < boundary_edges.size(); ++e_id) {
     const auto& edge = boundary_edges[e_id];
 

@@ -51,6 +51,7 @@ public:
 
 private:
   bool hookAtomicLocal(Label i, Label j);
+  Label partialRepresentative(Label i) const;
 
   const Label vertices_per_rank_;
   const RankLabel n_ranks_;
@@ -131,6 +132,13 @@ inline Label DistributedHookTree::representativeLocal(Label l) const {
   return l;
 }
 
+inline Label DistributedHookTree::partialRepresentative(Label l) const {
+  while (isLocal(l) && l != parent_[l - range_start_]) {
+    l = parent_[l - range_start_];
+  }
+  return l;
+}
+
 inline void DistributedHookTree::compressLocal() {
 #pragma omp parallel for num_threads(n_threads_) schedule(dynamic, 5000)
   for (Label i = 0; i < parent_.size(); ++i) {
@@ -167,8 +175,8 @@ inline void DistributedHookTree::hookToMinSafe(const Label i, const Label j) {
   Label repr_i(i), repr_j(j);
 
   while (!hooked) {
-    repr_i = representative(repr_i);
-    repr_j = representative(repr_j);
+    repr_i = partialRepresentative(repr_i);
+    repr_j = partialRepresentative(repr_j);
 
     if (repr_i == repr_j)
       break;
@@ -179,7 +187,7 @@ inline void DistributedHookTree::hookToMinSafe(const Label i, const Label j) {
     if (isLocal(from)) {  // Hook local to remote.
       hooked = hookAtomicLocal(from, to);
     }
-    else {  // Hook remote max to min.
+    else {  // Hook remote to local.
       Label result = parent_.atomicCAS(from, from, to);
       if (result == from)
         hooked = true;
