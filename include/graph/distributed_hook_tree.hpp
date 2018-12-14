@@ -200,8 +200,8 @@ inline void DistributedHookTree::hookToMinSafe(const Label i, const Label j) {
     if (vertex != repr) {
       if (isLocal(vertex))
         parent_[vertex - range_start_] = repr;
-      else
-        parent_.immediateGlobalWrite(vertex, repr);
+//      else
+//        parent_.immediateGlobalWrite(vertex, repr);
     }
   };
 

@@ -69,18 +69,22 @@ graph::DistributedHookTree nodeDistributedConnectedComponents(
 
   tree.sync();
 
-// Again, but with boundary edges.
-#pragma omp parallel for num_threads(n_threads_per_node) schedule(dynamic, 100)
-  for (Label e_id = 0; e_id < boundary_edges.size(); ++e_id) {
-    const auto& edge = boundary_edges[e_id];
-
-    tree.hookToMinSafe(edge.first, edge.second);
+  // Again, but with boundary edges.
+  omp_set_num_threads(n_threads_per_node);
+  //#pragma omp parallel for num_threads(n_threads_per_node) schedule(dynamic, 100)
+  //  constexpr unsigned int task_size = 10;
+  for (Label e_id = 0; e_id < boundary_edges.size(); e_id += 1) {
+#pragma omp task shared(tree) firstprivate(e_id)
+    {
+      const auto& edge = boundary_edges[e_id];
+      tree.hookToMinSafe(edge.first, edge.second);
+    }
   }
 
   tree.sync();
   tree.compress();
 
-  tree.sync();//MPI_Barrier(MPI_COMM_WORLD);
+  tree.sync();  // MPI_Barrier(MPI_COMM_WORLD);
   const auto end = util::getTime();
 
   if (computation_time)

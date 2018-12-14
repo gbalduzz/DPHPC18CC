@@ -107,11 +107,20 @@ T MPIWindowedVector<T>::get(const Label target_rank, const std::size_t idx) cons
   assert(idx < size_);
 
   T result;
+  MPI_Request request;
 
-  checkMPI(MPI_Get(&result, 1, MPITypeMap<T>::value(), target_rank, idx, 1, MPITypeMap<T>::value(),
-                   window_));
+  checkMPI(MPI_Rget(&result, 1, MPITypeMap<T>::value(), target_rank, idx, 1, MPITypeMap<T>::value(),
+                    window_, &request));
 
-  MPI_Win_flush_local(target_rank, window_);
+  auto test = [&]() {
+    int flag;
+    MPI_Request_get_status(request, &flag, MPI_STATUS_IGNORE);
+    return flag;
+  };
+
+  while (test() == false) {
+#pragma omp taskyield
+  }
 
   return result;
 }
