@@ -31,24 +31,19 @@ graph::DistributedHookTree nodeDistributedConnectedComponents(
 
   const std::size_t n_edges = all_edges.size();
 
-  std::vector<graph::Edge> internal_edges;
-  std::vector<graph::Edge> boundary_edges;
-
   using graph::Label;
   const Label vertices_per_rank = util::ceilDiv(n_vertices, comm_size);
   const Label start_index = vertices_per_rank * rank;
   const Label end_index = vertices_per_rank * (rank + 1);
   auto is_internal = [=](Label l) { return l >= start_index && l < end_index; };
 
+  std::vector<graph::Edge> edges;
   for (const auto& e : all_edges) {
-    if (is_internal(e.first) && is_internal(e.second)) {
-      internal_edges.push_back(e);
-    }
-    // TODO: consider ordering.
-    else if (is_internal(e.first)) {
-      boundary_edges.push_back(e);
+    if (is_internal(e.first)) {
+      edges.push_back(e);
     }
   }
+  //  const auto& edges = all_edges;
 
   // Start the timer.
   MPI_Barrier(MPI_COMM_WORLD);
@@ -56,35 +51,24 @@ graph::DistributedHookTree nodeDistributedConnectedComponents(
 
   graph::DistributedHookTree tree(vertices_per_rank, rank, comm_size, n_threads_per_node);
 
-// Create local forest.
-
-#pragma omp parallel for num_threads(n_threads_per_node) schedule(dynamic, 5000)
-  for (Label e_id = 0; e_id < internal_edges.size(); ++e_id) {
-    const auto& edge = internal_edges[e_id];
-
-    tree.hookToMinSafeLocal(edge.first, edge.second);
-  }
-
-  tree.compressLocal();
-
-  tree.sync();
-
-  // Again, but with boundary edges.
+  // Create local forest.
   omp_set_num_threads(n_threads_per_node);
-  //#pragma omp parallel for num_threads(n_threads_per_node) schedule(dynamic, 100)
-  //  constexpr unsigned int task_size = 10;
-  for (Label e_id = 0; e_id < boundary_edges.size(); e_id += 1) {
-#pragma omp task shared(tree) firstprivate(e_id)
+  const Label task_size = std::max((edges.size() / n_threads_per_node) / 10, 1ul);
+  for (Label start = 0; start < edges.size(); start += task_size) {
+#pragma omp task shared(tree) firstprivate(start)
     {
-      const auto& edge = boundary_edges[e_id];
-      tree.hookToMinSafe(edge.first, edge.second);
+      const Label end = std::min(start + task_size, edges.size());
+      for (int e_id = start; e_id < end; ++e_id) {
+        const auto& edge = edges[e_id];
+        tree.hookToMinSafe(edge.first, edge.second);
+      }
     }
   }
 
   tree.sync();
   tree.compress();
 
-  tree.sync();  // MPI_Barrier(MPI_COMM_WORLD);
+  MPI_Barrier(MPI_COMM_WORLD);
   const auto end = util::getTime();
 
   if (computation_time)

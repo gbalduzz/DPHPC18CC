@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <algorithm>
 #include <array>
 #include <limits>
 #include <vector>
@@ -78,6 +79,12 @@ void GridGraph::buildGraph(Label x_min, Label x_max, Label y_min, Label y_max, R
       if (y + 1 < grid_size_[1])
         generate_connection(x, y, x, y + 1);
     }
+
+  // Shuffle
+  for (std::size_t i = 0; i < edges_.size(); ++i) {
+    const std::size_t target = i * rng();
+    std::swap(edges_[i], edges_[target]);
+  }
 }
 
 inline Label GridGraph::coordinatesToId(Label x, Label y) const {

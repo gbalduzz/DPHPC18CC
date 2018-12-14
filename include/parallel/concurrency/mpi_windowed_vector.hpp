@@ -112,9 +112,10 @@ T MPIWindowedVector<T>::get(const Label target_rank, const std::size_t idx) cons
   checkMPI(MPI_Rget(&result, 1, MPITypeMap<T>::value(), target_rank, idx, 1, MPITypeMap<T>::value(),
                     window_, &request));
 
-  auto test = [&]() {
+  auto test = [&]() -> bool {
     int flag;
-    MPI_Request_get_status(request, &flag, MPI_STATUS_IGNORE);
+    //    MPI_Request_get_status(request, &flag, MPI_STATUS_IGNORE);
+    checkMPI(MPI_Test(&request, &flag, MPI_STATUS_IGNORE));
     return flag;
   };
 
@@ -151,11 +152,16 @@ T MPIWindowedVector<T>::globalGet(const std::size_t idx) const {
 template <class T>
 T MPIWindowedVector<T>::atomicCAS(Label rank, Label idx, T old_val, T new_val) {
   assert(idx < size_);
-  Label pre_swap_val;
+  T pre_swap_val(-1);
 
   checkMPI(MPI_Compare_and_swap(&new_val, &old_val, &pre_swap_val, MPITypeMap<Label>::value(), rank,
                                 idx, window_));
-  MPI_Win_flush_local(rank, window_);
+
+  while (pre_swap_val == -1) {
+#pragma omp taskyield
+  }
+//  MPI_Win_flush_local(rank, window_);
+//  assert(pre_swap_val != -1);
 
   return pre_swap_val;
 }
