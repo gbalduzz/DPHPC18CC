@@ -37,13 +37,13 @@ graph::DistributedHookTree nodeDistributedConnectedComponents(
   const Label end_index = vertices_per_rank * (rank + 1);
   auto is_internal = [=](Label l) { return l >= start_index && l < end_index; };
 
-  std::vector<graph::Edge> edges;
-  for (const auto& e : all_edges) {
-    if (is_internal(e.first)) {
-      edges.push_back(e);
-    }
-  }
-  //  const auto& edges = all_edges;
+  //  std::vector<graph::Edge> edges;
+  //  for (const auto& e : all_edges) {
+  //    if (is_internal(e.first)) {
+  //      edges.push_back(e);
+  //    }
+  //  }
+  const auto& edges = all_edges;
 
   // Start the timer.
   MPI_Barrier(MPI_COMM_WORLD);
