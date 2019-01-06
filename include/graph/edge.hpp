@@ -4,7 +4,11 @@
 
 namespace graph {
 
+#ifdef WITH_64_BITS
 using Label = unsigned long int;
+#else
+using Label = unsigned int;
+#endif
 
 class Edge {
 public:
