@@ -66,22 +66,21 @@ vector<vector<graph::Label>> GraphReader::read_connected_components_from_json(st
   return edges;
 }
 
-
 std::vector<graph::Edge> GraphReader::read_graph_from_paramat(string filename) {
   ifstream file;
 
   file.open(filename);
-  if(!file) {
+  if (!file) {
     exit(1);
   }
 
   vector<graph::Edge> edge_list;
   string content;
-  getline(file,content);
   getline(file, content);
-  while(!file.eof()){
+  getline(file, content);
+  while (!file.eof()) {
     vector<string> nr;
-    boost::split(nr, content, [](char c){return c == ' ';});
+    boost::split(nr, content, [](char c) { return c == ' '; });
     edge_list.push_back(graph::Edge(std::stoi(nr[0]), std::stoi(nr[1])));
   }
 
@@ -89,6 +88,25 @@ std::vector<graph::Edge> GraphReader::read_graph_from_paramat(string filename) {
 
   return edge_list;
 }
+
+void GraphReader::readCommAvoidingInput(const std::string& filename,
+                                        std::vector<graph::Edge>& edges, graph::Label& nodes) {
+  int n_edges, w;
+
+  std::ifstream inp(filename);
+  std::string line;
+  std::getline(inp, line);
+  if (line[0] != '#') {
+    throw(std::logic_error("invalid comment."));
+  }
+
+  inp >> nodes >> n_edges;
+  edges.resize(n_edges);
+
+  for (auto& edge : edges)
+    inp >> edge.first >> edge.second >> w;
+}
+
 /**
  * if the first char in one line is an a, then the line describes an edge
  * Otherwise: Comment or similar
