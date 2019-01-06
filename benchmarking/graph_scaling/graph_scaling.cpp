@@ -44,8 +44,9 @@ int main(int argc, char** argv) {
     constexpr int n_times = 10;
     std::vector<double> results(n_times);
 
+    using graph::Label ;
     for (int count = 0; count < n_times; ++count) {
-      graph::GridGraph grid(std::array<int, 2>{nx, ny}, std::array<int, 2>{1, 1},
+      graph::GridGraph grid(std::array<Label, 2>{nx, ny}, std::array<Label, 2>{1, 1},
                             edge_probability, rng);
 
       std::size_t n_edges = grid.get_edges().size();

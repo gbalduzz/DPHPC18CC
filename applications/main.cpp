@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <mpi.h>
+#include <parallel/concurrency/mpi_type_map.hpp>
 
 #include "algorithms/parallel_connected_components.hpp"
 #include "algorithms/parallel_mpi_connected_components.hpp"
@@ -11,49 +12,40 @@
 #include "util/graph_reader.hpp"
 
 int main(int argc, char** argv) {
+  MPI_Init(&argc, &argv);
 
-    MPI_Init(&argc, &argv);
+  int rank;
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-    int rank;
-    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+  std::vector<graph::Edge> edges;
+  graph::Label n_nodes;
 
-    std::vector<graph::Edge> edges;
+  if (rank == 0) {
+    std::string filename = "../benchmarking/USA-road-t.NY.gr";
 
-    if(rank == 0) {
-        std::string filename = "../benchmarking/USA-road-t.NY.gr";
+    printf("start load graph\n");
+    edges = util::GraphReader().read_graph_from_DIMACS_challenge(filename);
+    printf("end load graph\n");
 
-        printf("start load graph\n");
-        edges = util::GraphReader().read_graph_from_DIMACS_challenge(filename);
-        printf("end load graph\n");
+    n_nodes = util::GraphReader().vertexNumber(edges);
 
-        int n_nodes = util::GraphReader().vertexNumber(edges);
+    graph::HookTree serialHookTree = algorithms::serialConnectedComponents(n_nodes, edges);
+    printf("Serial number of connected componnets: %d\n", serialHookTree.getNumConnectedComponents());
 
-        graph::HookTree serialHookTree = algorithms::serialConnectedComponents(n_nodes, edges);
-        printf("Serial number of connected componnets: %d\n", serialHookTree.getNumConnectedComponents());
+    graph::HookTree parallelHookTree = algorithms::parallelConnectedComponents(n_nodes, edges, 4);
+    printf("Parallel number of connected componnets: %d\n",
+           parallelHookTree.getNumConnectedComponents());
+  }
 
-        graph::HookTree parallelHookTree = algorithms::parallelConnectedComponents(n_nodes, edges, 4);
-        printf("Parallel number of connected componnets: %d\n", parallelHookTree.getNumConnectedComponents());
-    }
+  MPI_Bcast(&n_nodes, 1, parallel::MPITypeMap<graph::Label>::value(), 0, MPI_COMM_WORLD);
+  graph::HookTree MpiHookTree = algorithms::parallelMpiConnectedComponents(n_nodes, edges, 4);
 
+  if (rank == 0) {
+    // printf("%s\n", finalHookTree.toString().c_str());
+    printf("MPI number of connected components: %d\n", MpiHookTree.getNumConnectedComponents());
+  }
 
-
-    graph::HookTree MpiHookTree = algorithms::parallelMpiConnectedComponents(edges, 4);
-
-
-
-    if(rank == 0) {
-        //printf("%s\n", finalHookTree.toString().c_str());
-        printf("MPI number of connected components: %d\n", MpiHookTree.getNumConnectedComponents());
-    }
-
-
-
-
-
-    MPI_Finalize();
-
-
-
+  MPI_Finalize();
 
   /*
   std::string input_name = "input.json";

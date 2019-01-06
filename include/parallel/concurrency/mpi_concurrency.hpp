@@ -5,6 +5,8 @@
 
 #include "mpi.h"
 
+#include "mpi_type_map.hpp"
+
 namespace parallel {
 
 class MpiConcurrency {
@@ -32,9 +34,17 @@ public:
     return size_;
   }
 
+  template <class T>
+  void broadcast(T& obj, int root = 0);
+
 private:
   int id_;
   int size_;
 };
+
+template <class T>
+void MpiConcurrency::broadcast(T& obj, int root) {
+  MPI_Bcast(&obj, 1, MPITypeMap<T>::value(), root, MPI_COMM_WORLD);
+}
 
 }  // parallel

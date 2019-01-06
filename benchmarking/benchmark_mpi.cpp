@@ -24,11 +24,14 @@ int main(int argc, char** argv) {
   const std::string filename = argc > 2 ? std::string(argv[2]) : "rmat_1024k_128.in";
 
   std::vector<graph::Edge> edges;
+  graph::Label n;
+
   if (concurrency.id() == 0) {
     edges = util::GraphReader().read_graph_from_paramat(filename);
-    const int n = util::GraphReader().vertexNumber(edges);
-    //std::cout << "Loaded graph.\n";
+    n = util::GraphReader().vertexNumber(edges);
+    // std::cout << "Loaded graph.\n";
   }
+  concurrency.broadcast(n);
 
   constexpr int n_times = 10;
   std::vector<double> results(n_times);
@@ -36,7 +39,7 @@ int main(int argc, char** argv) {
   for (auto& result : results) {
     std::vector<graph::Edge> edge_copy(edges);
     double compute_time;
-    auto ret = algorithms::parallelMpiConnectedComponents(edge_copy, n_threads, &compute_time);
+    auto ret = algorithms::parallelMpiConnectedComponents(n, edge_copy, n_threads, &compute_time);
     result = compute_time;
   }
 

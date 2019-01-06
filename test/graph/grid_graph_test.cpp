@@ -43,7 +43,8 @@ TEST(GridGraphTest, Rectangular) {
   vals[8] = 0; // 2-8
 
   MockRng rng{vals};
-  graph::GridGraph grid(std::array<int, 2>{4, 8}, std::array<int, 2>{2, 4}, 0.5, rng);
+  using graph::Label;
+  graph::GridGraph grid(std::array<Label, 2>{4, 8}, std::array<Label, 2>{2, 4}, 0.5, rng);
 
   EXPECT_EQ(grid.get_nodes(), 4*8);
 

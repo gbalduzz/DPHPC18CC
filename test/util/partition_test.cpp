@@ -3,7 +3,8 @@
 #include "gtest/gtest.h"
 
 TEST(PartitionTest, All) {
-  auto check_eq = [](int x, int y, std::array<int, 2> a) { return a[0] == x && a[1] == y; };
+  using graph::Label;
+  auto check_eq = [](Label x, Label y, std::array<Label, 2> a) { return a[0] == x && a[1] == y; };
   using util::partition;
 
   EXPECT_TRUE(check_eq(2, 2, partition(25, 25, 4)));
