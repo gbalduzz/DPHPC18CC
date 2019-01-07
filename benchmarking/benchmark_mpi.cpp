@@ -29,6 +29,7 @@ int main(int argc, char** argv) {
 
   std::vector<graph::Edge> edges;
   graph::Label n;
+  std::ofstream out(output_filename);
 
   if (concurrency.id() == 0) {
     util::GraphReader::readCommAvoidingInput(filename, edges, n);
@@ -37,12 +38,22 @@ int main(int argc, char** argv) {
   concurrency.broadcast(n);
   std::vector<double> results(n_repetitions);
 
-  for (auto& result : results) {
-    std::vector<graph::Edge> edge_copy(edges);
-    double compute_time;
-    auto ret = algorithms::parallelMpiConnectedComponents(n, edge_copy, n_threads, &compute_time);
-    result = compute_time;
+  if (concurrency.id() == 0) {
+    out << "# threads " << n_threads << " processes " << concurrency.size() << " vertices " << n
+        << " edges " << edges.size() << "\n"
+        << "# algorithm_time \t total_time\n";
   }
+
+  for (auto& result : results) {
+    double compute_time, total_time;
+    auto ret =
+        algorithms::parallelMpiConnectedComponents(n, edges, n_threads, &compute_time, &total_time);
+    result = compute_time;
+    if (concurrency.id() == 0) {
+      out << compute_time << "\t" << total_time << "\n";
+    }
+  }
+  out.close();
 
   if (concurrency.id() == 0) {
     const double mean = util::avg(results);
