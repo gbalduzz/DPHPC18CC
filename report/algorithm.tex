@@ -1,0 +1,44 @@
+\mypar{Connected components.}
+%Precisely define sorting problem you consider.
+%\mypar{Sorting algorithms}
+%Explain the algorithm you use including their costs.
+%
+%As an aside, don't talk about "the complexity of the algorithm.'' It's incorrect,
+%problems have a complexity, not algorithms.
+
+For an unordered graph $G=(V,E)$, the connected components are the ensemble
+of connected subgraphs, where connected means that for any two  vertices, there exist a path along the
+ edges connecting them.
+The straightforward algorithm to find them is to perform either a breath or depth first search from a starting
+random vertex in $V$, and give the same label to all the touched vertices. Then repeat the search from an unlabelled vertex
+until there are no more left.
+This has a cost in terms of memory accesses of $O(\abs{E} + \abs{V})$, which turns to be optimal \cite{Hopcroft}.
+
+\section{Proposed Algorithm}\label{sec:yourmethod}
+%Now comes the ``beef'' of the report, where you explain what you
+%did. Again, organize it in paragraphs with titles. As in every section
+%you start with a very brief overview of the section.
+%
+%In this section, structure is very important so one can follow the technical content.
+%
+%Mention and cite any external resources that you used including libraries or other code.
+
+Unfortunately this algorithm does not paralallize straightforwardly. Pavel Tvrdik \cite{PCompClass}
+proposed to cast the problem in terms of the generation of a forest, where the vertices of the same connected comonent belong
+to the same three, and its root can be used as the representative. Defining a star as a three of height one,
+his algorithm can be summarized as:
+
+% TODO
+\begin{algorithm}
+    \caption{Connected components 1.}
+    \label{algorithm:cc1}
+    \begin{algorithmic}[1]
+        %\Procedure{DCA} %\Comment{The g.c.d. of a and b}
+        \State do 1.
+        \State do 2.
+        %\While{$\norm{\Scg{n} - \Scg{n-1}} < \epsilon$} %\Comment{Iterate untill convergence is reached.}
+%        \EndWhile
+        %\State \textbf{return} $\Sdca$ %\Comment{foo}
+        %\EndProcedure
+    \end{algorithmic}
+\end{algorithm}

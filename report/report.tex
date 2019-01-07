@@ -4,19 +4,24 @@
 % --------------------------------------------------------------------------
 
 \documentclass[letterpaper]{article}
-\usepackage{spconf,amsmath,amssymb,graphicx}
 
+\usepackage{spconf,amsmath,amssymb,graphicx}
+\usepackage{algorithm,algpseudocode} %algorithmicx
+
+% |X|
+\newcommand{\abs}[1]{\left| #1 \right|}
 % bold paragraph titles
 \newcommand{\mypar}[1]{{\bf #1.}}
 
 % Title.
 % ------
-\title{A Descriptive Title, not too general, not too long}
+%% TODO
+\title{Something with connected components}
 %
 % Single address.
 % ---------------
-\name{Giovanni Balduzzi \& your names that I do not want to mispell.}
-%\address{Department of Computer Science\\ ETH Z\"urich\\Z\"urich, Switzerland}
+\name{Michael Bernasconi, Roman Haag, Giovanni Balduzzi, Lea Fritschi}
+\address{Department of Computer Science\\ ETH Z\"urich\\Z\"urich, Switzerland}
 
 % For example:
 % ------------
@@ -94,24 +99,6 @@
 %we formally define the sorting problem we consider and introduce the algorithms we use
 %including a cost analysis.
 
-\mypar{Connected components.}
-%Precisely define sorting problem you consider.
-
-%\mypar{Sorting algorithms}
-%Explain the algorithm you use including their costs.
-%
-%As an aside, don't talk about "the complexity of the algorithm.'' It's incorrect,
-%problems have a complexity, not algorithms.
-
-\section{Proposed Algorithm}\label{sec:yourmethod}
-
-%Now comes the ``beef'' of the report, where you explain what you
-%did. Again, organize it in paragraphs with titles. As in every section
-%you start with a very brief overview of the section.
-%
-%In this section, structure is very important so one can follow the technical content.
-%
-%Mention and cite any external resources that you used including libraries or other code.
 
 \input{algorithm.tex}
 
