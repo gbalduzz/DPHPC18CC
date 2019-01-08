@@ -32,7 +32,7 @@ int main(int argc, char** argv) {
   std::ofstream out(output_filename);
 
   if (concurrency.id() == 0) {
-    util::GraphReader::readCommAvoidingInput(filename, edges, n);
+    util::GraphReader::readCompressedCommAvoidingInput(filename, edges, n);
     std::cout << "Loaded graph.\n";
   }
   concurrency.broadcast(n);

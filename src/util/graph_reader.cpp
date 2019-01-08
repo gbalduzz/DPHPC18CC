@@ -1,5 +1,6 @@
 #include "util/graph_reader.hpp"
 #include "io/json11.hpp"
+#include "io/buffer.hpp"
 #include <sstream>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
@@ -105,6 +106,14 @@ void GraphReader::readCommAvoidingInput(const std::string& filename,
 
   for (auto& edge : edges)
     inp >> edge.first >> edge.second >> w;
+}
+
+void GraphReader::readCompressedCommAvoidingInput(const std::string& filename,
+                                                  std::vector<graph::Edge>& edges,
+                                                  graph::Label& nodes) {
+  io::Buffer buff;
+  buff.readFromFile(filename);
+  buff >> nodes >> edges;
 }
 
 /**
