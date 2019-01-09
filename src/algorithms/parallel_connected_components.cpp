@@ -21,8 +21,8 @@ graph::HookTree parallelConnectedComponents(const unsigned n, std::vector<graph:
 #pragma omp parallel for schedule(dynamic, 5000)
     for (unsigned int e_id = 0; e_id < m; ++e_id) {
       auto& edge = edges[e_id];
-      if (!edge.isValid())
-        continue;
+//      if (!edge.isValid())
+//        continue;
 
       tree.hookToMinSafe(edge.first, edge.second);
     }

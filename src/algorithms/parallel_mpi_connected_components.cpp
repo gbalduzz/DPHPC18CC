@@ -57,25 +57,28 @@ graph::HookTree parallelMpiConnectedComponents(graph::Label n_nodes,
 
   // scatter edges to all nodes
   const int buff_size = ceilDiv(n_edges, comm_size);
-  std::vector<graph::Edge> my_edges(buff_size);
-  if (rank == 0) {
-    //      printf("start scattering\n");
 
-    // Pad the edges with -1.
-    int sendbuffsize = comm_size * buff_size;
-    all_edges.resize(sendbuffsize);
-    std::fill(all_edges.begin() + n_edges, all_edges.end(), graph::Edge(-1, -1));
+  std::vector<graph::Edge> my_edges;
+
+  if (comm_size > 1 && rank == comm_size - 1) {
+    my_edges.resize(n_edges - (buff_size * (comm_size - 1)));
+  }
+  else {
+    my_edges.resize(buff_size);
   }
 
   // scatter edges
   if (rank == 0) {
-    for (int dest = 1; dest < comm_size; ++dest)
-      checkMPI(MPI_Send(all_edges.data() + buff_size * dest, buff_size * sizeof(graph::Edge),
+    for (int dest = 1; dest < comm_size; ++dest) {
+      const std::size_t sent_edges =
+          dest != comm_size - 1 ? buff_size : n_edges - (buff_size * (comm_size - 1));
+      checkMPI(MPI_Send(all_edges.data() + buff_size * dest, sent_edges * sizeof(graph::Edge),
                         MPI_CHAR, dest, 0, MPI_COMM_WORLD));
+    }
     std::copy_n(all_edges.data(), my_edges.size(), my_edges.data());
   }
   else {
-    checkMPI(MPI_Recv(my_edges.data(), buff_size * sizeof(graph::Edge), MPI_CHAR, 0, 0,
+    checkMPI(MPI_Recv(my_edges.data(), my_edges.size() * sizeof(graph::Edge), MPI_CHAR, 0, 0,
                       MPI_COMM_WORLD, MPI_STATUS_IGNORE));
   }
 
