@@ -23,22 +23,62 @@ This has a cost in terms of memory accesses of $O(\abs{E} + \abs{V})$, which tur
 %
 %Mention and cite any external resources that you used including libraries or other code.
 
-Unfortunately this algorithm does not paralallize straightforwardly. Pavel Tvrdik \cite{PCompClass}
+Unfortunately this algorithm does not parallelize straightforwardly. Pavel Tvrdik \cite{PCompClass}
 proposed to cast the problem in terms of the generation of a forest, where the vertices of the same connected comonent belong
-to the same three, and its root can be used as the representative. Defining a star as a three of height one,
-his algorithm can be summarized as:
+to the same three, and its root can be used as the representative.
+We defining a star as a three of height one, a singleton a tree with a single element, and use the variables
+ $n=\abs{V}$ and $m=\abs{E}$.
+His algorithm can be summarized as:
 
 % TODO
-\begin{algorithm}
-    \caption{Connected components 1.}
+\begin{algorithm}%[H]
+    \caption{Pavel Tvrdik's Connected components}
     \label{algorithm:cc1}
     \begin{algorithmic}[1]
-        %\Procedure{DCA} %\Comment{The g.c.d. of a and b}
-        \State do 1.
-        \State do 2.
-        %\While{$\norm{\Scg{n} - \Scg{n-1}} < \epsilon$} %\Comment{Iterate untill convergence is reached.}
-%        \EndWhile
-        %\State \textbf{return} $\Sdca$ %\Comment{foo}
-        %\EndProcedure
-    \end{algorithmic}
+        \Procedure{Hook}{$i, j$}
+          \State $p[p[i]] = p[j]$
+        \EndProcedure
+        \Procedure{connectedComponents}{$n, \text{edges}$}
+          \State $p[i] = i \quad \forall i \in \{1,\cdots, n\}$. \Comment{Initialize a list of parents.}
+        \While{Elements of $p$ are changed.}
+        \For{$\left<i, j\right> \in \text{edges}$} \Comment{Execute in parallel.}
+          \State  \kif $i\ge j$ \kthen Hook($i, j$)
+          \State  \kif $\text{isSingleton}(i)$ \kthen Hook($i, j$)
+        \EndFor
+        \For{$\left<i, j\right> \in \text{edges}$} \Comment{Execute in parallel.}
+          \State  \kif isStar(i) \kand $i \neq j$ \kthen Hook($i, j$)
+        \EndFor
+        \State $p[i] = \text{root}(i) \quad \forall i \in \{1,\cdots, n\}$ \Comment{Compress the forest.}
+        \EndWhile
+        \EndProcedure
+   \end{algorithmic}
 \end{algorithm}
+We defer to \cite{PCompClass} for a proof of correctness.
+
+After implementing this algorithm we found advantageous to remove the constraint
+that only singletons and stars can be hooked to another vertex, so that only a single pass through
+the edge list is required. Extra care is then required during parallel execution: as each vertex has only one outgoing
+connection, we need to avoid that a process overwrites a connection that has been formed by another one.
+We therefore need to grow our forest with the following rules:
+
+\begin{enumerate}
+    \item A hook must originate from a vertex id higher than the destination.
+    \item All edges must generate a connection between the relative vertices, or vertices at an higher level in their three.
+    \item A hook must originate from a vertex that is currently the root of a tree.
+\end{enumerate}
+
+The intuitive proof of correctness follows: rule $1$ means that the graph gebnerated by the
+hooks generate a directed graph with no cycles and with at most a single outgoing connection, therefore it must be a forest.
+Rule $2$ and $3$ enforce that after processing an edge between two nodes,
+they belong to the same tree, and rule $3$ guarantees that this connection can not be broken by a different edge.
+At the end of the algorithm, by following the connections from each vertex to the root, we can find a representative for each connected component.
+
+To implement rule $3$ in a multithreaded environment, we use an atomic compare and swap.
+We compare the parent of the hook's origin with its id, if they match it means the vertex is still a root and we
+hook we hook it to its destination. It does not matter for correctness if the destination is a root, but we try withouth enforcing to
+hook to a root to minimize the three height.
+We found empirically that using \verb|std::atomic_compare_exchange_weak|,
+compared to \verb|std::atomic_compare_exchange_strong| offers better performance, as we anyway need to loop until a hook is successful.
+
+
+In pseudocode our algorithm is:
