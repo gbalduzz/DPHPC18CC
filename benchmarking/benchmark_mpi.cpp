@@ -41,16 +41,16 @@ int main(int argc, char** argv) {
   if (concurrency.id() == 0) {
     out << "# threads " << n_threads << " processes " << concurrency.size() << " vertices " << n
         << " edges " << edges.size() << "\n"
-        << "# algorithm_time \t total_time\n";
+        << "# algorithm_time (edges + reduction)\t reduction_time\n";
   }
 
   for (auto& result : results) {
-    double compute_time, total_time;
+    double compute_time, reduc_time;
     auto ret =
-        algorithms::parallelMpiConnectedComponents(n, edges, n_threads, &compute_time, &total_time);
+        algorithms::parallelMpiConnectedComponents(n, edges, n_threads, &compute_time, &reduc_time);
     result = compute_time;
     if (concurrency.id() == 0) {
-      out << compute_time << "\t" << total_time << "\n";
+      out << compute_time << "\t" << reduc_time << "\n";
     }
   }
   out.close();

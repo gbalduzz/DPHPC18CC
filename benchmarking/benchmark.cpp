@@ -9,59 +9,52 @@
 #include "util/timer.hpp"
 #include "util/stddev.hpp"
 
-std::ostream& operator<<(std::ostream& out, std::pair<double, double> p) {
-  return out << p.first << "\t" << p.second;
-}
+// std::ostream& operator<<(std::ostream& out, std::pair<double, double> p) {
+//  return out << p.first << "\t" << p.second;
+//}
 
 int main(int argc, char** argv) {
-  bool writting_graph_file = false;
-  int max_threads = std::thread::hardware_concurrency();
-  if (argc > 1)
-    max_threads = std::atoi(argv[1]);
+  const int max_threads = argc > 1 ? std::atoi(argv[1]) : 1;
+  const std::string filename = argc > 2 ? std::string(argv[2]) : "USA-road-t.NY.gr";
+  const std::string output_prename = argc > 3 ? std::string(argv[3]) : "benchmark_omp";
+  const int n_repetitions = argc > 4 ? std::atoi(argv[4]) : 10;
 
-  const std::string filename = "USA-road-t.USA.gr";
+  std::vector<graph::Edge> edges;
+  graph::Label n;
 
-  if (writting_graph_file) {
-    util::GraphReader().read_graph_from_DIMACS_challenge_to_file(filename);
-    std::cout << "Written graph to file" << std::endl;
-  }
-  const auto edges = util::GraphReader().read_graph_from_DIMACS_challenge(filename);
-  const int n = util::GraphReader().vertexNumber(edges);
+  util::GraphReader::readCommAvoidingInput(filename, edges, n);
   std::cout << "Loaded graph.\n";
 
-  auto time = [&](auto&& f, int n_threads) -> std::pair<double, double> {
-    constexpr int n_times = 10;
-    std::vector<double> results(n_times);
+  for (int threads = 1; threads < max_threads + 1; ++threads) {
+    std::cout << "Threads:" << threads << std::endl;
+
+    const std::string outname = output_prename + "_" + std::to_string(threads) + ".txt";
+    std::ofstream out(outname);
+    std::vector<double> results(n_repetitions);
+
+    out << "# threads " << threads << " vertices " << n << " edges " << edges.size() << "\n"
+        << "# algorithm_time\n";
 
     for (auto& result : results) {
-      std::vector<graph::Edge> edges_copy(edges);
+      graph::HookTree tree(0);
+
       const auto start = util::getTime();
-      f(n, edges_copy, n_threads);
+      if (threads > 1)
+        tree = std::move(algorithms::parallelConnectedComponents(n, edges, threads));
+      else
+        tree = std::move(algorithms::serialConnectedComponents(n, edges));
       const auto end = util::getTime();
-      result = util::getDiff(start, end);
+
+      if(n != tree.size())
+          throw(std::logic_error("Something went wrong."));
+
+      const double time = util::getDiff(start, end);
+      out << time  << "\n";
+      result = time;
     }
-
+    out.close();
     const double mean = util::avg(results);
-    const double err = util::stddev(results) / std::sqrt(n_times);
-    return std::make_pair(mean, err);
-  };
-
-  std::ofstream out("result.txt");
-  out << "# n_threads(0 = serial) \t time \t err.\n";
-
-  // Time serial algorithm.
-  out << 0 << "\t" << time(algorithms::serialConnectedComponents, 0) << std::endl;
-
-  std::cout << "Done serial.\n";
-
-  // Time parallel.
-  for (int threads = 1; threads <= max_threads; ++threads) {
-    out << threads << "\t" << time(algorithms::parallelConnectedComponents, threads) << std::endl;
-
-    std::cout << "Done parallel " << threads << ".\n";
+    const double err = util::stddev(results) / std::sqrt(n_repetitions);
+    std::cout << "Time: " << mean << " +- " << err << std::endl;
   }
-
-  out.close();
-
-  return 0;
 }

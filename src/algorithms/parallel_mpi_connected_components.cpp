@@ -37,9 +37,7 @@ unsigned int nextPowerOf2(unsigned int v) {
 graph::HookTree parallelMpiConnectedComponents(graph::Label n_nodes,
                                                std::vector<graph::Edge>& all_edges,
                                                int n_threads_per_node, double* computation_time,
-                                               double* total_time) {
-  const auto start = util::getTime();
-
+                                               double* reduction_time) {
   // get MPI params
   int rank;
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
@@ -97,6 +95,8 @@ graph::HookTree parallelMpiConnectedComponents(graph::Label n_nodes,
   bool done = false;
   std::vector<graph::Label> peer_parents;
 
+  const auto start_redu = util::getTime(); // Note: for accurate timing insert a barrier.
+
   while (n_active_nodes > 1 && !done) {
     if (rank < n_active_nodes / 2) {
       // we are the receiver
@@ -116,7 +116,6 @@ graph::HookTree parallelMpiConnectedComponents(graph::Label n_nodes,
       MPI_Send(myHookTree.getParents().data(), n_nodes, MPI_type, peer_rank, TAG_DATA,
                MPI_COMM_WORLD);
       done = true;
-      //      printf("P_%d: done\n", rank);
     }
     n_active_nodes = n_active_nodes / 2;
   }
@@ -125,8 +124,8 @@ graph::HookTree parallelMpiConnectedComponents(graph::Label n_nodes,
 
   if (computation_time)
     *computation_time = util::getDiff(start_computation, end);
-  if (total_time)
-    *total_time = util::getDiff(start, end);
+  if (reduction_time)
+    *reduction_time = util::getDiff(start_redu, end);
 
   return myHookTree;
 }
