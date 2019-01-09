@@ -20,6 +20,14 @@ public:
   HookTree(std::vector<Label>&& labels);
 
   HookTree& operator+=(const HookTree& rhs);
+  HookTree(HookTree&& tree): parent_(std::move(tree.parent_)){}
+
+  HookTree& operator=(HookTree&& tree){
+    parent_ = std::move(tree.parent_);
+    return *this;
+  }
+
+  void merge(const HookTree& rhs, int n_threads);
 
   // Hooks i to j. No check is performed on the inputs.
   void hook(Label i, Label j);

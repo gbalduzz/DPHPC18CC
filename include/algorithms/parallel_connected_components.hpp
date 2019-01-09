@@ -7,7 +7,7 @@
 
 namespace algorithms {
 
-graph::HookTree parallelConnectedComponents(unsigned int n, std::vector<graph::Edge>& edges,
+graph::HookTree parallelConnectedComponents(unsigned int n, const std::vector<graph::Edge>& edges,
                                             int n_threads);
 
 }  // algorithms

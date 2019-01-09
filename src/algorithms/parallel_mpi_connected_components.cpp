@@ -37,9 +37,7 @@ unsigned int nextPowerOf2(unsigned int v) {
 graph::HookTree parallelMpiConnectedComponents(graph::Label n_nodes,
                                                std::vector<graph::Edge>& all_edges,
                                                int n_threads_per_node, double* computation_time,
-                                               double* total_time) {
-  const auto start = util::getTime();
-
+                                               double* reduction_time) {
   // get MPI params
   int rank;
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
@@ -57,25 +55,28 @@ graph::HookTree parallelMpiConnectedComponents(graph::Label n_nodes,
 
   // scatter edges to all nodes
   const int buff_size = ceilDiv(n_edges, comm_size);
-  std::vector<graph::Edge> my_edges(buff_size);
-  if (rank == 0) {
-    //      printf("start scattering\n");
 
-    // Pad the edges with -1.
-    int sendbuffsize = comm_size * buff_size;
-    all_edges.resize(sendbuffsize);
-    std::fill(all_edges.begin() + n_edges, all_edges.end(), graph::Edge(-1, -1));
+  std::vector<graph::Edge> my_edges;
+
+  if (comm_size > 1 && rank == comm_size - 1) {
+    my_edges.resize(n_edges - (buff_size * (comm_size - 1)));
+  }
+  else {
+    my_edges.resize(buff_size);
   }
 
   // scatter edges
   if (rank == 0) {
-    for (int dest = 1; dest < comm_size; ++dest)
-      checkMPI(MPI_Send(all_edges.data() + buff_size * dest, buff_size * sizeof(graph::Edge),
+    for (int dest = 1; dest < comm_size; ++dest) {
+      const std::size_t sent_edges =
+          dest != comm_size - 1 ? buff_size : n_edges - (buff_size * (comm_size - 1));
+      checkMPI(MPI_Send(all_edges.data() + buff_size * dest, sent_edges * sizeof(graph::Edge),
                         MPI_CHAR, dest, 0, MPI_COMM_WORLD));
+    }
     std::copy_n(all_edges.data(), my_edges.size(), my_edges.data());
   }
   else {
-    checkMPI(MPI_Recv(my_edges.data(), buff_size * sizeof(graph::Edge), MPI_CHAR, 0, 0,
+    checkMPI(MPI_Recv(my_edges.data(), my_edges.size() * sizeof(graph::Edge), MPI_CHAR, 0, 0,
                       MPI_COMM_WORLD, MPI_STATUS_IGNORE));
   }
 
@@ -93,6 +94,8 @@ graph::HookTree parallelMpiConnectedComponents(graph::Label n_nodes,
   constexpr int TAG_DATA = 20;
   bool done = false;
   std::vector<graph::Label> peer_parents;
+
+  const auto start_redu = util::getTime(); // Note: for accurate timing insert a barrier.
 
   while (n_active_nodes > 1 && !done) {
     if (rank < n_active_nodes / 2) {
@@ -113,7 +116,6 @@ graph::HookTree parallelMpiConnectedComponents(graph::Label n_nodes,
       MPI_Send(myHookTree.getParents().data(), n_nodes, MPI_type, peer_rank, TAG_DATA,
                MPI_COMM_WORLD);
       done = true;
-      //      printf("P_%d: done\n", rank);
     }
     n_active_nodes = n_active_nodes / 2;
   }
@@ -122,8 +124,8 @@ graph::HookTree parallelMpiConnectedComponents(graph::Label n_nodes,
 
   if (computation_time)
     *computation_time = util::getDiff(start_computation, end);
-  if (total_time)
-    *total_time = util::getDiff(start, end);
+  if (reduction_time)
+    *reduction_time = util::getDiff(start_redu, end);
 
   return myHookTree;
 }
