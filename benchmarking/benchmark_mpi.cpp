@@ -35,7 +35,7 @@ int main(int argc, char** argv) {
     util::GraphReader::readCommAvoidingInput(filename, edges, n);
     std::cout << "Loaded graph.\n";
   }
-  concurrency.broadcast(n);
+  //  concurrency.broadcast(n);
   std::vector<double> results(n_repetitions);
 
   if (concurrency.id() == 0) {

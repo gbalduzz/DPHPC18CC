@@ -34,7 +34,8 @@ unsigned int nextPowerOf2(unsigned int v) {
   return v;
 }
 
-graph::HookTree parallelMpiConnectedComponents(graph::Label n_nodes, std::vector<graph::Edge>& all_edges,
+graph::HookTree parallelMpiConnectedComponents(graph::Label n_nodes,
+                                               std::vector<graph::Edge>& all_edges,
                                                int n_threads_per_node, double* computation_time,
                                                double* total_time) {
   const auto start = util::getTime();
@@ -51,7 +52,8 @@ graph::HookTree parallelMpiConnectedComponents(graph::Label n_nodes, std::vector
   // broadcast number of edges
 
   auto MPI_type = parallel::MPITypeMap<Label>::value();
-  checkMPI(MPI_Bcast(&n_edges, 1, MPI_type, 0, MPI_COMM_WORLD));
+  checkMPI(MPI_Bcast(&n_edges, sizeof(Label), MPI_CHAR, 0, MPI_COMM_WORLD));
+  checkMPI(MPI_Bcast(&n_nodes, sizeof(Label), MPI_CHAR, 0, MPI_COMM_WORLD));
 
   // scatter edges to all nodes
   const int buff_size = ceilDiv(n_edges, comm_size);
@@ -66,13 +68,16 @@ graph::HookTree parallelMpiConnectedComponents(graph::Label n_nodes, std::vector
   }
 
   // scatter edges
-  // TODO : consider an MPI custom type.
-  MPI_Scatter(all_edges.data(), 2 * buff_size, MPI_type, my_edges.data(), 2 * buff_size,
-              MPI_type, 0, MPI_COMM_WORLD);
-
-  // if (rank == 0) {
-  //  printf("finished scattering\n");
-  //}
+  if (rank == 0) {
+    for (int dest = 1; dest < comm_size; ++dest)
+      checkMPI(MPI_Send(all_edges.data() + buff_size * dest, buff_size * sizeof(graph::Edge),
+                        MPI_CHAR, dest, 0, MPI_COMM_WORLD));
+    std::copy_n(all_edges.data(), my_edges.size(), my_edges.data());
+  }
+  else {
+    checkMPI(MPI_Recv(my_edges.data(), buff_size * sizeof(graph::Edge), MPI_CHAR, 0, 0,
+                      MPI_COMM_WORLD, MPI_STATUS_IGNORE));
+  }
 
   // Start the timer.
   MPI_Barrier(MPI_COMM_WORLD);
