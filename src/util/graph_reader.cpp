@@ -1,9 +1,9 @@
 #include "util/graph_reader.hpp"
 #include "io/json11.hpp"
 #include <sstream>
-#include <boost/property_tree/ptree.hpp>
-#include <boost/property_tree/json_parser.hpp>
-#include <boost/foreach.hpp>
+//#include <boost/property_tree/ptree.hpp>
+//#include <boost/property_tree/json_parser.hpp>
+//#include <boost/foreach.hpp>
 #include <iostream>
 
 using namespace std;
@@ -14,7 +14,7 @@ namespace util {
 // Ignore lines that start with '#', as those are comments.
 // If not # or number, will throw error!
 // Does not check for duplicates and similar.
-vector<graph::Edge> GraphReader::read_graph_from_adjacency_list(string filename) {
+/*vector<graph::Edge> GraphReader::read_graph_from_adjacency_list(string filename) {
   ifstream adjacency_list;
 
   adjacency_list.open(filename);
@@ -45,50 +45,7 @@ vector<graph::Edge> GraphReader::read_graph_from_adjacency_list(string filename)
 
   return edge_list;
 };
-
-/**
- * Decided against this...
- * Keep it for now as I might reconsider :)
- * */
-vector<vector<graph::Label>> GraphReader::read_connected_components_from_json(string filename) {
-  /** TODO TALK ABOUT ACTUALLY USEFUL JSON PARSER!!*/
-
-  boost::property_tree::ptree pt;
-  boost::property_tree::read_json(filename, pt);
-  // vector<ConnectedComponent
-  for (auto it : pt) {
-    for (auto i : it.second) {
-      std::cout << i.second.data() << endl;
-    }
-  }
-  vector<graph::Edge> edge_list;
-  vector<vector<graph::Label>> edges;
-  return edges;
-}
-
-std::vector<graph::Edge> GraphReader::read_graph_from_paramat(string filename) {
-  ifstream file;
-
-  file.open(filename);
-  if (!file) {
-    exit(1);
-  }
-
-  vector<graph::Edge> edge_list;
-  string content;
-  getline(file, content);
-  getline(file, content);
-  while (!file.eof()) {
-    vector<string> nr;
-    boost::split(nr, content, [](char c) { return c == ' '; });
-    edge_list.push_back(graph::Edge(std::stoi(nr[0]), std::stoi(nr[1])));
-  }
-
-  file.close();
-
-  return edge_list;
-}
-
+*/
 void GraphReader::readCommAvoidingInput(const std::string& filename,
                                         std::vector<graph::Edge>& edges, graph::Label& nodes) {
   int n_edges, w;
@@ -112,7 +69,7 @@ void GraphReader::readCommAvoidingInput(const std::string& filename,
  * Otherwise: Comment or similar
  *
  * */
-std::vector<graph::Edge> GraphReader::read_graph_from_DIMACS_challenge(string filename) {
+/*std::vector<graph::Edge> GraphReader::read_graph_from_DIMACS_challenge(string filename) {
   ifstream file;
 
   file.open(filename);
@@ -191,7 +148,7 @@ void GraphReader::read_graph_from_DIMACS_challenge_to_file(string filename) {
   file.close();
   outfile.close();
 }
-
+*/
 int GraphReader::vertexNumber(const std::vector<graph::Edge>& edges) {
   graph::Label max_id = 0;
   for (const auto& edge : edges) {
