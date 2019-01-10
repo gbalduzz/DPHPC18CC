@@ -1,4 +1,4 @@
-\mypar{Connected components.}
+\mypar{Connected components}
 %Precisely define sorting problem you consider.
 %\mypar{Sorting algorithms}
 %Explain the algorithm you use including their costs.
@@ -12,7 +12,7 @@ of connected subgraphs, where connected means that for any two  vertices, there 
 The straightforward algorithm to find them is to perform either a breath or depth first search from a starting
 random vertex in $V$, and give the same label to all the touched vertices. Then repeat the search from an unlabelled vertex
 until there are no more left.
-This has a cost in terms of memory accesses of $O(\abs{E} + \abs{V})$, which turns to be optimal \cite{Hopcroft}.
+This has a cost in terms of memory accesses of $\Theta(\abs{E} + \abs{V})$, which turns to be optimal \cite{Hopcroft}.
 
 \section{Proposed Algorithm}\label{sec:yourmethod}
 %Now comes the ``beef'' of the report, where you explain what you
@@ -30,7 +30,6 @@ We defining a star as a three of height one, a singleton a tree with a single el
  $n=\abs{V}$ and $m=\abs{E}$.
 His algorithm can be summarized as:
 
-% TODO
 \begin{algorithm}%[H]
     \caption{Pavel Tvrdik's Connected components}
     \label{algorithm:cc1}
@@ -48,7 +47,7 @@ His algorithm can be summarized as:
         \For{$\left<i, j\right> \in \text{edges}$} \Comment{Execute in parallel.}
           \State  \kif isStar(i) \kand $i \neq j$ \kthen Hook($i, j$)
         \EndFor
-        \State $p[i] = \text{root}(i) \quad \forall i \in \{1,\cdots, n\}$ \Comment{Compress the forest.}
+        \State $p[i] = \text{root}(i) \quad \forall i \in \{1,\cdots, n\}$ \Comment{Compress the forest in parallel.}
         \EndWhile
         \EndProcedure
    \end{algorithmic}
@@ -82,3 +81,35 @@ compared to \verb|std::atomic_compare_exchange_strong| offers better performance
 
 
 In pseudocode our algorithm is:
+
+\begin{algorithm}%[H]
+    \caption{Proposed algorithm}
+    \label{algorithm:cc2}
+    \begin{algorithmic}[1]
+        \Procedure{connectedComponents}{$n, \text{edges}$}
+        \State $p[i] = i \quad \forall i \in \{1,\cdots, n\}$. %\Comment{Initialize a list of parents.}
+        \For{$\left<i, j\right> \in \text{edges}$} \Comment{Execute in parallel.}
+        \While{hook is not successful.}
+                \State from = max(root(i), root(j))
+                \State to = mint(root(i), root(j))
+                \State  atomicHook(from, to)
+        \EndWhile
+        \State  \kif !isRoot(i) \kthen p[i] = root(i) \label{algorithm:step:skip_connection}
+        \State  \kif !isRoot(j) \kthen p[j] = root(j)
+        \EndFor
+        \State $p[i] = \text{root}(i) \quad \forall i \in \{1,\cdots, n\}$ \Comment{Compress the forest in parallel.}
+        \EndProcedure
+    \end{algorithmic}
+\end{algorithm}
+
+While the step \ref{algorithm:step:skip_connection} is not necessary for correctness, we found that
+reusing the already computed vertex's representative leads to a smaller tree height. This and the parallel compression works and was tested to
+be efficient only on architectures such as x86, where writes to 32 or 64-bits variables storing a label are atomic.
+
+The overall cost of the algorithm is $\Theta((n + m)\langle H \rangle)$, where $\langle H \rangle$ is
+the average tree height. Theefore $\langle H \rangle = \Theta(1)$ for a subcritical random graph, and on average (relatively to the execution order of the loop) $\langle H \rangle = \Theta(\log(n))$
+for a supercrital one \cite{RandomGraph}.
+
+\mypar{Multiple compute nodes}
+
+
