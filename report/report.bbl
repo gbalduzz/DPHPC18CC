@@ -1,0 +1,30 @@
+\begin{thebibliography}{1}
+
+\bibitem{Hopcroft}
+John Hopcroft and Robert Tarjan,
+\newblock ``Algorithm 447: Efficient algorithms for graph manipulation,''
+\newblock {\em Commun. ACM}, vol. 16, no. 6, pp. 372--378, June 1973.
+
+\bibitem{PCompClass}
+Pavel Tvrdik,
+\newblock ``Topics in parallel computing,'' Lecture, May 1999.
+
+\bibitem{Boost}
+Oliver Kowalke,
+\newblock ``Boost fibers library,'' 2013.
+
+\bibitem{RandomGraph}
+P.~Erd\"{o}s and A.~R\'{e}nyi,
+\newblock ``On random graphs i,''
+\newblock {\em Publicationes Mathematicae Debrecen}, vol. 6, pp. 290, 1959.
+
+\bibitem{Euler}
+``Euler cluster,'' .
+
+\bibitem{Parmat}
+Farzad Khorasani, Rajiv Gupta, and Laxmi~N. Bhuyan,
+\newblock ``Scalable simd-efficient graph processing on gpus,''
+\newblock in {\em Proceedings of the 24th International Conference on Parallel
+  Architectures and Compilation Techniques}, 2015, PACT '15, pp. 39--50.
+
+\end{thebibliography}
