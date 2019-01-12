@@ -17,7 +17,7 @@ The results in \autoref{fig:mpi_omp_commavoiding_euler} show the communication a
 \begin{figure}
 \begin{subfigure}[c]{0.15\textwidth}
 \includegraphics[width=\textwidth]{plots/50000our_impl}
-\subcaption{$10^{5}$ vertices}
+\subcaption{$5\cdot10^{5}$ vertices}
 \label{fig:mpi_omp_commavoiding_euler_1}
 \end{subfigure}
 \begin{subfigure}[c]{0.15\textwidth}
@@ -30,7 +30,7 @@ The results in \autoref{fig:mpi_omp_commavoiding_euler} show the communication a
 \subcaption{$2\cdot10^{7}$ vertices}
 \label{fig:mpi_omp_commavoiding_euler_3}
 \end{subfigure}
-\caption{Total runtime of three different graphs each with $10^{5}$ edges. The experiment was run on the Euler cluster.}
+\caption{Total runtime of three different graphs each with $5\cdot10^{8}$ edges. The experiment was run on the Euler cluster.}
 \label{fig:mpi_omp_commavoiding_euler}
 \end{figure}
 
@@ -40,7 +40,7 @@ As seen in \autoref{fig:mpi_omp_commavoiding_euler} there is a distinct differen
 \begin{figure}
 \includegraphics[width=0.5\textwidth]{plots/20000mpi_mixtures_with_everything}
 \subcaption{$2\cdot10^{7}$ vertices}
-\caption{Total runtime breakdown on graph with $10^{5}$ edges and $2\cdot10^{7}$ vertices. The experiment was run on the Euler cluster.}
+\caption{Total runtime breakdown on graph with $5\cdot10^{8}$ edges and $2\cdot10^{7}$ vertices. The experiment was run on the Euler cluster.}
 \label{fig:mixed_euler}
 \end{figure}
 
@@ -59,7 +59,7 @@ As seen in \autoref{fig:mpi_omp_commavoiding_euler} there is a distinct differen
 \subcaption{OMP only}
 \label{fig:speedup_omp}
 \end{subfigure}
-\caption{Speedup of MPI only and OMP only version on three different graphs each with $10^{5}$ edges.}
+\caption{Speedup of MPI only and OMP only version on three different graphs each with $5\cdot10^{8}$ edges.}
 \label{fig:speedup}
 \end{figure}
 
