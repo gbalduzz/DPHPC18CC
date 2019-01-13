@@ -16,12 +16,44 @@
 \gdef\HyperFirstAtBeginDocument#1{#1}
 \providecommand\HyField@AuxAddToFields[1]{}
 \providecommand\HyField@AuxAddToCoFields[2]{}
+\citation{683775}
+\citation{Wilson:2006:RCV:1166253.1166292}
+\citation{UDUPA1990355}
+\citation{Ambrosio2001}
+\citation{Hopcroft}
+\citation{MANOHAR1989133}
+\citation{Han:1990:EFP:79147.214077}
+\citation{comm_avoiding}
+\citation{comm_avoiding}
+\citation{article}
 \citation{Hopcroft}
 \citation{PCompPaper}
 \citation{PCompClass}
 \citation{PCompClass}
 \@writefile{toc}{\contentsline {section}{\numberline {1} Introduction}{1}{section.1}}
 \newlabel{sec:intro}{{1}{1}{Introduction}{section.1}{}}
+\@writefile{loc}{\ChangesListline {replaced}{Replaced}{Problems in computer science are often modeled as graphs.}{1}}
+\@writefile{loc}{\ChangesListline {deleted}{Deleted}{the task of}{1}}
+\@writefile{loc}{\ChangesListline {deleted}{Deleted}{the}{1}}
+\@writefile{loc}{\ChangesListline {replaced}{Replaced}{The related problem of strongly connected components will not be discussed in this paper}{1}}
+\@writefile{loc}{\ChangesListline {deleted}{Deleted}{As already mentioned this problem is well-studied both sequentially and in parallel.}{1}}
+\@writefile{loc}{\ChangesListline {added}{Added}{to solve the connected components problem}{1}}
+\@writefile{loc}{\ChangesListline {deleted}{Deleted}{A few}{1}}
+\@writefile{loc}{\ChangesListline {deleted}{Deleted}{would be}{1}}
+\@writefile{loc}{\ChangesListline {added}{Added}{were presented in }{1}}
+\@writefile{loc}{\ChangesListline {added}{Added}{and}{1}}
+\@writefile{loc}{\ChangesListline {added}{Added}{.}{1}}
+\@writefile{loc}{\ChangesListline {deleted}{Deleted}{and}{1}}
+\@writefile{loc}{\ChangesListline {added}{Added}{was published,}{1}}
+\@writefile{loc}{\ChangesListline {deleted}{Deleted}{they used}{1}}
+\@writefile{loc}{\ChangesListline {added}{Added}{was discussed}{1}}
+\@writefile{loc}{\ChangesListline {added}{Added}{computational}{1}}
+\@writefile{loc}{\ChangesListline {deleted}{Deleted}{in the computation}{1}}
+\@writefile{loc}{\ChangesListline {replaced}{Replaced}{In this paper we present an algorithm which distributes the work while still avoiding as much communication as possible.}{1}}
+\pgfsyspdfmark {pgfid1}{13894593}{8685466}
+\@writefile{loc}{\ChangesListline {deleted}{Deleted}{In a additional step we distributed the list of edges evenly among different MPI proccesses. This allows us to outperform the communication avoiding approach especially on denser graphs. Our approach perfroms significantly worse on a small amount of nodes (n$\leq $ 5) but as we increase the total number of cores the benefits of our algorithms starts to show.}{1}}
+\pgfsyspdfmark {pgfid2}{400848}{8683173}
+\pgfsyspdfmark {pgfid3}{2514383}{8464283}
 \@writefile{toc}{\contentsline {section}{\numberline {2} Proposed Algorithm}{1}{section.2}}
 \newlabel{sec:yourmethod}{{2}{1}{Proposed Algorithm}{section.2}{}}
 \@writefile{loa}{\contentsline {algorithm}{\numberline {1}{\ignorespaces Pavel Tvrdik's Connected components\relax }}{1}{algorithm.1}}
@@ -46,16 +78,17 @@
 \newlabel{sub@fig:mpi_omp_commavoiding_euler_3}{{c}{3}{$2\cdot 10^{7}$ vertices\relax }{figure.caption.1}{}}
 \@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Total runtime of three different graphs each with $5\cdot 10^{8}$ edges. The experiment was run on the Euler cluster.\relax }}{3}{figure.caption.1}}
 \newlabel{fig:mpi_omp_commavoiding_euler}{{1}{3}{Total runtime of three different graphs each with $5\cdot 10^{8}$ edges. The experiment was run on the Euler cluster.\relax }{figure.caption.1}{}}
-\newlabel{fig:mixed_euler}{{2b}{3}{Total runtime breakdown on graph with $5\cdot 10^{8}$ edges and $2\cdot 10^{7}$ vertices. The experiment was run on the Euler cluster.\relax }{figure.caption.2}{}}
-\newlabel{sub@fig:mixed_euler}{{b}{3}{Total runtime breakdown on graph with $5\cdot 10^{8}$ edges and $2\cdot 10^{7}$ vertices. The experiment was run on the Euler cluster.\relax }{figure.caption.2}{}}
 \bibstyle{IEEEbib}
 \bibdata{bibl_conf}
 \bibcite{Hopcroft}{1}
-\bibcite{PCompClass}{2}
-\bibcite{Boost}{3}
-\bibcite{RandomGraph}{4}
-\bibcite{Euler}{5}
-\bibcite{Parmat}{6}
+\bibcite{article}{2}
+\bibcite{PCompClass}{3}
+\bibcite{Boost}{4}
+\bibcite{RandomGraph}{5}
+\bibcite{Euler}{6}
+\bibcite{Parmat}{7}
+\newlabel{fig:mixed_euler}{{2b}{4}{Total runtime breakdown on graph with $5\cdot 10^{8}$ edges and $2\cdot 10^{7}$ vertices. The experiment was run on the Euler cluster.\relax }{figure.caption.2}{}}
+\newlabel{sub@fig:mixed_euler}{{b}{4}{Total runtime breakdown on graph with $5\cdot 10^{8}$ edges and $2\cdot 10^{7}$ vertices. The experiment was run on the Euler cluster.\relax }{figure.caption.2}{}}
 \newlabel{fig:speedup_mpi}{{3a}{4}{MPI only\relax }{figure.caption.3}{}}
 \newlabel{sub@fig:speedup_mpi}{{a}{4}{MPI only\relax }{figure.caption.3}{}}
 \newlabel{fig:speedup_omp}{{3b}{4}{OMP only\relax }{figure.caption.3}{}}

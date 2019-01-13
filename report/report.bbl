@@ -5,6 +5,10 @@ John Hopcroft and Robert Tarjan,
 \newblock ``Algorithm 447: Efficient algorithms for graph manipulation,''
 \newblock {\em Commun. ACM}, vol. 16, no. 6, pp. 372--378, June 1973.
 
+\bibitem{article}
+,''
+\newblock .
+
 \bibitem{PCompClass}
 Pavel Tvrdik,
 \newblock ``Topics in parallel computing,'' Lecture, May 1999.
