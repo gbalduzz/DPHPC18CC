@@ -6,7 +6,7 @@ namespace algorithms {
 
 graph::HookTree parallelConnectedComponents(const unsigned n, const std::vector<graph::Edge>& edges,
                                             const int n_threads) {
-  const unsigned int m = edges.size();
+  const std::size_t m = edges.size();
 
   if (n_threads > 0) {
     omp_set_num_threads(n_threads);
@@ -18,7 +18,7 @@ graph::HookTree parallelConnectedComponents(const unsigned n, const std::vector<
 
   while (failures) {
     failures = false;
-#pragma omp parallel for schedule(dynamic, 5000)
+#pragma omp parallel for schedule(static)
     for (unsigned int e_id = 0; e_id < m; ++e_id) {
       auto& edge = edges[e_id];
 //      if (!edge.isValid())
