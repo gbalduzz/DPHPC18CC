@@ -18,13 +18,21 @@ graph::HookTree parallelConnectedComponents(const unsigned n, const std::vector<
 
   while (failures) {
     failures = false;
-#pragma omp parallel for schedule(static)
-    for (unsigned int e_id = 0; e_id < m; ++e_id) {
-      auto& edge = edges[e_id];
-//      if (!edge.isValid())
-//        continue;
+    const bool static_blocks = (edges.size() / n) > 900;
 
-      tree.hookToMinSafe(edge.first, edge.second);
+    if (static_blocks) {
+#pragma omp parallel for schedule(static)
+      for (unsigned int e_id = 0; e_id < m; ++e_id) {
+        auto& edge = edges[e_id];
+        tree.hookToMinSafe(edge.first, edge.second);
+      }
+    }
+    else {
+#pragma omp parallel for schedule(dynamic, 50000)
+      for (unsigned int e_id = 0; e_id < m; ++e_id) {
+        auto& edge = edges[e_id];
+        tree.hookToMinSafe(edge.first, edge.second);
+      }
     }
 
 #pragma omp parallel for schedule(dynamic, 5000)
