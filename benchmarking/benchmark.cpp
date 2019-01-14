@@ -28,7 +28,7 @@ int main(int argc, char** argv) {
   for (int threads = 1; threads < max_threads + 1; ++threads) {
     std::cout << "Threads:" << threads << std::endl;
 
-    const std::string outname = output_prename + "_" + std::to_string(threads) + ".txt";
+    const std::string outname = output_prename + "_" + std::to_string(threads) + "_t.txt";
     std::ofstream out(outname);
     std::vector<double> results(n_repetitions);
 
