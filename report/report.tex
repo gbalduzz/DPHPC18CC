@@ -56,10 +56,7 @@
 %or use other tricks to squeeze. This pdf is formatted in the American letter format, so the spacing may look a bit strange when printed out.
 
 \begin{abstract}
-%Describe in concise words what you do, why you do it (not necessarily
-%in this order), and the main result.  The abstract has to be
-%self-contained and readable for a person in the general area. You
-%should write the abstract last.
+We present an implementation of a tree based connected components algorithm original by \cite{PCompArticle}. In order to improve the parallel performance of the algorithm we distribute the edges of the graph across multiple cores. Each of them computes a local forest, representing different connected components, which then gets reduced by comparing to the results of other processes. Finally we compare against a communication avoiding approach by \cite{comm_avoiding} where we can show improvement.
 \end{abstract}
 
 \section{Introduction}\label{sec:intro}
