@@ -54,12 +54,18 @@ def plot(data, label):
     error = np.array([data[:,2], data[:,3]])
     plt.errorbar(data[:,0], data[:,1], yerr=error, fmt='--o', label=label)
 
+def format(n): # return an easily readable string.
+    if n >= 1e3 and n < 1e6 : return str(n / 1000) + 'k'
+    elif n >= 1e6 and n < 1e9 : return str(n / 1e6) + 'M'
+    else : return str(n)
+
+
 #font
 font = {'family' : 'normal',
         'size'   : 11}
 plt.rc('font', **font)
 
-n_vertices=[500000, 1000000, 2000000]
+n_vertices=[500000, 10000000, 20000000]
 
 #plot_gcc = 0
 fig_id = 0
@@ -94,13 +100,12 @@ for vertices in n_vertices:
     plt.xlabel('Cores')
     plt.ylabel('runtime [s]')
 
-    plt.title('500M edges, ' + str(int(vertices / 1000)) + 'k vertices.')
+    plt.title('500M edges, ' + format(vertices) + 'k vertices.')
     plt.legend(loc='best')
 
     ax.xaxis.set_major_locator(MaxNLocator(integer=True))
 
-    #if save : plt.savefig(str(vertices) + '.png', format='png', dpi=900)
-    if save : plt.savefig('all_vertices_' + str(vertices) + '.pdf')
+    if save : plt.savefig('all_vertices_' + format(vertices) + '.pdf')
 
     fig_id += 1
 
