@@ -26,21 +26,25 @@ inline std::array<graph::Label, 2> partition(graph::Label nx, graph::Label ny, i
   Label tx = round(tx_f);
   Label ty = p / tx;
 
-  // Ensure tx and ty are divisiors of p.
+  // Ensure tx and ty are divisors of p.
   if (tx * ty != p) {
     auto divisor = [](Label a, Label b) -> bool { return a / b * b == a; };
 
     const int first_guess = tx > tx_f ? -1 : 1;
 
-    for (int delta = 1; delta < p / 2; ++delta)
+    bool found = false;
+    for (int delta = 1; delta < p / 2 && !found; ++delta)
       for (int sign : std::array<int, 2>{first_guess, -first_guess})
         if (divisor(p, (tx + sign * delta))) {
           tx = tx + sign * delta;
           ty = p / tx;
-          goto loop_exit;
+          found = true;
         }
+    if (!found) {
+      tx = 1;
+      ty = p;
+    }
   }
-loop_exit:
 
   assert(tx >= 1 && ty >= 1 && tx * ty == p);
   return std::array<Label, 2>{tx, ty};
