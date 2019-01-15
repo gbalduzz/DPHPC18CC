@@ -23,20 +23,22 @@ def confidenceInterval(data, prob_interval) :
     interval = distro.interval(prob_interval)
     return point, interval[0], interval[1]
 
-def get_num(string, key):
-    match = re.search('[0-9]+_' + key, string).group(0)
+def get_num(string, key, label_first = 0):
+    match = re.search(key + '_[0-9]+' if label_first else '[0-9]+_' + key, string).group(0)
     res = re.search('[0-9]+', match).group(0)
     return int(res)
 
 def sortFirst(data) :
     return data[np.lexsort(np.fliplr(data).T)]
 
-def load(filenames, separator = '\t', col = 0, dtype = np.float, cores_key = 'procs'):
+def load(filenames, separator = '\t', col = 0, dtype = np.float):
     data = []
     for filename in filenames:
         try:
             file = np.loadtxt(filename, comments='#', delimiter=separator, dtype = dtype)
-            procs = get_num(filename, cores_key)
+            cores = get_num(filename, 'cores')
+            threads = get_num(filename, 't', 1)
+            procs = int(cores / threads)
 
             times = np.zeros(file.shape[0])
             for i in range(len(times)):
@@ -64,45 +66,30 @@ font = {'family' : 'normal',
         'size'   : 11}
 plt.rc('font', **font)
 
-n_vertices=[500000, 10000000, 20000000]
+probs=[0.25, 0.5]#, 0.75]
 
-#plot_gcc = 0
 fig_id = 0
 
-for vertices in n_vertices:
+for prob in probs:
     plt.figure(fig_id)
 
-    filenames_theirs = glob.glob('./outputs/theirs_'+ str(vertices) + '_*')
-    filenames = glob.glob('./outputs/ours_cray_'+ str(vertices) + '_*')
-    filenames2 = glob.glob('./outputs/ours_cray_t2_'+ str(vertices) + '_*')
-    filenames4 = glob.glob('./outputs/ours_cray_t4_'+ str(vertices) + '_*')
-    filenames8 = glob.glob('./outputs/ours_cray_t8_'+ str(vertices) + '_*')
-    filenames_omp = glob.glob('./outputs/omp_cray_'+ str(vertices) + '_*')
+    filenames_red = glob.glob('./grid_outputs/*' + str(prob) + '_p_*reduction.txt')
+    filenames_dist = glob.glob('./grid_outputs/*' + str(prob) + '_p_*distributed.txt')
 
-    dtype = {'names': ('file', 'arg1', 'arg2', 'v', 'e', 'time', 'ctime','alg','comp'),
-            'formats': (np.str, np.int, np.int, np.int, np.int, np.float, np.float, np.str, np.int)}
 
-    data = load(filenames)
-    data2 = load(filenames2)
-    data4 = load(filenames4)
-    data8 = load(filenames8)
-    data_omp = load(filenames_omp, cores_key='t')
-    data_theirs = load(filenames_theirs, ',', 5, dtype)
+    data_red = load(filenames_red)
+    data_dist = load(filenames_dist)
 
     ax = plt.figure().gca()
 
-    plot(data, 'mpi 1 thread')
-    plot(data2, 'mpi 2 threads')
-    plot(data4, 'mpi 4 threads')
-    plot(data8, 'mpi 8 threads')
-    plot(data_omp, 'omp only')
-    plot(data_theirs, 'comm avoiding')
+    plot(data_red, 'mpi reduction')
+    plot(data_dist, 'distributed')
 
 
-    plt.xlabel('cores')
+    plt.xlabel('processes')
     plt.ylabel('runtime [s]')
 
-    plt.title('500M edges, ' + format(vertices) + ' vertices.')
+    plt.title('Edge probability: ' + str(prob))
     plt.legend(loc='best')
 
     ax.xaxis.set_major_locator(MaxNLocator(integer=True))
@@ -111,4 +98,4 @@ for vertices in n_vertices:
 
     fig_id += 1
 
-save : plt.show()
+if not save : plt.show()
