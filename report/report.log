@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.19 (MiKTeX 2.9.6630 64-bit) (preloaded format=pdflatex 2018.3.14)  15 JAN 2019 09:11
+This is pdfTeX, Version 3.14159265-2.6-1.40.19 (MiKTeX 2.9.6630 64-bit) (preloaded format=pdflatex 2018.3.14)  15 JAN 2019 10:08
 entering extended mode
 **./report.tex
 (report.tex
@@ -867,9 +867,9 @@ re
  []
 
 ) (results.tex
-Overfull \hbox (0.35727pt too wide) in paragraph at lines 11--16
-\OT1/ptm/m/n/10 com-mu-ni-ca-tion avoid-ing al-go-rithm on three dif-fer-ent gr
-aphs
+Overfull \hbox (3.20758pt too wide) in paragraph at lines 11--16
+\OT1/ptm/m/n/10 only ver-sion speed-ing up as the graph be-comes sparser, while
+
  []
 
 Package epstopdf Info: Source file: <plots/50000our_impl.eps>
@@ -882,7 +882,7 @@ Package epstopdf Info: Source file: <plots/50000our_impl.eps>
 verted-to.pdf plots/50000our_impl.eps>
 (epstopdf)             \includegraphics on input line 19.
 Package epstopdf Info: Output file is already uptodate.
-<plots/50000our_impl-eps-converted-to.pdf, id=93, 722.7pt x 722.7pt>
+<plots/50000our_impl-eps-converted-to.pdf, id=94, 722.7pt x 722.7pt>
 File: plots/50000our_impl-eps-converted-to.pdf Graphic file (type pdf)
 <use plots/50000our_impl-eps-converted-to.pdf>
 Package pdftex.def Info: plots/50000our_impl-eps-converted-to.pdf  used on inpu
@@ -898,7 +898,7 @@ Package epstopdf Info: Source file: <plots/10000our_impl.eps>
 verted-to.pdf plots/10000our_impl.eps>
 (epstopdf)             \includegraphics on input line 24.
 Package epstopdf Info: Output file is already uptodate.
-<plots/10000our_impl-eps-converted-to.pdf, id=94, 722.7pt x 722.7pt>
+<plots/10000our_impl-eps-converted-to.pdf, id=95, 722.7pt x 722.7pt>
 File: plots/10000our_impl-eps-converted-to.pdf Graphic file (type pdf)
 <use plots/10000our_impl-eps-converted-to.pdf>
 Package pdftex.def Info: plots/10000our_impl-eps-converted-to.pdf  used on inpu
@@ -914,7 +914,7 @@ Package epstopdf Info: Source file: <plots/20000our_impl.eps>
 verted-to.pdf plots/20000our_impl.eps>
 (epstopdf)             \includegraphics on input line 29.
 Package epstopdf Info: Output file is already uptodate.
-<plots/20000our_impl-eps-converted-to.pdf, id=95, 722.7pt x 722.7pt>
+<plots/20000our_impl-eps-converted-to.pdf, id=96, 722.7pt x 722.7pt>
 File: plots/20000our_impl-eps-converted-to.pdf Graphic file (type pdf)
 <use plots/20000our_impl-eps-converted-to.pdf>
 Package pdftex.def Info: plots/20000our_impl-eps-converted-to.pdf  used on inpu
@@ -960,11 +960,8 @@ Package caption Warning: \subcaption
 (caption)                outside box or environment on input line 43.
 See the caption package documentation for explanation.
 
-
-Underfull \vbox (badness 1147) has occurred while \output is active []
-
- [3]
-<plots/mpi_speedup_with_ref.png, id=107, 462.528pt x 346.896pt>
+[3]
+<plots/mpi_speedup_with_ref.png, id=108, 462.528pt x 346.896pt>
 File: plots/mpi_speedup_with_ref.png Graphic file (type png)
 <use plots/mpi_speedup_with_ref.png>
 Package pdftex.def Info: plots/mpi_speedup_with_ref.png  used on input line 53.
@@ -981,15 +978,14 @@ o.pdf>
 eps-converted-to.pdf plots/omp_speedup_with_ref.eps>
 (epstopdf)             \includegraphics on input line 58.
 Package epstopdf Info: Output file is already uptodate.
-<plots/omp_speedup_with_ref-eps-converted-to.pdf, id=109, 462.72874pt x 346.293
+<plots/omp_speedup_with_ref-eps-converted-to.pdf, id=110, 462.72874pt x 346.293
 75pt>
 File: plots/omp_speedup_with_ref-eps-converted-to.pdf Graphic file (type pdf)
 <use plots/omp_speedup_with_ref-eps-converted-to.pdf>
 Package pdftex.def Info: plots/omp_speedup_with_ref-eps-converted-to.pdf  used 
 on input line 58.
 (pdftex.def)             Requested size: 114.5202pt x 85.70135pt.
-)
-(conclusion.tex)
+) (conclusion.tex)
 Overfull \hbox (7.61661pt too wide) in paragraph at lines 1--108
 \OT1/ptm/m/n/10 par-al-lelism avail-able within shared mem-ory units while avoi
 d-
@@ -1070,7 +1066,7 @@ les/MiKTeX 2.9/fonts/type1/urw/courier/ucrr8a.pfb><C:/Program Files/MiKTeX 2.9/
 fonts/type1/urw/times/utmb8a.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/urw/t
 imes/utmr8a.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/urw/times/utmri8a.pfb>
 
-Output written on report.pdf (5 pages, 324695 bytes).
+Output written on report.pdf (5 pages, 324727 bytes).
 PDF statistics:
  360 PDF objects out of 1000 (max. 8388607)
  34 named destinations out of 1000 (max. 500000)
