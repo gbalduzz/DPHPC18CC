@@ -54,7 +54,7 @@ def load(filenames, separator = '\t', col = 0, dtype = np.float, cores_key = 'pr
 
 def plot(data, label):
     error = np.array([data[:,2], data[:,3]])
-    plt.errorbar(data[:,0], data[:,1], yerr=error, fmt='--o', label=label)
+    plt.errorbar(data[:,0], data[:,1], yerr=error, fmt='--o', label=label, markersize=5)
     if fixed_scale : plt.ylim(0, 18.5)
 
 def format(n): # return an easily readable string.
