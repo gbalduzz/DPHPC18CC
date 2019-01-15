@@ -2,3 +2,9 @@ build
 cmake*
 .idea
 **~
+*.bbl
+*.blg
+*.aux
+*.log
+*.bak
+*.log
