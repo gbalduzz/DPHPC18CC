@@ -11,6 +11,7 @@ from matplotlib.ticker import MaxNLocator
 
 confidence_value = 0.95
 save = 0 if len(argv) <= 1 else argv[1]
+fixed_scale = 0 if len(argv) <= 2 else argv[2]
 
 # Returns point estimate, begin and end of confidence interval.
 def confidenceInterval(data, prob_interval) :
@@ -37,6 +38,7 @@ def load(filenames, separator = '\t', col = 0, dtype = np.float, cores_key = 'pr
         try:
             file = np.loadtxt(filename, comments='#', delimiter=separator, dtype = dtype)
             procs = get_num(filename, cores_key)
+            if procs > 32 : continue
 
             times = np.zeros(file.shape[0])
             for i in range(len(times)):
@@ -52,12 +54,14 @@ def load(filenames, separator = '\t', col = 0, dtype = np.float, cores_key = 'pr
 
 def plot(data, label):
     error = np.array([data[:,2], data[:,3]])
-    plt.errorbar(data[:,0], data[:,1], yerr=error, fmt='--o', label=label, markersize=1)
+    plt.errorbar(data[:,0], data[:,1], yerr=error, fmt='--o', label=label)
+    if fixed_scale : plt.ylim(0, 18.5)
 
 def format(n): # return an easily readable string.
     if n >= 1e3 and n < 1e6 : return str(int(n / 1000)) + 'k'
     elif n >= 1e6 and n < 1e9 : return str(int(n / 1e6)) + 'M'
     else : return str(n)
+
 
 #font
 font = {'family' : 'normal',
@@ -89,8 +93,8 @@ for vertices in n_vertices:
 
     ax = plt.figure().gca()
 
-    plot(data, 'mpi 1 thread')
-    plot(data2, 'mpi 2 threads')
+    plot(data, 'mpi only')
+    #plot(data2, 'mpi 2 threads')
     plot(data4, 'mpi 4 threads')
     plot(data_omp, 'omp only')
     plot(data_theirs, 'comm avoiding')
@@ -104,8 +108,11 @@ for vertices in n_vertices:
 
     ax.xaxis.set_major_locator(MaxNLocator(integer=True))
 
-    if save : plt.savefig('all_vertices_' + format(vertices) + '.pdf')
+    if save :
+        if fixed_scale : plt.savefig('plot_vertices_fixed_scale_' + format(vertices) + '.pdf')
+        else : plt.savefig('plot_vertices_' + format(vertices) + '.pdf')
+
 
     fig_id += 1
 
-save : plt.show()
+if not save : plt.show()
