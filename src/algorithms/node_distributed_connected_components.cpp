@@ -58,10 +58,9 @@ graph::DistributedHookTree nodeDistributedConnectedComponents(
 
 // Create local forest.
 
-#pragma omp parallel for num_threads(n_threads_per_node) schedule(dynamic, 5000)
+#pragma omp parallel for num_threads(n_threads_per_node) schedule(dynamic, 50000)
   for (Label e_id = 0; e_id < internal_edges.size(); ++e_id) {
     const auto& edge = internal_edges[e_id];
-
     tree.hookToMinSafeLocal(edge.first, edge.second);
   }
 
