@@ -26,6 +26,11 @@ public:
     return edges_;
   }
 
+  // TODO: remove
+  std::vector<Edge>& get_edges() {
+    return edges_;
+  }
+
   Label get_nodes() const {
     return nodes_;
   }
