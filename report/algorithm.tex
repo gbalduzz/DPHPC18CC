@@ -6,11 +6,15 @@
 %As an aside, don't talk about "the complexity of the algorithm.'' It's incorrect,
 %problems have a complexity, not algorithms.
 
-For an \replaced{undirected}{unordered} graph $G=(V,E)$, the connected components are the ensemble
-of connected subgraphs, where connected means that for any two vertices there exists a path along the edges connecting them.
-\replaced{A}{The} straightforward algorithm to find \replaced{the connected components}{them} is to perform either a breath or depth first search \replaced{starting from a}{from a starting} random vertex in $V$, and give the same label to all \deleted{the touched} vertices \added{reached}. \deleted{Then repeat} The search \added{is then repeated, starting} from an unlabeled vertex
-until there are no more \added{unlabeled vertices} left.
-This has a cost in terms of memory accesses of $\Theta(\abs{E} + \abs{V})$, which turns \added{out} to be optimal \cite{Hopcroft}.
+For an undirected graph $G=(V,E)$, the connected components are the ensemble
+of connected subgraphs, where connected means that for any two vertices there exists a path along
+the edges connecting them.
+A straightforward algorithm to find the connected components is to perform either
+a breath or depth first search starting from a random vertex in $V$,
+and give the same label to all vertices reached. The search is then repeated, starting from an
+unlabeled vertex.
+This has a cost in terms of memory accesses of $\Theta(\abs{E} + \abs{V})$, which turns out
+to be optimal \cite{Hopcroft}.
 
 \section{Proposed Algorithm}\label{sec:yourmethod}
 %Now comes the ``beef'' of the report, where you explain what you
@@ -22,13 +26,17 @@ This has a cost in terms of memory accesses of $\Theta(\abs{E} + \abs{V})$, whic
 %Mention and cite any external resources that you used including libraries or other code.
 
 
-Unfortunately this algorithm does not parallelize \replaced{in a straightforward way}{straightforwardly}. Instead we \replaced{first}{firstly} implemented
-an algorithm proposed by Uzi Vishkin \cite{PCompPaper} and later described in a class by Pavel Tvrdik \cite{PCompClass}. This algorithm casts the problem in terms of the generation of a
+Unfortunately this algorithm does not parallelize in a straightforward
+way. Instead we first implemented
+an algorithm proposed by Uzi Vishkin \cite{PCompPaper} and later described in a class by Pavel
+Tvrdik \cite{PCompClass}. This algorithm casts the problem in terms of the generation of a
 forest, where the vertices of the same connected component belong to the same tree, and its root
 can be used as the representative.\\
-We define a star as a tree of height one, a singleton \added{as} a tree with a single element, and use the variables $n=\abs{V}$ and $m=\abs{E}$.
-\replaced{The}{His} algorithm can be summarized as:
+We define a star as a tree of height one, a singleton as a tree with a single element, and
+use the variables $n=\abs{V}$ and $m=\abs{E}$.
+Thealgorithm can be summarized as:
 
+%TODO check
 \begin{algorithm}[H]
     \caption{Pavel Tvrdik's Connected components}
     \label{algorithm:cc1}
@@ -37,7 +45,8 @@ We define a star as a tree of height one, a singleton \added{as} a tree with a s
           \State $p[p[i]] = p[j]$
         \EndProcedure
         \Procedure{connectedComponents}{$n, \text{edges}$}
-          \State $p[i] = i \quad \forall i \in \{1,\cdots, n\}$. \Comment{Initialize a list of parents.}
+          \State $p[i] = i \quad \forall i \in \{1,\cdots, n\}$. \Comment{Initialize a list of
+parents.}
         \While{Elements of $p$ are changed.}
         \For{$\left<i, j\right> \in \text{edges}$} \Comment{Execute in parallel.}
           \State  \kif $i\ge j$ \kthen Hook($i, j$)
@@ -46,36 +55,43 @@ We define a star as a tree of height one, a singleton \added{as} a tree with a s
         \For{$\left<i, j\right> \in \text{edges}$} \Comment{Execute in parallel.}
           \State  \kif isStar(i) \kand $i \neq j$ \kthen Hook($i, j$)
         \EndFor
-        \State $p[i] = \text{root}(i) \quad \forall i \in \{1,\cdots, n\}$ \Comment{Compress the forest in parallel.}
+        \State $p[i] = \text{root}(i) \quad \forall i \in \{1,\cdots, n\}$ \Comment{Compress the
+forest in parallel.}
         \EndWhile
         \EndProcedure
    \end{algorithmic}
 \end{algorithm}
 We defer to \cite{PCompClass} for a proof of correctness.
 
-After implementing this algorithm we found advantageous to remove the constraint
-that only singletons and stars can be hooked to another vertex, so that only a single pass through
-the edge list is required. Extra care is then required during parallel execution: as each vertex \replaced{only has}{has only} one outgoing connection, we need to avoid that a process overwrites a connection that has been formed by another one.
+After implementing this algorithm we found advantageous to remove the constraint that only
+singletons and stars can be hooked to another vertex, so that only a single pass through
+the edge list is required. Extra care is then required during parallel execution: as each vertex
+\replaced{only has}{has only} one outgoing connection, we need to avoid that a process overwrites a
+connection that has been formed by another one.
 We therefore need to grow our forest with the following rules:
 
 \begin{enumerate}
-    \item A hook must originate from a vertex id \replaced{larger}{higher} than the destination.
-    \item All edges must generate a connection between the relative vertices, or vertices at an higher level in their tree.
+    \item A hook must originate from a vertex id larger than the destination.
+    \item All edges must generate a connection between the relative vertices, or vertices at an
+higher level in their tree.
     \item A hook must originate from a vertex that is currently the root of a tree.
 \end{enumerate}
 
-\replaced{An}{The} intuitive proof of correctness follows: rule $1$ means that the graph generated by the
-hooks \replaced{is}{generate} a directed graph \replaced{without}{with no} cycles and \deleted{with} at most a single outgoing connection. Therefore, it must be a forest.
-Rules $2$ and $3$ enforce that after processing an edge between two nodes they belong to the same tree. Rule $3$ guarantees that this connection cannot be broken by a different edge.
-At the end of the algorithm, by following the connections from each vertex to the root, we \deleted{can} find a representative for each connected component.
+An intuitive proof of correctness follows: rule $1$ means that the graph generated
+by the hooks is a directed graph without cycles and
+ at most with a single outgoing connection. Therefore, it must be a forest.
+Rules $2$ and $3$ enforce that after processing an edge between two nodes, they belong to the same
+tree. Rule $3$ guarantees that this connection cannot be broken by a different edge.
+At the end of the algorithm, by following the connections from each vertex to the root, we
+can find a representative for each connected component.
 
 To implement rule $3$ in a multi-threaded environment we use an atomic compare and swap.
-We compare the parent of the hook's origin with its id. If they match it means the vertex is still a root and we
-hook it to its destination. \replaced{For correctness it does not matter}{It does not matter for correctness} if the destination is a root, \deleted[remark=this is really unclear]{}but we try without enforcing to
-hook to a root to minimize the three height.
+We compare the parent of the hook's origin with its id. If they match it means the vertex is still
+a root and we hook it to its destination. For correctness it does not matter if the destination is
+a root, but doing so minimizes the three height.
 We found empirically that using \verb|std::atomic_compare_exchange_weak|,
-compared to \verb|std::atomic_compare_exchange_strong| offers better performance, as we anyway need to loop until a hook is successful.
-
+compared to \verb|std::atomic_compare_exchange_strong| offers better performance, as we anyway need
+to loop until a hook is successful.
 
 In pseudocode our algorithm is:
 
@@ -84,8 +100,10 @@ In pseudocode our algorithm is:
     \label{algorithm:cc2}
     \begin{algorithmic}[1]
         \Procedure{connectedComponents}{$n, \text{edges}$}
-        \State $p[i] = i \quad \forall i \in \{1,\cdots, n\}$. %\Comment{Initialize a list of parents.}
-        \For{$\left<i, j\right> \in \text{edges}$} \Comment{Execute in parallel.} \label{algorithm:step:loop}
+        \State $p[i] = i \quad \forall i \in \{1,\cdots, n\}$. %\Comment{Initialize a list of
+parents.}
+        \For{$\left<i, j\right> \in \text{edges}$} \Comment{Execute in parallel.}
+\label{algorithm:step:loop}
         \While{hook is not successful.}
                 \State from = max(root(i), root(j))
                 \State to = mint(root(i), root(j))
@@ -94,59 +112,86 @@ In pseudocode our algorithm is:
         \State  \kif !isRoot(i) \kthen p[i] = root(i) \label{algorithm:step:skip_connection}
         \State  \kif !isRoot(j) \kthen p[j] = root(j)
         \EndFor
-        \State $p[i] = \text{root}(i) \quad \forall i \in \{1,\cdots, n\}$ \Comment{Compress the forest in parallel.}
+        \State $p[i] = \text{root}(i) \quad \forall i \in \{1,\cdots, n\}$ \Comment{Compress the
+forest in parallel.}
         \EndProcedure
     \end{algorithmic}
 \end{algorithm}
 
 While step \ref{algorithm:step:skip_connection} is not necessary for correctness, we found that
-reusing the already computed vertex's representative leads to a smaller tree height. This and the parallel compression works and was tested to
-be efficient only on architectures such as x86, where writes to 32 or 64-bits , used to store a vertex's id, are atomic.
+reusing the already computed vertex's representative leads to a smaller tree height. This and the
+parallel compression works and was tested to
+be efficient only on architectures such as x86, where writes to 32 or 64-bits , used to store a
+vertex's id, are atomic.
 
-We tried implementing the parallel execution of loop \ref{algorithm:step:loop} with  Boost fibers \cite{Boost}
+We tried implementing the parallel execution of loop \ref{algorithm:step:loop} with  Boost fibers
+\cite{Boost}
 whose execution is scheduled with a work stealing algorithm, and OpenMP with a dynamic scheduler.
 OpenMP performed better by a large margin and will be used to  acquire the data presented later.
 
-The overall cost of the algorithm is $\Theta((n + m)\langle H \rangle)$, where $\langle H \rangle$ is
-the average tree height. Therefore $\langle H \rangle = \Theta(1)$ for a sub-critical random graph, and on average (relatively to the execution order of the loop) $\langle H \rangle = \Theta(\log(n))$
+The overall cost of the algorithm is $\Theta((n + m)\langle H \rangle)$, where $\langle H \rangle$
+is
+the average tree height. Therefore $\langle H \rangle = \Theta(1)$ for a sub-critical random graph,
+and on average (relatively to the execution order of the loop) $\langle H \rangle = \Theta(\log(n))$
 for a supercritical one \cite{RandomGraph}.
 
 \mypar{Multiple compute nodes}
-Algorithm \label{algorithm:cc2} works only on a single compute node with a shared memory model. Moreover it is efficient
-only when the graph is relatively sparse so that the chance of a collision between two processors trying to update the same parent is low.
+Algorithm \label{algorithm:cc2} works only on a single compute node with a shared memory model.
+Moreover it is efficient
+only when the graph is relatively sparse so that the chance of a collision between two processors
+trying to update the same parent is low.
 %TODO reference the data.
 
 We propose to extend our algorithm by distributing the list of edges evenly among each MPI process,
-then each one of them computes a forest used only the subset of edges it received. This local computation
-is followed by a reduction step, where the list of representatives is sent to another process, which confront it
-with its own. If a discrepancy is detected, a hook is inserted between the two different parents, then
+then each one of them computes a forest used only the subset of edges it received. This local
+computation
+is followed by a reduction step, where the list of representatives is sent to another process,
+which confront it
+with its own. If a discrepancy is detected, a hook is inserted between the two different parents,
+then
 the resulting forest is compressed again before the following reduction step.
 
-Using $p$ processes, the total execution time of this extension scales as $\Theta(\frac{(m + n)}{p}\, \langle H \rangle + n\,\log p)$.
+Using $p$ processes, the total execution time of this extension scales as $\Theta(\frac{(m +
+n)}{p}\, \langle H \rangle + n\,\log p)$.
 
 On top of allowing to scale past a single compute node, this approach is advantageous on
-dense graphs: if the reduction cost is negligible, the scaling is the same as algorithm \ref{algorithm:cc2} executed on a single node,
-but we can avoid the cost of performing atomic hooks, if a single thread is used, or limit the number of failures if a few threads are used.
-Therefore a different mixture of MPI ranks and OpenMP threads per rank is advised depending on the density of the graph.
+dense graphs: if the reduction cost is negligible, the scaling is the same as algorithm
+\ref{algorithm:cc2} executed on a single node,
+but we can avoid the cost of performing atomic hooks, if a single thread is used, or limit the
+number of failures if a few threads are used.
+Therefore a different mixture of MPI ranks and OpenMP threads per rank is advised depending on the
+density of the graph.
 
 \mypar{Distributed vertices}
 While the described approach works on generic graphs, it performs poorly on very sparse graphs using
-a large number of compute nodes. Moreover the full set of vertices' id must fit in memory, limiting the
-graph size to $8$ billions vertices. If the connectivity of a graph the size of a human brain needs to be studied,
+a large number of compute nodes. Moreover the full set of vertices' id must fit in memory, limiting
+the
+graph size to $8$ billions vertices. If the connectivity of a graph the size of a human brain needs
+to be studied,
 we propose do distribute the representation of the vertices as well.
 
-Often, real word graphs are embedded on a space with some metric, and connections are present much more frequently between
-vertices that are close together. For examples the pixel representing features of a picture, or the roads connecting cities
+Often, real word graphs are embedded on a space with some metric, and connections are present much
+more frequently between
+vertices that are close together. For examples the pixel representing features of a picture, or the
+roads connecting cities
 with a known geographical position, posses this property.
 
-We represent this type of graphs with a very simple model: a two dimensional lattice with random connections between nearest neighbors
-only. We split the lattice in as many square tiles as there are processes. Then each process applies algorithm \ref{algorithm:cc2} with the subset
-of edges connecting two vertices in their own tile. Finally we process the boundary edges, connecting vertices of different tiles, with MPI
-one sided communication. The list of ids of the local vertices is stored in an MPI window, so that the representative of a remote vertex
+We represent this type of graphs with a very simple model: a two dimensional lattice with random
+connections between nearest neighbors
+only. We split the lattice in as many square tiles as there are processes. Then each process
+applies algorithm \ref{algorithm:cc2} with the subset
+of edges connecting two vertices in their own tile. Finally we process the boundary edges,
+connecting vertices of different tiles, with MPI
+one sided communication. The list of ids of the local vertices is stored in an MPI window, so that
+the representative of a remote vertex
 can be obtained with \verb|MPI_Get|, while an hook can be created with \verb|MPI_Compare_and_swap|.
-Therefore only two global synchronization points are necessary: after all edges have been processed, and after the final compression
+Therefore only two global synchronization points are necessary: after all edges have been
+processed, and after the final compression
 of the forest.
 
-Unfortunately, due to time constraint in developing, in our implementation each MPI operation is synchronized locally.
+Unfortunately, due to time constraint in developing, in our implementation each MPI operation is
+synchronized locally.
 This leads to good scaling results only on extremely sparse graphs. % TODO reference graph
 Future work should consider batching several MPI requests before synchronization is required.
+%TODO maybe move last sentence to future work section.
+
