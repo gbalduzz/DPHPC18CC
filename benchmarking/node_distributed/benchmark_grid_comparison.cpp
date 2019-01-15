@@ -57,7 +57,7 @@ int main(int argc, char** argv) {
     std::cout << "Nodes: " << size_x * size_y << std::endl;
   }
 
-  Rng rng(concurrency.id());
+  Rng rng(0);
 
   graph::GridGraph grid(std::array<Label, 2>{size_x, size_y}, n_tiles_per_dim, edge_probability, rng);
   const std::size_t n_edges = grid.get_edges().size();
