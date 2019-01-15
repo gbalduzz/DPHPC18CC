@@ -35,6 +35,8 @@ public:
 
   void hookToMinSafeLocal(Label i, Label j);
 
+  void hookToMinLocal(Label i, Label j);
+
   void compressLocal();
   void compress();
 
@@ -85,6 +87,21 @@ inline bool DistributedHookTree::hookAtomicLocal(Label repr_i, Label repr_j) {
   assert(isLocal(repr_i));
   return std::atomic_compare_exchange_weak(
       reinterpret_cast<std::atomic<Label>*>(&parent_[repr_i - range_start_]), &repr_i, repr_j);
+}
+
+inline void DistributedHookTree::hookToMinLocal(const Label i, const Label j) {
+  const Label repr_i = representativeLocal(i);
+  const Label repr_j = representativeLocal(j);
+
+  if (repr_i > repr_j)
+    parent_[repr_i - range_start_] = repr_j;
+  else if (repr_j > repr_i)
+    parent_[repr_j - range_start_] = repr_i;
+
+  if (i != repr_i)
+    parent_[i - range_start_] = repr_i;
+  if (j != repr_j)
+    parent_[j - range_start_] = repr_j;
 }
 
 inline void DistributedHookTree::hookToMinSafeLocal(Label i, Label j) {

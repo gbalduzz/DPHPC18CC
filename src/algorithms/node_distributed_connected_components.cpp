@@ -56,12 +56,19 @@ graph::DistributedHookTree nodeDistributedConnectedComponents(
 
   graph::DistributedHookTree tree(vertices_per_rank, rank, comm_size, n_threads_per_node);
 
-// Create local forest.
+  // Create local forest.
 
+  if (n_threads_per_node > 1) {
 #pragma omp parallel for num_threads(n_threads_per_node) schedule(dynamic, 50000)
-  for (Label e_id = 0; e_id < internal_edges.size(); ++e_id) {
-    const auto& edge = internal_edges[e_id];
-    tree.hookToMinSafeLocal(edge.first, edge.second);
+    for (Label e_id = 0; e_id < internal_edges.size(); ++e_id) {
+      const auto& edge = internal_edges[e_id];
+      tree.hookToMinSafeLocal(edge.first, edge.second);
+    }
+  }
+  else {
+    for (const auto& edge : internal_edges) {
+      tree.hookToMinLocal(edge.first, edge.second);
+    }
   }
 
   tree.compressLocal();
@@ -79,7 +86,7 @@ graph::DistributedHookTree nodeDistributedConnectedComponents(
   tree.sync();
   tree.compress();
 
-  tree.sync();//MPI_Barrier(MPI_COMM_WORLD);
+  tree.sync();  // MPI_Barrier(MPI_COMM_WORLD);
   const auto end = util::getTime();
 
   if (computation_time)
