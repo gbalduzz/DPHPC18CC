@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.19 (MiKTeX 2.9.6630 64-bit) (preloaded format=pdflatex 2018.3.14)  13 JAN 2019 18:23
+This is pdfTeX, Version 3.14159265-2.6-1.40.19 (MiKTeX 2.9.6630 64-bit) (preloaded format=pdflatex 2018.3.14)  15 JAN 2019 09:11
 entering extended mode
 **./report.tex
 (report.tex
@@ -782,57 +782,21 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <10> not available
 (Font)              Font shape `OT1/ptm/b/n' tried instead on input line 58.
- (introduction.tex
 
-LaTeX Warning: Citation `683775' on page 1 undefined on input line 4.
-
-
-LaTeX Warning: Citation `Wilson:2006:RCV:1166253.1166292' on page 1 undefined o
-n input line 4.
-
-
-LaTeX Warning: Citation `UDUPA1990355' on page 1 undefined on input line 4.
-
-
-LaTeX Warning: Citation `Ambrosio2001' on page 1 undefined on input line 4.
-
-
-Overfull \hbox (2.28714pt too wide) in paragraph at lines 3--5
-\OT1/ptm/m/n/10 eled as graphs.|   []   |   []   |   []   |   []   |   []   |  
- []   |   []
+Overfull \hbox (4.10716pt too wide) in paragraph at lines 59--60
+\OT1/ptm/m/n/10 based con-nected com-po-nents al-go-rithm orig-i-nally in-tro-d
+uced
  []
 
 
-LaTeX Warning: Citation `MANOHAR1989133' on page 1 undefined on input line 6.
-
-
-LaTeX Warning: Citation `Han:1990:EFP:79147.214077' on page 1 undefined on inpu
-t line 6.
-
-
-LaTeX Warning: Citation `comm_avoiding' on page 1 undefined on input line 6.
-
-
-LaTeX Warning: Citation `comm_avoiding' on page 1 undefined on input line 6.
-
-
-Package changes Warning: You used the deprecated option 'remark' in your markup
-, please use 'comment' instead. on input line 6.
-
-
-Overfull \hbox (18.54742pt too wide) in paragraph at lines 6--7
-|   []   |   []   |   []   |   []   |   []   |   []   |   [][][] []|   []   |  
- []   |   []
+Overfull \hbox (2.29689pt too wide) in paragraph at lines 59--60
+\OT1/ptm/m/n/10 putes a lo-cal for-est rep-re-sent-ing the dif-fer-ent con-nect
+ed com-
  []
 
-
-Overfull \hbox (21.3961pt too wide) in paragraph at lines 6--7
-|   []   |   []   |   []   |   []   |   []   |   []   |   []   |   []   |   []
- []
-
-
-Overfull \hbox (5.4178pt too wide) in paragraph at lines 6--7
-|   []   |   []   |   []   |   []   |   []   |   []   |   []   |   []
+(introduction.tex
+Overfull \hbox (1.02702pt too wide) in paragraph at lines 6--8
+\OT1/ptm/m/n/10 which dis-tributes the work while still avoid-ing as much com-
  []
 
 ) (algorithm.tex
@@ -842,10 +806,10 @@ Overfull \hbox (4.26741pt too wide) in paragraph at lines 9--14
  []
 
 
-LaTeX Warning: Citation `PCompPaper' on page 1 undefined on input line 25.
+LaTeX Warning: Citation `PCompPaper' on page 1 undefined on input line 26.
 
 
-Overfull \hbox (5.36649pt too wide) in paragraph at lines 24--31
+Overfull \hbox (5.36649pt too wide) in paragraph at lines 25--31
 \OT1/ptm/m/n/10 Unfortunately this al-go-rithm does not par-al-lelize []in a st
 raight-
  []
@@ -918,7 +882,7 @@ Package epstopdf Info: Source file: <plots/50000our_impl.eps>
 verted-to.pdf plots/50000our_impl.eps>
 (epstopdf)             \includegraphics on input line 19.
 Package epstopdf Info: Output file is already uptodate.
-<plots/50000our_impl-eps-converted-to.pdf, id=76, 722.7pt x 722.7pt>
+<plots/50000our_impl-eps-converted-to.pdf, id=93, 722.7pt x 722.7pt>
 File: plots/50000our_impl-eps-converted-to.pdf Graphic file (type pdf)
 <use plots/50000our_impl-eps-converted-to.pdf>
 Package pdftex.def Info: plots/50000our_impl-eps-converted-to.pdf  used on inpu
@@ -934,7 +898,7 @@ Package epstopdf Info: Source file: <plots/10000our_impl.eps>
 verted-to.pdf plots/10000our_impl.eps>
 (epstopdf)             \includegraphics on input line 24.
 Package epstopdf Info: Output file is already uptodate.
-<plots/10000our_impl-eps-converted-to.pdf, id=77, 722.7pt x 722.7pt>
+<plots/10000our_impl-eps-converted-to.pdf, id=94, 722.7pt x 722.7pt>
 File: plots/10000our_impl-eps-converted-to.pdf Graphic file (type pdf)
 <use plots/10000our_impl-eps-converted-to.pdf>
 Package pdftex.def Info: plots/10000our_impl-eps-converted-to.pdf  used on inpu
@@ -950,7 +914,7 @@ Package epstopdf Info: Source file: <plots/20000our_impl.eps>
 verted-to.pdf plots/20000our_impl.eps>
 (epstopdf)             \includegraphics on input line 29.
 Package epstopdf Info: Output file is already uptodate.
-<plots/20000our_impl-eps-converted-to.pdf, id=78, 722.7pt x 722.7pt>
+<plots/20000our_impl-eps-converted-to.pdf, id=95, 722.7pt x 722.7pt>
 File: plots/20000our_impl-eps-converted-to.pdf Graphic file (type pdf)
 <use plots/20000our_impl-eps-converted-to.pdf>
 Package pdftex.def Info: plots/20000our_impl-eps-converted-to.pdf  used on inpu
@@ -968,7 +932,7 @@ s-converted-to.pdf>
 h_everything-eps-converted-to.pdf plots/20000mpi_mixtures_with_everything.eps>
 (epstopdf)             \includegraphics on input line 41.
 Package epstopdf Info: Output file is already uptodate.
-<plots/20000mpi_mixtures_with_everything-eps-converted-to.pdf, id=80, 4336.2pt 
+<plots/20000mpi_mixtures_with_everything-eps-converted-to.pdf, id=97, 4336.2pt 
 x 2168.1pt>
 File: plots/20000mpi_mixtures_with_everything-eps-converted-to.pdf Graphic file
  (type pdf)
@@ -1000,7 +964,7 @@ See the caption package documentation for explanation.
 Underfull \vbox (badness 1147) has occurred while \output is active []
 
  [3]
-<plots/mpi_speedup_with_ref.png, id=91, 462.528pt x 346.896pt>
+<plots/mpi_speedup_with_ref.png, id=107, 462.528pt x 346.896pt>
 File: plots/mpi_speedup_with_ref.png Graphic file (type png)
 <use plots/mpi_speedup_with_ref.png>
 Package pdftex.def Info: plots/mpi_speedup_with_ref.png  used on input line 53.
@@ -1017,8 +981,8 @@ o.pdf>
 eps-converted-to.pdf plots/omp_speedup_with_ref.eps>
 (epstopdf)             \includegraphics on input line 58.
 Package epstopdf Info: Output file is already uptodate.
-<plots/omp_speedup_with_ref-eps-converted-to.pdf, id=93, 462.72874pt x 346.2937
-5pt>
+<plots/omp_speedup_with_ref-eps-converted-to.pdf, id=109, 462.72874pt x 346.293
+75pt>
 File: plots/omp_speedup_with_ref-eps-converted-to.pdf Graphic file (type pdf)
 <use plots/omp_speedup_with_ref-eps-converted-to.pdf>
 Package pdftex.def Info: plots/omp_speedup_with_ref-eps-converted-to.pdf  used 
@@ -1026,41 +990,55 @@ on input line 58.
 (pdftex.def)             Requested size: 114.5202pt x 85.70135pt.
 )
 (conclusion.tex)
-Overfull \hbox (7.61661pt too wide) in paragraph at lines 1--111
+Overfull \hbox (7.61661pt too wide) in paragraph at lines 1--108
 \OT1/ptm/m/n/10 par-al-lelism avail-able within shared mem-ory units while avoi
 d-
  []
 
 (future_work.tex)
-Underfull \hbox (badness 10000) in paragraph at lines 1--125
+Underfull \hbox (badness 10000) in paragraph at lines 1--122
 
  []
 
 
-Overfull \hbox (1.92763pt too wide) in paragraph at lines 1--125
+Overfull \hbox (1.92763pt too wide) in paragraph at lines 1--122
 \OT1/ptm/m/n/10 Another draw-back of our al-go-rithm is that in or-der to achie
 ve
  []
 
-(report.bbl [4 <./plots/50000our_impl-eps-converted-to.pdf> <./plots/10000our_i
-mpl-eps-converted-to.pdf> <./plots/20000our_impl-eps-converted-to.pdf> <./plots
-/20000mpi_mixtures_with_everything-eps-converted-to.pdf> <./plots/mpi_speedup_w
-ith_ref.png> <./plots/omp_speedup_with_ref-eps-converted-to.pdf>])
+(report.bbl
+Underfull \hbox (badness 10000) in paragraph at lines 10--17
+[]\OT1/ptm/m/n/10 Lukas Gi-an-i-nazzi, Pavel Kalvoda, Alessan-
+ []
+
+
+Underfull \hbox (badness 1308) in paragraph at lines 10--17
+\OT1/ptm/m/n/10 ``Communication-Avoiding Par-al-lel Min-i-mum Cuts
+ []
+
+[4 <./plots/50000our_impl-eps-converted-to.pdf> <./plots/10000our_impl-eps-conv
+erted-to.pdf> <./plots/20000our_impl-eps-converted-to.pdf> <./plots/20000mpi_mi
+xtures_with_everything-eps-converted-to.pdf> <./plots/mpi_speedup_with_ref.png>
+ <./plots/omp_speedup_with_ref-eps-converted-to.pdf>]
+Underfull \hbox (badness 3407) in paragraph at lines 80--84
+[]\OT1/ptm/m/n/10 Farzad Kho-rasani, Ra-jiv Gupta, and Laxmi N.
+ []
+
+)
 \Changes@OutFile=\write5
 \openout5 = `report.soc'.
 
 \tf@loc=\write6
 \openout6 = `report.loc'.
 
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 181.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 178.
  [5
 
 ]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 181.
-
-(report.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 181.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 181.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 178.
+ (report.aux)
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 178.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 178.
 Package rerunfilecheck Info: File `report.out' has not changed.
 (rerunfilecheck)             Checksum: 75154DB0CD7ECC922CFA44B064789B55;304.
 
@@ -1070,16 +1048,16 @@ LaTeX Warning: There were undefined references.
 
 LaTeX Warning: There were multiply-defined labels.
 
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 181.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 178.
  ) 
 Here is how much of TeX's memory you used:
- 18972 strings out of 493305
- 354718 string characters out of 3138868
- 441493 words of memory out of 3000000
- 22102 multiletter control sequences out of 15000+200000
+ 18971 strings out of 493305
+ 354697 string characters out of 3138868
+ 428782 words of memory out of 3000000
+ 22094 multiletter control sequences out of 15000+200000
  26770 words of font info for 68 fonts, out of 3000000 for 9000
  1141 hyphenation exceptions out of 8191
- 69i,9n,81p,1517b,838s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 69i,9n,81p,1087b,838s stack positions out of 5000i,500n,10000p,200000b,50000s
 {C:/Program Files/MiKTeX 2.9/fonts/enc/dvips/base/8r.enc}<C:/Program Files/Mi
 KTeX 2.9/fonts/type1/public/amsfonts/cm/cmmi10.pfb><C:/Program Files/MiKTeX 2.9
 /fonts/type1/public/amsfonts/cm/cmmi7.pfb><C:/Program Files/MiKTeX 2.9/fonts/ty
@@ -1092,9 +1070,9 @@ les/MiKTeX 2.9/fonts/type1/urw/courier/ucrr8a.pfb><C:/Program Files/MiKTeX 2.9/
 fonts/type1/urw/times/utmb8a.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/urw/t
 imes/utmr8a.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/urw/times/utmri8a.pfb>
 
-Output written on report.pdf (5 pages, 321289 bytes).
+Output written on report.pdf (5 pages, 324695 bytes).
 PDF statistics:
- 343 PDF objects out of 1000 (max. 8388607)
- 27 named destinations out of 1000 (max. 500000)
+ 360 PDF objects out of 1000 (max. 8388607)
+ 34 named destinations out of 1000 (max. 500000)
  91 words of extra memory for PDF output out of 10000 (max. 10000000)
 

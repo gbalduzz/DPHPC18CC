@@ -56,7 +56,7 @@
 %or use other tricks to squeeze. This pdf is formatted in the American letter format, so the spacing may look a bit strange when printed out.
 
 \begin{abstract}
-We present an implementation of a tree based connected components algorithm original by \cite{PCompArticle}. In order to improve the parallel performance of the algorithm we distribute the edges of the graph across multiple cores. Each of them computes a local forest, representing different connected components, which then gets reduced by comparing to the results of other processes. Finally we compare against a communication avoiding approach by \cite{comm_avoiding} where we can show improvement.
+We present an improved parallel implementation of a tree based connected components algorithm originally introduced by \cite{PCompArticle}. To improve the algorithm's performance the graph's edges are distributed across multiple cores. Each core computes a local forest representing the different connected components. The resulting forests are then combined using reduction. A comparison of our algorithm against the communication avoiding algorithm \cite{comm_avoiding} on a set of large graphs ($5\times10^8$ Edges with up to $2\times10^7$ Vertices) is presented. Results where our algorithm uses a mixture of both MPI and OMP are also shown.
 \end{abstract}
 
 \section{Introduction}\label{sec:intro}
