@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.19 (MiKTeX 2.9.6630 64-bit) (preloaded format=pdflatex 2018.3.14)  15 JAN 2019 10:08
+This is pdfTeX, Version 3.14159265-2.6-1.40.19 (MiKTeX 2.9.6630 64-bit) (preloaded format=pdflatex 2018.3.14)  15 JAN 2019 11:12
 entering extended mode
 **./report.tex
 (report.tex
@@ -873,11 +873,11 @@ Overfull \hbox (3.20758pt too wide) in paragraph at lines 11--16
  []
 
 Package epstopdf Info: Source file: <plots/50000our_impl.eps>
-(epstopdf)                    date: 2019-01-09 09:37:01
-(epstopdf)                    size: 32853 bytes
+(epstopdf)                    date: 2019-01-15 10:58:59
+(epstopdf)                    size: 31158 bytes
 (epstopdf)             Output file: <plots/50000our_impl-eps-converted-to.pdf>
-(epstopdf)                    date: 2019-01-09 09:43:17
-(epstopdf)                    size: 24072 bytes
+(epstopdf)                    date: 2019-01-15 10:59:33
+(epstopdf)                    size: 23756 bytes
 (epstopdf)             Command: <epstopdf --outfile=plots/50000our_impl-eps-con
 verted-to.pdf plots/50000our_impl.eps>
 (epstopdf)             \includegraphics on input line 19.
@@ -889,11 +889,11 @@ Package pdftex.def Info: plots/50000our_impl-eps-converted-to.pdf  used on inpu
 t line 19.
 (pdftex.def)             Requested size: 74.68544pt x 74.67822pt.
 Package epstopdf Info: Source file: <plots/10000our_impl.eps>
-(epstopdf)                    date: 2019-01-09 09:37:01
-(epstopdf)                    size: 32909 bytes
+(epstopdf)                    date: 2019-01-15 10:45:48
+(epstopdf)                    size: 31160 bytes
 (epstopdf)             Output file: <plots/10000our_impl-eps-converted-to.pdf>
-(epstopdf)                    date: 2019-01-09 09:43:18
-(epstopdf)                    size: 23855 bytes
+(epstopdf)                    date: 2019-01-15 10:51:50
+(epstopdf)                    size: 23761 bytes
 (epstopdf)             Command: <epstopdf --outfile=plots/10000our_impl-eps-con
 verted-to.pdf plots/10000our_impl.eps>
 (epstopdf)             \includegraphics on input line 24.
@@ -905,11 +905,11 @@ Package pdftex.def Info: plots/10000our_impl-eps-converted-to.pdf  used on inpu
 t line 24.
 (pdftex.def)             Requested size: 74.68544pt x 74.67822pt.
 Package epstopdf Info: Source file: <plots/20000our_impl.eps>
-(epstopdf)                    date: 2019-01-09 09:37:01
-(epstopdf)                    size: 32915 bytes
+(epstopdf)                    date: 2019-01-15 10:49:52
+(epstopdf)                    size: 31160 bytes
 (epstopdf)             Output file: <plots/20000our_impl-eps-converted-to.pdf>
-(epstopdf)                    date: 2019-01-09 09:43:19
-(epstopdf)                    size: 23970 bytes
+(epstopdf)                    date: 2019-01-15 10:51:50
+(epstopdf)                    size: 23860 bytes
 (epstopdf)             Command: <epstopdf --outfile=plots/20000our_impl-eps-con
 verted-to.pdf plots/20000our_impl.eps>
 (epstopdf)             \includegraphics on input line 29.
@@ -922,12 +922,12 @@ t line 29.
 (pdftex.def)             Requested size: 74.68544pt x 74.67822pt.
 Package epstopdf Info: Source file: <plots/20000mpi_mixtures_with_everything.ep
 s>
-(epstopdf)                    date: 2019-01-12 11:56:03
-(epstopdf)                    size: 70193 bytes
+(epstopdf)                    date: 2019-01-15 11:10:54
+(epstopdf)                    size: 57600 bytes
 (epstopdf)             Output file: <plots/20000mpi_mixtures_with_everything-ep
 s-converted-to.pdf>
-(epstopdf)                    date: 2019-01-12 11:56:38
-(epstopdf)                    size: 38979 bytes
+(epstopdf)                    date: 2019-01-15 11:11:08
+(epstopdf)                    size: 36794 bytes
 (epstopdf)             Command: <epstopdf --outfile=plots/20000mpi_mixtures_wit
 h_everything-eps-converted-to.pdf plots/20000mpi_mixtures_with_everything.eps>
 (epstopdf)             \includegraphics on input line 41.
@@ -961,24 +961,40 @@ Package caption Warning: \subcaption
 See the caption package documentation for explanation.
 
 [3]
-<plots/mpi_speedup_with_ref.png, id=108, 462.528pt x 346.896pt>
-File: plots/mpi_speedup_with_ref.png Graphic file (type png)
-<use plots/mpi_speedup_with_ref.png>
-Package pdftex.def Info: plots/mpi_speedup_with_ref.png  used on input line 53.
+Package epstopdf Info: Source file: <plots/mpi_speedup_with_ref.eps>
+(epstopdf)                    date: 2019-01-15 11:11:45
+(epstopdf)                    size: 28870 bytes
+(epstopdf)             Output file: <plots/mpi_speedup_with_ref-eps-converted-t
+o.pdf>
+(epstopdf)             Command: <epstopdf --outfile=plots/mpi_speedup_with_ref-
+eps-converted-to.pdf plots/mpi_speedup_with_ref.eps>
+(epstopdf)             \includegraphics on input line 53.
+runsystem(epstopdf --outfile=plots/mpi_speedup_with_ref-eps-converted-to.pdf pl
+ots/mpi_speedup_with_ref.eps)...executed (allowed).
 
-(pdftex.def)             Requested size: 114.5202pt x 85.88745pt.
+Package epstopdf Info: Result file: <plots/mpi_speedup_with_ref-eps-converted-t
+o.pdf>
+(epstopdf)                    date: 2019-01-15 11:12:42
+(epstopdf)                    size: 23000 bytes.
+<plots/mpi_speedup_with_ref-eps-converted-to.pdf, id=108, 462.72874pt x 346.293
+75pt>
+File: plots/mpi_speedup_with_ref-eps-converted-to.pdf Graphic file (type pdf)
+<use plots/mpi_speedup_with_ref-eps-converted-to.pdf>
+Package pdftex.def Info: plots/mpi_speedup_with_ref-eps-converted-to.pdf  used 
+on input line 53.
+(pdftex.def)             Requested size: 114.5202pt x 85.70135pt.
 Package epstopdf Info: Source file: <plots/omp_speedup_with_ref.eps>
-(epstopdf)                    date: 2019-01-12 12:05:17
-(epstopdf)                    size: 29371 bytes
+(epstopdf)                    date: 2019-01-15 11:10:36
+(epstopdf)                    size: 29379 bytes
 (epstopdf)             Output file: <plots/omp_speedup_with_ref-eps-converted-t
 o.pdf>
-(epstopdf)                    date: 2019-01-12 12:15:54
-(epstopdf)                    size: 24445 bytes
+(epstopdf)                    date: 2019-01-15 11:11:08
+(epstopdf)                    size: 24448 bytes
 (epstopdf)             Command: <epstopdf --outfile=plots/omp_speedup_with_ref-
 eps-converted-to.pdf plots/omp_speedup_with_ref.eps>
 (epstopdf)             \includegraphics on input line 58.
 Package epstopdf Info: Output file is already uptodate.
-<plots/omp_speedup_with_ref-eps-converted-to.pdf, id=110, 462.72874pt x 346.293
+<plots/omp_speedup_with_ref-eps-converted-to.pdf, id=109, 462.72874pt x 346.293
 75pt>
 File: plots/omp_speedup_with_ref-eps-converted-to.pdf Graphic file (type pdf)
 <use plots/omp_speedup_with_ref-eps-converted-to.pdf>
@@ -1014,8 +1030,8 @@ Underfull \hbox (badness 1308) in paragraph at lines 10--17
 
 [4 <./plots/50000our_impl-eps-converted-to.pdf> <./plots/10000our_impl-eps-conv
 erted-to.pdf> <./plots/20000our_impl-eps-converted-to.pdf> <./plots/20000mpi_mi
-xtures_with_everything-eps-converted-to.pdf> <./plots/mpi_speedup_with_ref.png>
- <./plots/omp_speedup_with_ref-eps-converted-to.pdf>]
+xtures_with_everything-eps-converted-to.pdf> <./plots/mpi_speedup_with_ref-eps-
+converted-to.pdf> <./plots/omp_speedup_with_ref-eps-converted-to.pdf>]
 Underfull \hbox (badness 3407) in paragraph at lines 80--84
 []\OT1/ptm/m/n/10 Farzad Kho-rasani, Ra-jiv Gupta, and Laxmi N.
  []
@@ -1048,7 +1064,7 @@ Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 178.
  ) 
 Here is how much of TeX's memory you used:
  18971 strings out of 493305
- 354697 string characters out of 3138868
+ 354789 string characters out of 3138868
  428782 words of memory out of 3000000
  22094 multiletter control sequences out of 15000+200000
  26770 words of font info for 68 fonts, out of 3000000 for 9000
@@ -1066,9 +1082,9 @@ les/MiKTeX 2.9/fonts/type1/urw/courier/ucrr8a.pfb><C:/Program Files/MiKTeX 2.9/
 fonts/type1/urw/times/utmb8a.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/urw/t
 imes/utmr8a.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/urw/times/utmri8a.pfb>
 
-Output written on report.pdf (5 pages, 324727 bytes).
+Output written on report.pdf (5 pages, 315624 bytes).
 PDF statistics:
- 360 PDF objects out of 1000 (max. 8388607)
+ 391 PDF objects out of 1000 (max. 8388607)
  34 named destinations out of 1000 (max. 500000)
  91 words of extra memory for PDF output out of 10000 (max. 10000000)
 
