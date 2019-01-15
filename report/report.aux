@@ -29,7 +29,6 @@
 \citation{Hopcroft}
 \citation{PCompPaper}
 \citation{PCompClass}
-\citation{PCompClass}
 \@writefile{toc}{\contentsline {section}{\numberline {1} Introduction}{1}{section.1}}
 \newlabel{sec:intro}{{1}{1}{Introduction}{section.1}{}}
 \@writefile{loc}{\ChangesListline {replaced}{Replaced}{Problems in computer science are often modeled as graphs.}{1}}
@@ -54,13 +53,40 @@
 \@writefile{loc}{\ChangesListline {deleted}{Deleted}{In a additional step we distributed the list of edges evenly among different MPI proccesses. This allows us to outperform the communication avoiding approach especially on denser graphs. Our approach perfroms significantly worse on a small amount of nodes (n$\leq $ 5) but as we increase the total number of cores the benefits of our algorithms starts to show.}{1}}
 \pgfsyspdfmark {pgfid2}{400848}{8683173}
 \pgfsyspdfmark {pgfid3}{2514383}{8464283}
+\@writefile{loc}{\ChangesListline {replaced}{Replaced}{undirected}{1}}
+\@writefile{loc}{\ChangesListline {replaced}{Replaced}{A}{1}}
+\@writefile{loc}{\ChangesListline {replaced}{Replaced}{the connected components}{1}}
+\@writefile{loc}{\ChangesListline {replaced}{Replaced}{starting from a}{1}}
+\@writefile{loc}{\ChangesListline {deleted}{Deleted}{the touched}{1}}
+\@writefile{loc}{\ChangesListline {added}{Added}{reached}{1}}
+\@writefile{loc}{\ChangesListline {deleted}{Deleted}{Then repeat}{1}}
+\@writefile{loc}{\ChangesListline {added}{Added}{is then repeated, starting}{1}}
+\@writefile{loc}{\ChangesListline {added}{Added}{unlabeled vertices}{1}}
+\@writefile{loc}{\ChangesListline {added}{Added}{out}{1}}
 \@writefile{toc}{\contentsline {section}{\numberline {2} Proposed Algorithm}{1}{section.2}}
 \newlabel{sec:yourmethod}{{2}{1}{Proposed Algorithm}{section.2}{}}
-\@writefile{loa}{\contentsline {algorithm}{\numberline {1}{\ignorespaces Pavel Tvrdik's Connected components\relax }}{1}{algorithm.1}}
-\providecommand*\caption@xref[2]{\@setref\relax\@undefined{#1}}
-\newlabel{algorithm:cc1}{{1}{1}{Pavel Tvrdik's Connected components\relax }{algorithm.1}{}}
+\@writefile{loc}{\ChangesListline {replaced}{Replaced}{in a straightforward way}{1}}
+\@writefile{loc}{\ChangesListline {replaced}{Replaced}{first}{1}}
+\@writefile{loc}{\ChangesListline {added}{Added}{as}{1}}
+\@writefile{loc}{\ChangesListline {replaced}{Replaced}{The}{1}}
+\citation{PCompClass}
 \citation{Boost}
 \citation{RandomGraph}
+\@writefile{loa}{\contentsline {algorithm}{\numberline {1}{\ignorespaces Pavel Tvrdik's Connected components\relax }}{2}{algorithm.1}}
+\providecommand*\caption@xref[2]{\@setref\relax\@undefined{#1}}
+\newlabel{algorithm:cc1}{{1}{2}{Pavel Tvrdik's Connected components\relax }{algorithm.1}{}}
+\@writefile{loc}{\ChangesListline {replaced}{Replaced}{only has}{2}}
+\@writefile{loc}{\ChangesListline {replaced}{Replaced}{larger}{2}}
+\@writefile{loc}{\ChangesListline {replaced}{Replaced}{An}{2}}
+\@writefile{loc}{\ChangesListline {replaced}{Replaced}{is}{2}}
+\@writefile{loc}{\ChangesListline {replaced}{Replaced}{without}{2}}
+\@writefile{loc}{\ChangesListline {deleted}{Deleted}{with}{2}}
+\@writefile{loc}{\ChangesListline {deleted}{Deleted}{can}{2}}
+\@writefile{loc}{\ChangesListline {replaced}{Replaced}{For correctness it does not matter}{2}}
+\pgfsyspdfmark {pgfid6}{27561492}{45355826}
+\@writefile{loc}{\ChangesListline {deleted}{Deleted}{}{2}}
+\pgfsyspdfmark {pgfid9}{38734376}{45353533}
+\pgfsyspdfmark {pgfid10}{40847911}{45134643}
 \@writefile{loa}{\contentsline {algorithm}{\numberline {2}{\ignorespaces Single pass connected component.\relax }}{2}{algorithm.2}}
 \newlabel{algorithm:cc2}{{2}{2}{Single pass connected component.\relax }{algorithm.2}{}}
 \newlabel{algorithm:step:loop}{{3}{2}{Single pass connected component.\relax }{algorithm.2}{}}
@@ -70,14 +96,6 @@
 \citation{Parmat}
 \@writefile{toc}{\contentsline {section}{\numberline {3} Experimental Results}{3}{section.3}}
 \newlabel{sec:exp}{{3}{3}{Experimental Results}{section.3}{}}
-\newlabel{fig:mpi_omp_commavoiding_euler_1}{{1a}{3}{$5\cdot 10^{5}$ vertices\relax }{figure.caption.1}{}}
-\newlabel{sub@fig:mpi_omp_commavoiding_euler_1}{{a}{3}{$5\cdot 10^{5}$ vertices\relax }{figure.caption.1}{}}
-\newlabel{fig:mpi_omp_commavoiding_euler_2}{{1b}{3}{$10^{7}$ vertices\relax }{figure.caption.1}{}}
-\newlabel{sub@fig:mpi_omp_commavoiding_euler_2}{{b}{3}{$10^{7}$ vertices\relax }{figure.caption.1}{}}
-\newlabel{fig:mpi_omp_commavoiding_euler_3}{{1c}{3}{$2\cdot 10^{7}$ vertices\relax }{figure.caption.1}{}}
-\newlabel{sub@fig:mpi_omp_commavoiding_euler_3}{{c}{3}{$2\cdot 10^{7}$ vertices\relax }{figure.caption.1}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Total runtime of three different graphs each with $5\cdot 10^{8}$ edges. The experiment was run on the Euler cluster.\relax }}{3}{figure.caption.1}}
-\newlabel{fig:mpi_omp_commavoiding_euler}{{1}{3}{Total runtime of three different graphs each with $5\cdot 10^{8}$ edges. The experiment was run on the Euler cluster.\relax }{figure.caption.1}{}}
 \bibstyle{IEEEbib}
 \bibdata{bibl_conf}
 \bibcite{Hopcroft}{1}
@@ -85,8 +103,14 @@
 \bibcite{PCompClass}{3}
 \bibcite{Boost}{4}
 \bibcite{RandomGraph}{5}
-\bibcite{Euler}{6}
-\bibcite{Parmat}{7}
+\newlabel{fig:mpi_omp_commavoiding_euler_1}{{1a}{4}{$5\cdot 10^{5}$ vertices\relax }{figure.caption.1}{}}
+\newlabel{sub@fig:mpi_omp_commavoiding_euler_1}{{a}{4}{$5\cdot 10^{5}$ vertices\relax }{figure.caption.1}{}}
+\newlabel{fig:mpi_omp_commavoiding_euler_2}{{1b}{4}{$10^{7}$ vertices\relax }{figure.caption.1}{}}
+\newlabel{sub@fig:mpi_omp_commavoiding_euler_2}{{b}{4}{$10^{7}$ vertices\relax }{figure.caption.1}{}}
+\newlabel{fig:mpi_omp_commavoiding_euler_3}{{1c}{4}{$2\cdot 10^{7}$ vertices\relax }{figure.caption.1}{}}
+\newlabel{sub@fig:mpi_omp_commavoiding_euler_3}{{c}{4}{$2\cdot 10^{7}$ vertices\relax }{figure.caption.1}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Total runtime of three different graphs each with $5\cdot 10^{8}$ edges. The experiment was run on the Euler cluster.\relax }}{4}{figure.caption.1}}
+\newlabel{fig:mpi_omp_commavoiding_euler}{{1}{4}{Total runtime of three different graphs each with $5\cdot 10^{8}$ edges. The experiment was run on the Euler cluster.\relax }{figure.caption.1}{}}
 \newlabel{fig:mixed_euler}{{2b}{4}{Total runtime breakdown on graph with $5\cdot 10^{8}$ edges and $2\cdot 10^{7}$ vertices. The experiment was run on the Euler cluster.\relax }{figure.caption.2}{}}
 \newlabel{sub@fig:mixed_euler}{{b}{4}{Total runtime breakdown on graph with $5\cdot 10^{8}$ edges and $2\cdot 10^{7}$ vertices. The experiment was run on the Euler cluster.\relax }{figure.caption.2}{}}
 \newlabel{fig:speedup_mpi}{{3a}{4}{MPI only\relax }{figure.caption.3}{}}
@@ -98,3 +122,5 @@
 \@writefile{toc}{\contentsline {section}{\numberline {4} Conclusions}{4}{section.4}}
 \@writefile{toc}{\contentsline {section}{\numberline {5} Future Work}{4}{section.5}}
 \@writefile{toc}{\contentsline {section}{\numberline {6} References}{4}{section.6}}
+\bibcite{Euler}{6}
+\bibcite{Parmat}{7}

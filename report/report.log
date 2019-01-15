@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.19 (MiKTeX 2.9.6630 64-bit) (preloaded format=pdflatex 2018.3.14)  13 JAN 2019 17:37
+This is pdfTeX, Version 3.14159265-2.6-1.40.19 (MiKTeX 2.9.6630 64-bit) (preloaded format=pdflatex 2018.3.14)  13 JAN 2019 18:23
 entering extended mode
 **./report.tex
 (report.tex
@@ -836,48 +836,68 @@ Overfull \hbox (5.4178pt too wide) in paragraph at lines 6--7
  []
 
 ) (algorithm.tex
-Overfull \hbox (2.7175pt too wide) in paragraph at lines 9--16
-\OT1/ptm/m/n/10 com-po-nents are the en-sem-ble of con-nected sub-graphs, where
-
+Overfull \hbox (4.26741pt too wide) in paragraph at lines 9--14
+\OT1/ptm/m/n/10 nected com-po-nents are the en-sem-ble of con-nected sub-graphs
+,
  []
 
 
-LaTeX Warning: Citation `PCompPaper' on page 1 undefined on input line 27.
+LaTeX Warning: Citation `PCompPaper' on page 1 undefined on input line 25.
+
+
+Overfull \hbox (5.36649pt too wide) in paragraph at lines 24--31
+\OT1/ptm/m/n/10 Unfortunately this al-go-rithm does not par-al-lelize []in a st
+raight-
+ []
 
 Package hyperref Info: bookmark level for unknown algorithm defaults to 0 on in
-put line 35.
-[1{C:/Users/Michael/AppData/Local/MiKTeX/2.9/pdftex/config/pdftex.map}
+put line 33.
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [1{C:/Users/Michael/AppData/Local/MiKTeX/2.9/pdftex/config/pdftex.map}
 
 
 
 ]
-LaTeX Font Info:    Try loading font information for OT1+pcr on input line 80.
-
-("C:\Program Files\MiKTeX 2.9\tex\latex\psnfss\ot1pcr.fd"
-File: ot1pcr.fd 2001/06/04 font definitions for OT1/pcr.
-)
-Overfull \hbox (4.36919pt too wide) in paragraph at lines 76--82
-[][]\OT1/pcr/m/n/10 std::atomic_compare_exchange_weak[]\OT1/ptm/m/n/10 , com-pa
-red
+Overfull \hbox (7.82724pt too wide) in paragraph at lines 67--71
+[]\OT1/ptm/m/n/10 An|   [][][] in-tu-itive proof of cor-rect-ness fol-lows: rul
+e $\OT1/cmr/m/n/10 1$ \OT1/ptm/m/n/10 means
  []
 
 
-Underfull \vbox (badness 10000) has occurred while \output is active []
+Package changes Warning: You used the deprecated option 'remark' in your markup
+, please use 'comment' instead. on input line 74.
 
- [2]
-Overfull \hbox (9.6371pt too wide) in paragraph at lines 136--141
+LaTeX Font Info:    Try loading font information for OT1+pcr on input line 76.
+("C:\Program Files\MiKTeX 2.9\tex\latex\psnfss\ot1pcr.fd"
+File: ot1pcr.fd 2001/06/04 font definitions for OT1/pcr.
+)
+Overfull \hbox (38.61848pt too wide) in paragraph at lines 72--78
+\OT1/ptm/m/n/10 pir-i-cally that us-ing [][]\OT1/pcr/m/n/10 std::atomic_compare
+_exchange_weak[]\OT1/ptm/m/n/10 ,
+ []
+
+
+Overfull \hbox (23.42911pt too wide) in paragraph at lines 72--78
+\OT1/ptm/m/n/10 com-pared to [][]\OT1/pcr/m/n/10 std::atomic_compare_exchange_s
+trong
+ []
+
+[2]
+Overfull \hbox (9.6371pt too wide) in paragraph at lines 132--137
 []\OT1/ptm/b/n/10 Distributed ver-tices. \OT1/ptm/m/n/10 While the de-scribed a
 p-proach works
  []
 
 
-Overfull \hbox (7.09727pt too wide) in paragraph at lines 146--153
+Overfull \hbox (7.09727pt too wide) in paragraph at lines 142--149
 []\OT1/ptm/m/n/10 We rep-re-sent this type of graphs with a very sim-ple model:
 
  []
 
 
-Overfull \hbox (1.05707pt too wide) in paragraph at lines 146--153
+Overfull \hbox (1.05707pt too wide) in paragraph at lines 142--149
 \OT1/ptm/m/n/10 near-est neigh-bors only. We split the lat-tice in as many squa
 re
  []
@@ -898,7 +918,7 @@ Package epstopdf Info: Source file: <plots/50000our_impl.eps>
 verted-to.pdf plots/50000our_impl.eps>
 (epstopdf)             \includegraphics on input line 19.
 Package epstopdf Info: Output file is already uptodate.
-<plots/50000our_impl-eps-converted-to.pdf, id=78, 722.7pt x 722.7pt>
+<plots/50000our_impl-eps-converted-to.pdf, id=76, 722.7pt x 722.7pt>
 File: plots/50000our_impl-eps-converted-to.pdf Graphic file (type pdf)
 <use plots/50000our_impl-eps-converted-to.pdf>
 Package pdftex.def Info: plots/50000our_impl-eps-converted-to.pdf  used on inpu
@@ -914,7 +934,7 @@ Package epstopdf Info: Source file: <plots/10000our_impl.eps>
 verted-to.pdf plots/10000our_impl.eps>
 (epstopdf)             \includegraphics on input line 24.
 Package epstopdf Info: Output file is already uptodate.
-<plots/10000our_impl-eps-converted-to.pdf, id=79, 722.7pt x 722.7pt>
+<plots/10000our_impl-eps-converted-to.pdf, id=77, 722.7pt x 722.7pt>
 File: plots/10000our_impl-eps-converted-to.pdf Graphic file (type pdf)
 <use plots/10000our_impl-eps-converted-to.pdf>
 Package pdftex.def Info: plots/10000our_impl-eps-converted-to.pdf  used on inpu
@@ -930,17 +950,12 @@ Package epstopdf Info: Source file: <plots/20000our_impl.eps>
 verted-to.pdf plots/20000our_impl.eps>
 (epstopdf)             \includegraphics on input line 29.
 Package epstopdf Info: Output file is already uptodate.
-<plots/20000our_impl-eps-converted-to.pdf, id=80, 722.7pt x 722.7pt>
+<plots/20000our_impl-eps-converted-to.pdf, id=78, 722.7pt x 722.7pt>
 File: plots/20000our_impl-eps-converted-to.pdf Graphic file (type pdf)
 <use plots/20000our_impl-eps-converted-to.pdf>
 Package pdftex.def Info: plots/20000our_impl-eps-converted-to.pdf  used on inpu
 t line 29.
 (pdftex.def)             Requested size: 74.68544pt x 74.67822pt.
-
-Underfull \vbox (badness 1472) has occurred while \output is active []
-
- [3 <./plots/50000our_impl-eps-converted-to.pdf> <./plots/10000our_impl-eps-con
-verted-to.pdf> <./plots/20000our_impl-eps-converted-to.pdf>]
 Package epstopdf Info: Source file: <plots/20000mpi_mixtures_with_everything.ep
 s>
 (epstopdf)                    date: 2019-01-12 11:56:03
@@ -953,15 +968,14 @@ s-converted-to.pdf>
 h_everything-eps-converted-to.pdf plots/20000mpi_mixtures_with_everything.eps>
 (epstopdf)             \includegraphics on input line 41.
 Package epstopdf Info: Output file is already uptodate.
-<plots/20000mpi_mixtures_with_everything-eps-converted-to.pdf, id=203, 4336.2pt
- x 2168.1pt>
+<plots/20000mpi_mixtures_with_everything-eps-converted-to.pdf, id=80, 4336.2pt 
+x 2168.1pt>
 File: plots/20000mpi_mixtures_with_everything-eps-converted-to.pdf Graphic file
  (type pdf)
 <use plots/20000mpi_mixtures_with_everything-eps-converted-to.pdf>
 Package pdftex.def Info: plots/20000mpi_mixtures_with_everything-eps-converted-
 to.pdf  used on input line 41.
 (pdftex.def)             Requested size: 248.96161pt x 124.45636pt.
-
 
 Package caption Warning: \captionsetup{subtype*=...} or \subcaptionof
 (caption)                outside box or environment on input line 42.
@@ -982,7 +996,11 @@ Package caption Warning: \subcaption
 (caption)                outside box or environment on input line 43.
 See the caption package documentation for explanation.
 
-<plots/mpi_speedup_with_ref.png, id=205, 462.528pt x 346.896pt>
+
+Underfull \vbox (badness 1147) has occurred while \output is active []
+
+ [3]
+<plots/mpi_speedup_with_ref.png, id=91, 462.528pt x 346.896pt>
 File: plots/mpi_speedup_with_ref.png Graphic file (type png)
 <use plots/mpi_speedup_with_ref.png>
 Package pdftex.def Info: plots/mpi_speedup_with_ref.png  used on input line 53.
@@ -999,14 +1017,15 @@ o.pdf>
 eps-converted-to.pdf plots/omp_speedup_with_ref.eps>
 (epstopdf)             \includegraphics on input line 58.
 Package epstopdf Info: Output file is already uptodate.
-<plots/omp_speedup_with_ref-eps-converted-to.pdf, id=207, 462.72874pt x 346.293
-75pt>
+<plots/omp_speedup_with_ref-eps-converted-to.pdf, id=93, 462.72874pt x 346.2937
+5pt>
 File: plots/omp_speedup_with_ref-eps-converted-to.pdf Graphic file (type pdf)
 <use plots/omp_speedup_with_ref-eps-converted-to.pdf>
 Package pdftex.def Info: plots/omp_speedup_with_ref-eps-converted-to.pdf  used 
 on input line 58.
 (pdftex.def)             Requested size: 114.5202pt x 85.70135pt.
-) (conclusion.tex)
+)
+(conclusion.tex)
 Overfull \hbox (7.61661pt too wide) in paragraph at lines 1--111
 \OT1/ptm/m/n/10 par-al-lelism avail-able within shared mem-ory units while avoi
 d-
@@ -1023,18 +1042,23 @@ Overfull \hbox (1.92763pt too wide) in paragraph at lines 1--125
 ve
  []
 
-(report.bbl)
+(report.bbl [4 <./plots/50000our_impl-eps-converted-to.pdf> <./plots/10000our_i
+mpl-eps-converted-to.pdf> <./plots/20000our_impl-eps-converted-to.pdf> <./plots
+/20000mpi_mixtures_with_everything-eps-converted-to.pdf> <./plots/mpi_speedup_w
+ith_ref.png> <./plots/omp_speedup_with_ref-eps-converted-to.pdf>])
 \Changes@OutFile=\write5
 \openout5 = `report.soc'.
 
 \tf@loc=\write6
 \openout6 = `report.loc'.
 
- [4 <./plots/20000mpi_mixtures_with_everything-eps-converted-to.pdf> <./plots/m
-pi_speedup_with_ref.png> <./plots/omp_speedup_with_ref-eps-converted-to.pdf>]
 Package atveryend Info: Empty hook `BeforeClearDocument' on input line 181.
+ [5
+
+]
 Package atveryend Info: Empty hook `AfterLastShipout' on input line 181.
- (report.aux)
+
+(report.aux)
 Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 181.
 Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 181.
 Package rerunfilecheck Info: File `report.out' has not changed.
@@ -1049,10 +1073,10 @@ LaTeX Warning: There were multiply-defined labels.
 Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 181.
  ) 
 Here is how much of TeX's memory you used:
- 18963 strings out of 493305
- 354533 string characters out of 3138868
- 440493 words of memory out of 3000000
- 22094 multiletter control sequences out of 15000+200000
+ 18972 strings out of 493305
+ 354718 string characters out of 3138868
+ 441493 words of memory out of 3000000
+ 22102 multiletter control sequences out of 15000+200000
  26770 words of font info for 68 fonts, out of 3000000 for 9000
  1141 hyphenation exceptions out of 8191
  69i,9n,81p,1517b,838s stack positions out of 5000i,500n,10000p,200000b,50000s
@@ -1068,9 +1092,9 @@ les/MiKTeX 2.9/fonts/type1/urw/courier/ucrr8a.pfb><C:/Program Files/MiKTeX 2.9/
 fonts/type1/urw/times/utmb8a.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/urw/t
 imes/utmr8a.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/urw/times/utmri8a.pfb>
 
-Output written on report.pdf (4 pages, 319763 bytes).
+Output written on report.pdf (5 pages, 321289 bytes).
 PDF statistics:
- 339 PDF objects out of 1000 (max. 8388607)
- 26 named destinations out of 1000 (max. 500000)
+ 343 PDF objects out of 1000 (max. 8388607)
+ 27 named destinations out of 1000 (max. 500000)
  91 words of extra memory for PDF output out of 10000 (max. 10000000)
 
