@@ -1,6 +1,6 @@
 To evaluate our algorithm's performance a number of experiments were run on both the Euler and the Piz Daint cluster. In the following paragraphs we will first describe both the Euler and the Piz Daint setups. We will then go on to discussing each experiment.
 
-\mypar{Euler setup} 
+\mypar{Euler setup}
 Each node in the Euler V cluster contains two 12-core Intel Xeon Gold 5118 processors and 96 GB of DDR4 memory clocked at 2400 MHz \cite{Euler}. We were allowed to use up to two nodes, giving us a maximum of 48 cores.
 
 \mypar{Piz Daint setup} [Insert Daint specs]
@@ -14,24 +14,28 @@ The results in \autoref{fig:mpi_omp_commavoiding_euler} show our algorithm compa
 The results in \autoref{fig:mpi_omp_commavoiding_euler_2} and \autoref{fig:mpi_omp_commavoiding_euler_3} were obtained using sparser graphs compared to \autoref{fig:mpi_omp_commavoiding_euler_1}. Here, for a large number of cores, the OMP only version is clearly faster than the MPI only version. \autoref{fig:mpi_omp_commavoiding_euler} shows a trend of the OMP only version speeding up as the graph becomes sparser, while the MPI only version slows down. The OMP only version's speed up can be explained by the reduced contention between the OMP threads due to the sparser graph. The MPI only version's slow down is a result of the increased reduction time due to the increasing number of vertices.\\
 The results in \autoref{fig:mpi_omp_commavoiding_euler} show the communication avoiding algorithm scaling badly with the number of cores. This is expected since the edge contractions are computed on a single node in this algorithm. Since our algorithm does to scale with the number of cores up to some point we manage to outperform the communication avoiding algorithm on each graph.
 
+\newlength{\fsize}
+\setlength{\fsize}{0.5\textwidth}
 \begin{figure}
-\begin{subfigure}[c]{0.15\textwidth}
-\includegraphics[width=\textwidth]{plots/50000our_impl}
-\subcaption{$5\times10^{5}$ vertices}
-\label{fig:mpi_omp_commavoiding_euler_1}
+    \begin{subfigure}[c]{\fsize}
+        \includegraphics[width=\textwidth]{plots/plot_vertices_500k.pdf}
+%\subcaption{$5\times10^{5}$ vertices}
+        \label{fig:mpi_omp_commavoiding_daint_1}
+    \end{subfigure}
+\begin{subfigure}[c]{\fsize}
+    \includegraphics[width=\textwidth]{plots/plot_vertices_10M.pdf}
+    %\subcaption{$10^{7}$ vertices}
+    \label{fig:mpi_omp_commavoiding_daint_2}
 \end{subfigure}
-\begin{subfigure}[c]{0.15\textwidth}
-\includegraphics[width=\textwidth]{plots/10000our_impl}
-\subcaption{$10^{7}$ vertices}
-\label{fig:mpi_omp_commavoiding_euler_2}
-\end{subfigure}
-\begin{subfigure}[c]{0.15\textwidth}
-\includegraphics[width=\textwidth]{plots/20000our_impl}
-\subcaption{$2\times10^{7}$ vertices}
-\label{fig:mpi_omp_commavoiding_euler_3}
-\end{subfigure}
-\caption{Total runtime of three different graphs each with $5\times10^{8}$ edges. The experiment was run on the Euler cluster.}
-\label{fig:mpi_omp_commavoiding_euler}
+    \begin{subfigure}[c]{\fsize}
+        \includegraphics[width=\textwidth]{plots/plot_vertices_20M.pdf}
+        %\subcaption{$2\times10^{7}$ vertices}
+\label{fig:mpi_omp_commavoiding_daint_3}
+    \end{subfigure}
+    \caption{Comparison of the total runtime of out algorithm, with the communication avoiding
+    algorithm \cite{comm_avoiding}, over three different graphs each with $5\times10^{8}$ edges
+    and $5\times10^5, 1\times10^7, 2\times10^7$ vertices. The experiment was run on the Daint cluster.}
+    \label{fig:mpi_omp_commavoiding_daint}
 \end{figure}
 
 \mypar{Mixing MPI and OMP}
