@@ -63,7 +63,7 @@ def format(n): # return an easily readable string.
 
 #font
 font = {'family' : 'normal',
-        'size'   : 11}
+        'size'   : 12}
 plt.rc('font', **font)
 
 probs=[0.25, 0.5]#, 0.75]
@@ -86,14 +86,14 @@ for prob in probs:
     plot(data_dist, 'distributed')
 
 
-    plt.xlabel('processes')
-    plt.ylabel('runtime [s]')
+    plt.xlabel('Number of cores')
+    plt.ylabel('Time [s]')
 
     plt.title('Edge probability: ' + str(prob))
     plt.legend(loc='best')
 
     ax.xaxis.set_major_locator(MaxNLocator(integer=True))
-
+    plt.tight_layout(pad=0.2, h_pad=0.2, w_pad=0.2)
     if save : plt.savefig('all_vertices_' + format(vertices) + '.pdf')
 
     fig_id += 1
