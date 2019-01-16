@@ -57,10 +57,19 @@ int main(int argc, char** argv) {
     std::cout << "Nodes: " << size_x * size_y << std::endl;
   }
 
-  Rng rng(0);
+  std::unique_ptr<graph::GridGraph> grid;
 
-  graph::GridGraph grid(std::array<Label, 2>{size_x, size_y}, n_tiles_per_dim, edge_probability, rng);
-  const std::size_t n_edges = grid.get_edges().size();
+  if (concurrency.id() == 0) {
+    Rng rng(0);
+    grid = std::make_unique<graph::GridGraph>(std::array<Label, 2>{size_x, size_y}, n_tiles_per_dim,
+                                              edge_probability, rng);
+  }
+  else{
+    grid = std::make_unique<graph::GridGraph>(std::array<Label, 2>{size_x, size_y}, n_tiles_per_dim);
+  }
+  grid->broadcast(concurrency);
+
+  const std::size_t n_edges = grid->get_edges().size();
 
   if (concurrency.id() == 0)
     std::cout << "Generated " << n_edges << " edges.\n";
@@ -74,7 +83,7 @@ int main(int argc, char** argv) {
 
       out.open(filename + "_t_" + std::to_string(n_threads) + "_distributed.txt");
       out << "# threads " << n_threads << " processes " << concurrency.size() << " vertices "
-          << grid.get_nodes() << " edges " << n_edges << "\n"
+          << grid->get_nodes() << " edges " << n_edges << "\n"
           << "# algorithm_time \t total_time\n";
     }
 
@@ -82,7 +91,7 @@ int main(int argc, char** argv) {
       double compute_time;
       double total_time;
       auto ret = algorithms::nodeDistributedConnectedComponents(
-          grid.get_nodes(), grid.get_edges(), n_threads, &compute_time, &total_time);
+          grid->get_nodes(), grid->get_edges(), n_threads, &compute_time, &total_time);
       result = compute_time;
       if (concurrency.id() == 0)
         out << compute_time << "\t" << total_time << "\n";
@@ -102,7 +111,7 @@ int main(int argc, char** argv) {
 
       out.open(filename + "_t_" + std::to_string(n_threads) + "_reduction.txt");
       out << "# threads " << n_threads << " processes " << concurrency.size() << " vertices "
-          << grid.get_nodes() << " edges " << n_edges << "\n"
+          << grid->get_nodes() << " edges " << n_edges << "\n"
           << "# algorithm_time \t reduction_time\n";
     }
 
@@ -110,7 +119,7 @@ int main(int argc, char** argv) {
       double compute_time;
       double reduction_time;
       auto ret = algorithms::parallelMpiConnectedComponents(
-          grid.get_nodes(), grid.get_edges(), n_threads, &compute_time, &reduction_time);
+          grid->get_nodes(), grid->get_edges(), n_threads, &compute_time, &reduction_time);
       result = compute_time;
       if (concurrency.id() == 0)
         out << compute_time << "\t" << reduction_time << "\n";

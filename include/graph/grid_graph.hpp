@@ -15,6 +15,8 @@ namespace graph {
 
 class GridGraph {
 public:
+  GridGraph(std::array<Label, 2> grid_length, std::array<Label, 2> n_tiles);
+
   template <class Rng>
   GridGraph(std::array<Label, 2> grid_length, std::array<Label, 2> n_tiles, double prob_connection,
             Rng& rng, bool construct = true);
@@ -35,6 +37,9 @@ public:
     return nodes_;
   }
 
+  template <class Concurrency>
+  void broadcast(const Concurrency& concurrency);
+
 protected:
   Label coordinatesToId(Label x, Label y) const;
   template <class Rng>
@@ -45,8 +50,14 @@ protected:
   const std::array<Label, 2> n_tiles_per_dim_;
 
   std::vector<Edge> edges_;
-  const Label nodes_;
+  Label nodes_;
 };
+
+GridGraph::GridGraph(std::array<Label, 2> grid_size, std::array<Label, 2> n_tiles)
+    : grid_size_(grid_size),
+      n_tiles_per_dim_(n_tiles),
+      tile_size_{util::ceilDiv(grid_size[0], n_tiles[0]), util::ceilDiv(grid_size[1], n_tiles[1])},
+      nodes_(grid_size_[0] * grid_size_[1]) {}
 
 template <class Rng>
 GridGraph::GridGraph(Label grid_length, Label n_tiles, double prob_connection, Rng& rng)
@@ -97,6 +108,12 @@ inline Label GridGraph::coordinatesToId(Label x, Label y) const {
   y -= tile_y * tile_size_[1];
 
   return tile_start + x + y * tile_size_[0];
+}
+
+template <class Concurrency>
+void GridGraph::broadcast(const Concurrency& concurrency) {
+  concurrency.broadcast(nodes_);
+  concurrency.broadcast(edges_);
 }
 
 }  // graph

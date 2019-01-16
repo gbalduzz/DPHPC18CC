@@ -2,6 +2,8 @@
 #pragma once
 
 #include <stdexcept>
+#include <vector>
+#include <type_traits>
 
 #include "mpi.h"
 
@@ -35,7 +37,10 @@ public:
   }
 
   template <class T>
-  void broadcast(T& obj, int root = 0);
+  void broadcast(T& obj, int root = 0) const;
+
+  template <class T>
+  void broadcast(std::vector<T>& v, int root = 0) const;
 
 private:
   int id_;
@@ -43,8 +48,17 @@ private:
 };
 
 template <class T>
-void MpiConcurrency::broadcast(T& obj, int root) {
-  MPI_Bcast(&obj, 1, MPITypeMap<T>::value(), root, MPI_COMM_WORLD);
+void MpiConcurrency::broadcast(T& obj, int root) const {
+  MPI_Bcast(&obj, sizeof(T), MPI_CHAR, root, MPI_COMM_WORLD);
+}
+
+template <class T>
+void MpiConcurrency::broadcast(std::vector<T>& v, int root) const {
+  std::size_t n = v.size();
+  broadcast(n);
+
+  v.resize(n);
+  MPI_Bcast(v.data(), n * sizeof(T), MPI_CHAR, root, MPI_COMM_WORLD);
 }
 
 }  // parallel
