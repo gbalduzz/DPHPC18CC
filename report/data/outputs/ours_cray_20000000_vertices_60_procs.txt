@@ -1,0 +1,6 @@
+# threads 1 processes 56 vertices 20000000 edges 500000000
+# algorithm_time (edges + reduction)	 reduction_time
+2.52816	2.12465
+2.42524	2.02338
+2.44102	2.03712
+2.43421	2.03255

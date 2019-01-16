@@ -10,7 +10,7 @@ from sys import argv
 from matplotlib.ticker import MaxNLocator
 
 confidence_value = 0.95
-save = 0 if len(argv) <= 1 else argv[1]
+save = 1 if len(argv) <= 1 else argv[1]
 fixed_scale = 0 if len(argv) <= 2 else argv[2]
 
 # Returns point estimate, begin and end of confidence interval.
@@ -36,10 +36,10 @@ def load(filenames, separator = '\t', col = 0, dtype = np.float, cores_key = 'pr
     data = []
     for filename in filenames:
         try:
+            
             file = np.loadtxt(filename, comments='#', delimiter=separator, dtype = dtype)
             procs = get_num(filename, cores_key)
             if procs > 32 : continue
-
             times = np.zeros(file.shape[0])
             for i in range(len(times)):
                 times[i] = file[i][col] if len(file.shape) == 2 or dtype != np.float else file[i]
@@ -94,8 +94,6 @@ for vertices in n_vertices:
     ax = plt.figure().gca()
 
     plot(data, 'mpi only')
-    #plot(data2, 'mpi 2 threads')
-    plot(data4, 'mpi 4 threads')
     plot(data_omp, 'omp only')
     plot(data_theirs, 'comm avoiding')
 
@@ -105,11 +103,11 @@ for vertices in n_vertices:
 
     plt.title('500M edges, ' + format(vertices) + ' vertices.')
     plt.legend(loc='best')
-
+    plt.ylim(0,18)
     ax.xaxis.set_major_locator(MaxNLocator(integer=True))
-
+ 
     if save :
-        if fixed_scale : plt.savefig('plot_vertices_fixed_scale_' + format(vertices) + '.pdf')
+        if fixed_scale : plt.savefig('plot_vertices_' + format(vertices) + '.pdf')
         else : plt.savefig('plot_vertices_' + format(vertices) + '.pdf')
 
 
