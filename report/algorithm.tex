@@ -100,8 +100,7 @@ In pseudocode our algorithm is:
     \label{algorithm:cc2}
     \begin{algorithmic}[1]
         \Procedure{connectedComponents}{$n, \text{edges}$}
-        \State $p[i] = i \quad \forall i \in \{1,\cdots, n\}$. %\Comment{Initialize a list of
-parents.}
+        \State $p[i] = i \quad \forall i \in \{1,\cdots, n\}$. %\Comment{Initialize a list of parents.}
         \For{$\left<i, j\right> \in \text{edges}$} \Comment{Execute in parallel.}
 \label{algorithm:step:loop}
         \While{hook is not successful.}
