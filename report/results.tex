@@ -18,23 +18,23 @@ two vertices and self loops were not allowed. All graphs were generated using \c
 \mypar{MPI vs OMP vs Communication Avoiding}
 
 \newlength{\fsize}
-\setlength{\fsize}{0.3\textwidth}
+\setlength{\fsize}{0.45\textwidth}
 \begin{figure}[H]
 	
 \begin{subfigure}[c]{\fsize}
-\includegraphics[width=\textwidth]{plots/50000our_impl}
+\includegraphics[width=\textwidth]{data/50000our_impl}
 \subcaption{$5\times10^{5}$ vertices}
 \label{fig:mpi_omp_commavoiding_euler_1}
 \end{subfigure}
 
 \begin{subfigure}[c]{\fsize}
-\includegraphics[width=\textwidth]{plots/10000our_impl}
+\includegraphics[width=\textwidth]{data/10000our_impl}
 \subcaption{$10^{7}$ vertices}
 \label{fig:mpi_omp_commavoiding_euler_2}
 \end{subfigure}
 
 \begin{subfigure}[c]{\fsize}
-\includegraphics[width=\textwidth]{plots/20000our_impl}
+\includegraphics[width=\textwidth]{data/20000our_impl}
 \subcaption{$2\times10^{7}$ vertices}
 \label{fig:mpi_omp_commavoiding_euler_3}
 \end{subfigure}
@@ -92,13 +92,13 @@ to some point we manage to outperform the communication avoiding algorithm on ea
 \mypar{Results on Piz Daint}
 
 \begin{figure}[H]
-\includegraphics[width=0.5\textwidth]{data/plot_vertices_500k}
+\includegraphics[width=\fsize]{data/plot_vertices_500k}
 \caption{Piz Daint results on graph with $5\times10^8$ edges and $5\times10^5$ vertices.}
 \label{fig:mpi_omp_commavoiding_daint_1}
 \end{figure}
 
 \begin{figure}
-\includegraphics[width=0.5\textwidth]{data/plot_vertices_without_commavoid_20M.pdf}
+\includegraphics[width=\fsize]{data/all_vertices_without_commavoid_20M.pdf}
 \caption{Piz Daint results on graph with $5\times10^8$ edges and $2\times10^7$ vertices.}
 \label{fig:mixed_daint}
 \end{figure}
@@ -114,12 +114,12 @@ In addition to testing our algorithm on the Euler cluster it was also tested on 
 \mypar{Speedups}
 
 \begin{figure}[H]
-\begin{subfigure}[c]{0.5\textwidth}
+\begin{subfigure}[c]{\fsize}
 \includegraphics[width=\textwidth]{data/mpi_speedup_with_ref}
 \subcaption{MPI only}
 \label{fig:speedup_mpi}
 \end{subfigure}
-\begin{subfigure}[c]{0.5\textwidth}
+\begin{subfigure}[c]{\fsize}
 \includegraphics[width=\textwidth]{data/omp_speedup_with_ref}
 \subcaption{OMP only}
 \label{fig:speedup_omp}

@@ -10,7 +10,7 @@ from sys import argv
 from matplotlib.ticker import MaxNLocator
 
 confidence_value = 0.95
-save = 0 if len(argv) <= 1 else argv[1]
+save = 1 if len(argv) <= 1 else argv[1]
 
 # Returns point estimate, begin and end of confidence interval.
 def confidenceInterval(data, prob_interval) :
@@ -61,7 +61,7 @@ def format(n): # return an easily readable string.
 
 #font
 font = {'family' : 'normal',
-        'size'   : 11}
+        'size'   : 12}
 plt.rc('font', **font)
 
 n_vertices=[500000, 10000000, 20000000]
@@ -94,20 +94,19 @@ for vertices in n_vertices:
     plot(data, 'mpi 1 thread')
     plot(data2, 'mpi 2 threads')
     plot(data4, 'mpi 4 threads')
-    plot(data8, 'mpi 8 threads')
     plot(data_omp, 'omp only')
-    plot(data_theirs, 'comm avoiding')
+    #plot(data_theirs, 'comm avoiding')
 
 
-    plt.xlabel('cores')
-    plt.ylabel('runtime [s]')
+    plt.xlabel('Number of cores')
+    plt.ylabel('Time [s]')
 
     plt.title('500M edges, ' + format(vertices) + ' vertices.')
-    plt.legend(loc='best')
-
+    plt.legend(loc='upper right')
+    plt.tight_layout(pad=0.1, h_pad=0.1, w_pad=0.1)
     ax.xaxis.set_major_locator(MaxNLocator(integer=True))
-
-    if save : plt.savefig('all_vertices_' + format(vertices) + '.pdf')
+    plt.xlim(0,32)
+    if save : plt.savefig('all_vertices_without_commavoid_' + format(vertices) + '.pdf')
 
     fig_id += 1
 

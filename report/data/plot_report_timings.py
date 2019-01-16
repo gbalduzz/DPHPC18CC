@@ -65,7 +65,7 @@ def format(n): # return an easily readable string.
 
 #font
 font = {'family' : 'normal',
-        'size'   : 16}
+        'size'   : 12}
 plt.rc('font', **font)
 
 n_vertices=[500000, 10000000, 20000000]
@@ -103,9 +103,8 @@ for vertices in n_vertices:
 
     plt.title('500M edges, ' + format(vertices) + ' vertices.')
     plt.legend(loc='upper right')
-    plt.ylim(0,18)
     ax.xaxis.set_major_locator(MaxNLocator(integer=True))
-    plt.tight_layout(pad=0.2, w_pad=0.2, h_pad=0.2)
+    plt.tight_layout(pad=0.1,w_pad=0.1,h_pad=0.1)
     if save :
         if fixed_scale : plt.savefig('plot_vertices_' + format(vertices) + '.pdf')
         else : plt.savefig('plot_vertices_' + format(vertices) + '.pdf')
