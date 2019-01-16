@@ -105,7 +105,7 @@ for vertices in n_vertices:
     plt.legend(loc='upper right')
     plt.ylim(0,18)
     ax.xaxis.set_major_locator(MaxNLocator(integer=True))
- 
+    plt.tight_layout(pad=0.2, w_pad=0.2, h_pad=0.2)
     if save :
         if fixed_scale : plt.savefig('plot_vertices_' + format(vertices) + '.pdf')
         else : plt.savefig('plot_vertices_' + format(vertices) + '.pdf')
