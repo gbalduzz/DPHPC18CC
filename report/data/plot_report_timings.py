@@ -52,9 +52,9 @@ def load(filenames, separator = '\t', col = 0, dtype = np.float, cores_key = 'pr
 
     return sortFirst(np.array(data))
 
-def plot(data, label):
+def plot(data, label,color):
     error = np.array([data[:,2], data[:,3]])
-    plt.errorbar(data[:,0], data[:,1], yerr=error, fmt='--o', label=label, markersize=5)
+    plt.errorbar(data[:,0], data[:,1], yerr=error, fmt='--o', label=label, markersize=5,color=color)
     if fixed_scale : plt.ylim(0, 18.5)
 
 def format(n): # return an easily readable string.
@@ -65,7 +65,7 @@ def format(n): # return an easily readable string.
 
 #font
 font = {'family' : 'normal',
-        'size'   : 11}
+        'size'   : 16}
 plt.rc('font', **font)
 
 n_vertices=[500000, 10000000, 20000000]
@@ -93,16 +93,16 @@ for vertices in n_vertices:
 
     ax = plt.figure().gca()
 
-    plot(data, 'mpi only')
-    plot(data_omp, 'omp only')
-    plot(data_theirs, 'comm avoiding')
+    plot(data, 'mpi only',color='#144ead')
+    plot(data_omp, 'omp only',color='red')
+    plot(data_theirs, 'comm avoiding',color='green')
 
 
-    plt.xlabel('cores')
-    plt.ylabel('runtime [s]')
+    plt.xlabel('Number of cores')
+    plt.ylabel('Time [s]')
 
     plt.title('500M edges, ' + format(vertices) + ' vertices.')
-    plt.legend(loc='best')
+    plt.legend(loc='upper right')
     plt.ylim(0,18)
     ax.xaxis.set_major_locator(MaxNLocator(integer=True))
  
