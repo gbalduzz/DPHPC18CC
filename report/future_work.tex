@@ -1,5 +1,25 @@
-The main drawback of our algorithm is the reduction step's runtime of $O\left(n \cdot log\left(p\right)\right)$, where $p$ is the number of MPI ranks and $n$ is the number of vertices. For a large number of MPI ranks the $log\left(p\right)$ factor becomes an issue.\\
-Shortening the reductions critical path addresses this problem. In our algorithm this is done by using a mixture of OMP and MPI which reduces the number of MPI ranks. Since OMP does not scale well once the number of OMP threads exceeds the number of cores per CPU this approach is only viable up to a limited number of cores.\\
-Another approach would be reducing the work done in each reduction step. Due to time constraints we were unable to investigate this approach. One could imagine a more efficient hook tree representation solving this problem.\\
-\\
-Another drawback of our algorithm is that in order to achieve satisfying performance one needs to find the right mixture of MPI and OMP. While we analysed the behaviour of different mixtures on graphs with varying density we did not come up with an a priori scheme to determine the right mixture. A good heuristic or even a scheme to find the optimal mixture would be worth exploring.
+The main drawback of our algorithm is the reduction step's runtime of $O\left(n \cdot
+log\left(p\right)\right)$, where $p$ is the number of MPI ranks and $n$ is the number of vertices.
+For a large number of MPI ranks the $log\left(p\right)$ factor becomes an issue.
+
+Limiting the reduction ``height'' addresses this problem. In our algorithm this is done by using a
+mixture of OMP and MPI which reduces the number of MPI ranks.
+
+\deleted{Since OMP does not scale well once
+the number of OMP threads exceeds the number of cores per CPU this approach is only viable up to a
+limited number of cores.} % Besides the hard cap, it seems to scale well.
+
+\deleted{Another approach would be reducing the work $n$ done in each reduction step. Due to time
+constraints we were unable to investigate this approach. One could imagine a more efficient hook
+tree representation solving this problem.} % Is there really anything that we have tought in this direction?
+
+Another drawback of our algorithm is that in order to achieve satisfying performance one needs to
+find the right mixture of MPI and OMP. While we analysed the behaviour of different mixtures on
+graphs with varying density we did not come up with an a priori scheme to determine the right
+mixture. A good heuristic or even a scheme to find the optimal mixture would be worth exploring.
+
+Finally we expect that large improvements can be made in the distributed vertices algorithm
+described in section \ref{section:distributed} by batching several MPI one sided reads
+before synchronization. Further data should be gathered to validate the algorithm
+with different components sizes, while comparing different MPI implementation such as
+foMPI \cite{fompi-mpi3-one-sided}.

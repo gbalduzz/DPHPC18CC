@@ -57,11 +57,11 @@
 
 \begin{abstract}
 We present an improved parallel implementation of a tree based connected components algorithm originally
-introduced by \cite{PCompArticle}. To improve the algorithm's performance the graph's edges are % NOTE: no citations in abstract
-distributed across multiple cores. Each core computes in a lock-free manner a local forest representing the different
+introduced in 1984 by U. Vishkin. To improve the algorithm's performance the graph's edges are
+distributed across multiple cores. Each process computes in a lock-free manner a local forest representing the different
 connected components. The resulting forests are then combined using a reduction. A comparison of our
-algorithm against a communication avoiding algorithm \cite{comm_avoiding} on a set of large graphs
-($5\times10^8$ Edges with up to $2\times10^7$ Vertices) is presented. Results where our algorithm uses a
+algorithm against a communication avoiding algorithm recently developed at ETH, on a set of large graphs
+($5\times10^8$ Edges with up to $2\times10^7$ Vertices), is presented. Results where our algorithm uses a
 mixture of both MPI and OMP are also shown.
 \end{abstract}
 
@@ -86,7 +86,6 @@ mixture of both MPI and OMP are also shown.
 %Then explain what kind of benchmarks you ran. The idea is to give enough information so the experiments are reproducible by somebody else on his or her code.
 %For sorting you would talk about the input sizes. For a tool that performs NUMA optimization, you would specify the programs you ran.
 
-\mypar{Results}
 %Next divide the experiments into classes, one paragraph for each. In each class of experiments you typically pursue one questions that then is answered by a suitable plot or plots. For example, first you may want to investigate the performance behavior with changing input size, then how your code compares to external benchmarks.
 %
 %For some tips on benchmarking including how to create a decent viewgraph see pages 22--27 in \cite{Pueschel:10}.
