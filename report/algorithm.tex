@@ -28,7 +28,7 @@ to be optimal \cite{Hopcroft}.
 
 Unfortunately this algorithm does not parallelize in a straightforward
 way. Instead we first implemented
-an algorithm proposed by Uzi Vishkin \cite{PCompPaper} and later described in a class by Pavel
+an algorithm proposed by Uzi Vishkin \cite{PCompArticle} and later described in a class by Pavel
 Tvrdik \cite{PCompClass}. This algorithm casts the problem in terms of the generation of a
 forest, where the vertices of the same connected component belong to the same tree, and its root
 can be used as the representative.\\
@@ -118,10 +118,10 @@ parallel compression works and was tested to
 be efficient only on architectures such as x86, where writes to 32 or 64-bits , used to store a
 vertex's id, are atomic.}
 
-We \replaced{to implement}{tried implementing} the parallel execution of loop \ref{algorithm:step:loop} with  Boost fibers
+\deleted[id=R]{We}\replaced{To implement}{tried implementing} the parallel execution of loop \ref{algorithm:step:loop} with  Boost fibers
 \cite{Boost}
 whose execution is scheduled with a work stealing algorithm, and OpenMP with a dynamic scheduler.
-OpenMP performed better by a large margin and \replaced{and thus was}{will be} used to acquire the data presented later.
+OpenMP performed better by a large margin and \replaced[id=R]{and therefore was}{and thus was} used to acquire the data presented later.
 
 \replaced{The algorithm's overall cost}{The overall cost of the algorithm} is $\Theta((n + m)\langle H \rangle)$, where $\langle H \rangle$
 is
@@ -130,7 +130,7 @@ and on average (\replaced{depending on}{relatively to} the execution order of th
 for a supercritical \replaced{random graph}{one} \cite{RandomGraph}.
 
 \mypar{Multiple compute nodes}
-Algorithm \label{algorithm:cc2} works only on a single compute node with a shared memory model.
+\added[id=R]{The} algorithm \label{algorithm:cc2} works only on a single compute node with a shared memory model.
 Moreover, it is efficient
 only when the graph is \replaced{sparse enough}{relatively sparse so} that the \replaced{probability}{chance} of a collision between two processors
 trying to update the same parent is low.
@@ -158,9 +158,8 @@ density of the graph.
 
 \mypar{Distributed vertices}
 While the described approach works on generic graphs, it performs poorly on very sparse graphs using
-a large number of compute nodes. Moreover, the full set of vertex id's must fit in memory, limiting
-the
-graph size to $8$ billion vertices. If the connectivity of a graph the size of a human brain needs
+a large number of compute nodes. Moreover, the full set of \replaced[id=R]{vertices}{vertex id's} must fit in memory, limiting
+the graph size to $8$ billion vertices. If the connectivity of a graph the size of a human brain needs
 to be studied,
 we propose do distribute the representation of the vertices as well.
 
@@ -168,7 +167,7 @@ Often, real world graphs are embedded on a space with some metric, and connectio
 more frequently between
 vertices that are close together. For example the pixel representing features of \replaced{an image}{a picture}, or the
 roads connecting cities
-with a known geographical position\deleted{, posses this property}.
+with a known geographical position\deleted[id=R,remark= I would not delete this part as it now is not a correct sentence anymore]{, posses this property}.
 
 We represent this type of graph with a very simple model: a two dimensional lattice with random
 connections between nearest neighbors
@@ -176,7 +175,7 @@ only. We split the lattice in as many square tiles as there are processes. Then 
 applies algorithm \ref{algorithm:cc2} \replaced{to}{with} the subset
 of edges connecting two vertices in \replaced{its}{their own} tile. Finally we process the boundary edges\replaced{(edges connecting tiles)}{,
 connecting vertices of different tiles,} \replaced{using}{with} MPI
-one sided communication. The list \replaced{local vertex ids}{of ids of the local vertices} is stored in an MPI window, so that
+one sided communication. The list \replaced[id=R,remark=I would not change this one]{local vertex ids}{of ids of the local vertices} is stored in an MPI window, so that
 the representative of a remote vertex
 can be obtained with \verb|MPI_Get|, while a hook can be created with \verb|MPI_Compare_and_swap|.
 Therefore only two global synchronization points are necessary: after all edges have been
