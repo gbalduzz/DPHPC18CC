@@ -8,8 +8,10 @@ DDR4 memory clocked at 2400 MHz \cite{Euler}. We were allowed to use up to two n
 maximum of 48 cores. The algorithm was compiled and run using gcc 6.2.3 and Open MPI 3.0.0.
 
 \mypar{Piz Daint setup}
-Each of the utilized XC40 nodes on Piz Daint contains two Intel Xeon E5-2695, each with 18 hardware threads,
-and
+Each of the utilized XC40 nodes on Piz Daint contains two Intel Xeon E5-2695, each with 18 hardware
+threads,
+and 32 GB of DDR4 memory. We used both gcc and the Cray compiler, and observed marginally faster
+run times with the latter.
 
 \mypar{Graph Generation}
 Our algorithm was evaluated on undirected, unweighted graphs. Multiple edges connecting the same
@@ -20,7 +22,7 @@ two vertices and self loops were not allowed. All graphs were generated using \c
 \newlength{\fsize}
 \setlength{\fsize}{0.45\textwidth}
 \begin{figure}[H]
-	
+
 \begin{subfigure}[c]{\fsize}
 \includegraphics[width=\textwidth]{data/50000our_impl}
 \subcaption{$5\times10^{5}$ vertices}
@@ -38,8 +40,10 @@ two vertices and self loops were not allowed. All graphs were generated using \c
 \subcaption{$2\times10^{7}$ vertices}
 \label{fig:mpi_omp_commavoiding_euler_3}
 \end{subfigure}
-    
-\caption{Comparison of the total runtime of our algorithm with the communication avoiding algorithm \cite{comm_avoiding} over three different graphs each with $5\times10^{8}$ edges and $5\times10^5, 1\times10^7, 2\times10^7$ vertices. The experiment was run on the Euler
+
+\caption{Comparison of the total runtime of our algorithm with the communication avoiding algorithm
+\cite{comm_avoiding} over three different graphs each with $5\times10^{8}$ edges and $5\times10^5,
+1\times10^7, 2\times10^7$ vertices. The experiment was run on the Euler
 cluster.}
 \label{fig:mpi_omp_commavoiding_euler}
 \end{figure}
@@ -47,7 +51,8 @@ cluster.}
 The results in \autoref{fig:mpi_omp_commavoiding_euler} show our algorithm compared with the
 communication avoiding algorithm \cite{comm_avoiding} on three different graphs with the same
 number of edges but different densities. Our algorithm was run in MPI and OMP only mode.\\
-\autoref{fig:mpi_omp_commavoiding_euler_1} shows the MPI only version outperforming the OMP version on the densest graph. This can be explained by the combination of two effects:
+\autoref{fig:mpi_omp_commavoiding_euler_1} shows the MPI only version outperforming the OMP version
+on the densest graph. This can be explained by the combination of two effects:
 the first being that a dense graph results in more contention between the OMP threads during the
 edge contractions, and the second being that the reduction after the contractions scales linearly
 with the number of vertices. Since the number of vertices is comparatively low in a dense graph the
@@ -91,21 +96,32 @@ to some point we manage to outperform the communication avoiding algorithm on ea
 
 \mypar{Results on Piz Daint}
 
-\begin{figure}[H]
-\includegraphics[width=\fsize]{data/plot_vertices_500k}
+\begin{figure}
+\includegraphics[width=\fsize]{data/plot_vertices_500k.pdf}
 \caption{Piz Daint results on graph with $5\times10^8$ edges and $5\times10^5$ vertices.}
 \label{fig:mpi_omp_commavoiding_daint_1}
 \end{figure}
 
 \begin{figure}
-\includegraphics[width=\fsize]{data/all_vertices_without_commavoid_20M.pdf}
+\includegraphics[width=\fsize]{data/plot_vertices_20M.pdf}
 \caption{Piz Daint results on graph with $5\times10^8$ edges and $2\times10^7$ vertices.}
 \label{fig:mixed_daint}
 \end{figure}
 
-In addition to testing our algorithm on the Euler cluster it was also tested on the Piz Daint cluster. The graphs used were the same as in the experiments run on Euler. We will now discuss interesting differences in the results.\\
-\autoref{fig:mpi_omp_commavoiding_daint_1} shows the results for the densest graph on Piz Daint. The OMP only version behaves differently compared to Euler. We still observe a decrease in performance when going from one to two cores. The decrease is not as severe as on Euler. The performance decrease as we go from one to multiple CPUs is no longer present. This can be explained by Daint's cache coherency protocol being more efficient, especially across multiple CPUs.
-\autoref{fig:mixed_daint} shows the Piz Daint results for different mixtures of MPI and OMP on the sparsest graph. As on Euler, we do see the OMP only version performing best for a large number of cores. For all versions, except the OMP only version, we can clearly see the effect the number of reduction steps has on the runtime. It is most noticeable as we go from 16 to 18 cores. Here each version has to perform an additional reduction step which results in the increased runtime.
+In addition to testing our algorithm on the Euler cluster it was also tested on the Piz Daint
+cluster. The graphs used were the same as in the experiments run on Euler. We will now discuss
+interesting differences in the results.
+
+\autoref{fig:mpi_omp_commavoiding_daint_1} shows the results for the densest graph on Piz Daint.
+The OMP only version behaves differently compared to Euler. We still observe a decrease in
+performance when going from one to two cores. The decrease is not as severe as on Euler. The
+performance decrease as we go from one to multiple CPUs is no longer present. This can be explained
+by Daint's cache coherency protocol being more efficient, especially across multiple CPUs.
+\autoref{fig:mixed_daint} shows the Piz Daint results for different mixtures of MPI and OMP on the
+sparsest graph. As on Euler, we do see the OMP only version performing best for a large number of
+cores. For all versions, except the OMP only version, we can clearly see the effect the number of
+reduction steps has on the runtime. It is most noticeable as we go from 16 to 18 cores. Here each
+version has to perform an additional reduction step which results in the increased runtime.
 
 
 
@@ -130,7 +146,12 @@ $5\times10^{8}$ edges.}
 \end{figure}
 
 \autoref{fig:speedup} shows the measured speed up of the MPI only and OMP only version. As one
-would expect from the results discussed previously the MPI only version achieves better scaling on dense graphs while the OMP only version scales better on sparse graphs.\\
-We can also see that our algorithm achieves better scaling on Euler for the MPI only version. The reason our algorithm scales better on Euler is that the single core performance is lower on Euler compared to Daint. This means that the edge contractions dominate the runtime for longer before the reduction step starts to be an issue.\\
-For the OMP only version the differences in speed ups can be explained by the differences in the shared memory architecture.
+would expect from the results discussed previously the MPI only version achieves better scaling on
+dense graphs while the OMP only version scales better on sparse graphs.\\
+We can also see that our algorithm achieves better scaling on Euler for the MPI only version. The
+reason our algorithm scales better on Euler is that the single core performance is lower on Euler
+compared to Daint. This means that the edge contractions dominate the runtime for longer before the
+reduction step starts to be an issue.\\
+For the OMP only version the differences in speed ups can be explained by the differences in the
+shared memory architecture.
 

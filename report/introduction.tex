@@ -12,9 +12,8 @@ be discussed in this paper.
 \mypar{Related Work}
 The first sequential algorithm to solve the connected components problem goes back to
 \cite{Hopcroft}. Parallel approaches were presented in \cite{MANOHAR1989133} and
-\cite{Han:1990:EFP:79147.214077}. Recently \cite{comm_avoiding} was published, where a
-communication-avoiding approach was discussed. A communication-avoiding algorithm uses
-asymptotically less communication. By doing so \cite{comm_avoiding} sacrifices some computational
+\cite{Han:1990:EFP:79147.214077}. Recently a communication-avoiding algorithm was published \cite{comm_avoiding}.
+This algorithm uses asymptotically less communication, but sacrifices some computational
 efficiency as the root node does most of the work. In this paper we present an algorithm which
 distributes the work while still avoiding as much communication as possible. This is achieved by
 distributing the list of edges evenly among different MPI ranks. These then locally compute their

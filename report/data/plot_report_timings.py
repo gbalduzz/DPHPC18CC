@@ -10,8 +10,9 @@ from sys import argv
 from matplotlib.ticker import MaxNLocator
 
 confidence_value = 0.95
-save = 1 if len(argv) <= 1 else argv[1]
+save = 0 if len(argv) <= 1 else argv[1]
 fixed_scale = 0 if len(argv) <= 2 else argv[2]
+limit = 32
 
 # Returns point estimate, begin and end of confidence interval.
 def confidenceInterval(data, prob_interval) :
@@ -36,10 +37,10 @@ def load(filenames, separator = '\t', col = 0, dtype = np.float, cores_key = 'pr
     data = []
     for filename in filenames:
         try:
-            
+
             file = np.loadtxt(filename, comments='#', delimiter=separator, dtype = dtype)
             procs = get_num(filename, cores_key)
-            if procs > 32 : continue
+            if procs > limit and limit > 0 : continue
             times = np.zeros(file.shape[0])
             for i in range(len(times)):
                 times[i] = file[i][col] if len(file.shape) == 2 or dtype != np.float else file[i]
@@ -54,7 +55,10 @@ def load(filenames, separator = '\t', col = 0, dtype = np.float, cores_key = 'pr
 
 def plot(data, label,color):
     error = np.array([data[:,2], data[:,3]])
-    plt.errorbar(data[:,0], data[:,1], yerr=error, fmt='--o', label=label, markersize=5,color=color)
+    if color != 'auto':
+        plt.errorbar(data[:,0], data[:,1], yerr=error, fmt='--o', label=label, markersize=5,color=color)
+    else :
+        plt.errorbar(data[:,0], data[:,1], yerr=error, fmt='--o', label=label, markersize=5)
     if fixed_scale : plt.ylim(0, 18.5)
 
 def format(n): # return an easily readable string.
@@ -95,6 +99,7 @@ for vertices in n_vertices:
 
     plot(data, 'mpi only',color='#144ead')
     plot(data_omp, 'omp only',color='red')
+    plot(data4, 'mpi 4 threads', color='auto')
     plot(data_theirs, 'comm avoiding',color='green')
 
 
