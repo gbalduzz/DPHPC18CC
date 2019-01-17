@@ -1,6 +1,6 @@
 To evaluate our algorithm's performance a number of experiments were run on both the Euler and the
 Piz Daint cluster. In the following paragraphs we will first describe both the Euler and the Piz
-Daint setups. We will then go on to discussing each experiment separately.
+Daint setups. We will then go on to discussing each experiment separately. The errorbars in all plots refer to a 95\% confidence interval.
 
 \mypar{Euler setup}
 Each node in the Euler V cluster contains two 12-core Intel Xeon Gold 5118 processors and 96 GB of
@@ -15,7 +15,7 @@ run times with the latter.
 
 \mypar{Graph Generation}
 Our algorithm was evaluated on undirected, unweighted graphs. Multiple edges connecting the same
-two vertices and self loops were not allowed. All graphs were generated using \cite{Parmat}.
+two vertices and self loops were not allowed. All graphs were generated using \cite{Parmat}. The same tool was used in \cite{comm_avoiding}
 
 \mypar{MPI vs OMP vs Communication Avoiding}
 
@@ -70,7 +70,7 @@ threads due to the sparser graph. The MPI version's slow down is the result of t
 reduction time due to the larger number of vertices.\\
 The results in \autoref{fig:mpi_omp_commavoiding_euler} show the communication avoiding algorithm
 scaling badly with the number of cores. This is expected since the edge contractions are computed
-on a single node. Since our algorithm does to scale with the number of cores up
+on a single node. Since our algorithm does scale with the number of cores up
 to some point we manage to outperform the communication avoiding algorithm on each graph.
 
 

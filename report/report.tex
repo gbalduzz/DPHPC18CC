@@ -20,7 +20,7 @@
 % Title.
 % ------
 %% TODO
-\title{Something with connected components}
+\title{Parallel Connected Components}
 %
 % Single address.
 % ---------------
@@ -60,7 +60,7 @@ We present an improved parallel implementation of a tree based connected compone
 introduced in 1984 by U. Vishkin. To improve the algorithm's performance the graph's edges are
 distributed across multiple cores. Each process computes in a lock-free manner a local forest representing the different
 connected components. The resulting forests are then combined using a reduction. A comparison of our
-algorithm against a communication avoiding algorithm recently developed at ETH, on a set of large graphs
+algorithm against a communication-avoiding algorithm recently developed at ETH, on a set of large graphs
 ($5\times10^8$ Edges with up to $2\times10^7$ Vertices), is presented. Results where our algorithm uses a
 mixture of both MPI and OMP are also shown.
 \end{abstract}

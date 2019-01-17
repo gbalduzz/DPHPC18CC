@@ -146,8 +146,8 @@ probability of a collision between two processors
 trying to update the same parent is low.
 %TODO reference the data.
 
-We propose to extend our algorithm by distributing the list of edges evenly among each MPI
-process. %Rank is the label.
+We propose to extend our algorithm by distributing the list of edges evenly among the MPI
+processes. %Rank is the label.
 Then each one of them computes a forest using only the subset of edges it
 received. This local
 computation
@@ -166,38 +166,39 @@ Therefore a different mixture of MPI ranks and OpenMP threads per rank is advise
 density of the graph.
 %TODO: maybe insert ref to data.
 
-\mypar{Distributed vertices}
-\label{section:distributed}
-While the described approach works on generic graphs, it performs poorly on very sparse graphs using
-a large number of compute nodes. Moreover, the full set of vertex indices must fit in memory, limiting
-the graph size to $8$ billion vertices. If the connectivity of a graph the size of a human brain needs
-to be studied,
-we propose do distribute the representation of the vertices as well.
-
-Often, real world graphs are embedded on a space with some metric, and connections
-occur much more frequently between
-vertices that are close together. For example the pixel representing features of an
-image, or the roads connecting cities
-with a known geographical position.
-
-We represent this type of graph with a very simple model: a two dimensional lattice with random
-connections between nearest neighbors
-only. We split the lattice in as many square tiles as there are processes. Then each process
-applies algorithm \ref{algorithm:cc2} to the subset
-of edges connecting two vertices in its tile. Finally we process
-edges crossing the boundary between different tiles using MPI one sided communication. The list
-of the local vertices' parents is stored in an MPI window, so that
-the representative of a remote vertex
-can be obtained with \verb|MPI_Get|, while a hook can be created with \verb|MPI_Compare_and_swap|.
-Therefore only two global synchronization points are necessary: after all edges have been
-processed, and after the final compression
-of the forest.
-
-Unfortunately, due to development time constraints each MPI
-operation is
-synchronized locally.
-This leads to good scaling results only on extremely sparse graphs with small connected
-components.
+% This part is not relevant without results
+%\mypar{Distributed vertices}
+%\label{section:distributed}
+%While the described approach works on generic graphs, it performs poorly on very sparse graphs using
+%a large number of compute nodes. Moreover, the full set of vertex indices must fit in memory, limiting
+%the graph size to $8$ billion vertices. If the connectivity of a graph the size of a human brain needs
+%to be studied,
+%we propose do distribute the representation of the vertices as well.
+%
+%Often, real world graphs are embedded on a space with some metric, and connections
+%occur much more frequently between
+%vertices that are close together. For example the pixel representing features of an
+%image, or the roads connecting cities
+%with a known geographical position.
+%
+%We represent this type of graph with a very simple model: a two dimensional lattice with random
+%connections between nearest neighbors
+%only. We split the lattice in as many square tiles as there are processes. Then each process
+%applies algorithm \ref{algorithm:cc2} to the subset
+%of edges connecting two vertices in its tile. Finally we process
+%edges crossing the boundary between different tiles using MPI one sided communication. The list
+%of the local vertices' parents is stored in an MPI window, so that
+%the representative of a remote vertex
+%can be obtained with \verb|MPI_Get|, while a hook can be created with \verb|MPI_Compare_and_swap|.
+%Therefore only two global synchronization points are necessary: after all edges have been
+%processed, and after the final compression
+%of the forest.
+%
+%Unfortunately, due to development time constraints each MPI
+%operation is
+%synchronized locally.
+%This leads to good scaling results only on extremely sparse graphs with small connected
+%components.
 
 % TODO reference graph if available.
 
