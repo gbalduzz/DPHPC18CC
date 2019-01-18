@@ -64,7 +64,7 @@ int main(int argc, char** argv) {
     grid = std::make_unique<graph::GridGraph>(std::array<Label, 2>{size_x, size_y}, n_tiles_per_dim,
                                               edge_probability, rng);
   }
-  else{
+  else {
     grid = std::make_unique<graph::GridGraph>(std::array<Label, 2>{size_x, size_y}, n_tiles_per_dim);
   }
   grid->broadcast(concurrency);
@@ -100,11 +100,15 @@ int main(int argc, char** argv) {
     if (concurrency.id() == 0) {
       const double mean = util::avg(results);
       const double err = util::stddev(results) / std::sqrt(n_times);
-      std::cout << "Time: " << mean << " +- " << err << std::endl;
+      std::cout << "Time distributed: " << mean << " +- " << err << std::endl;
     }
   }
 
   {  // Reduction
+    if (concurrency.id() != 0) {
+      grid->get_edges().clear();
+    }
+
     std::ofstream out;
     if (concurrency.id() == 0) {
       std::cout << "Starting Reduction algorithm.\n";
@@ -128,7 +132,7 @@ int main(int argc, char** argv) {
     if (concurrency.id() == 0) {
       const double mean = util::avg(results);
       const double err = util::stddev(results) / std::sqrt(n_times);
-      std::cout << "Time: " << mean << " +- " << err << std::endl;
+      std::cout << "Time reduction: " << mean << " +- " << err << std::endl;
     }
   }
 

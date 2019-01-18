@@ -4,6 +4,7 @@
 #pragma once
 
 #include <array>
+#include <cassert>
 #include <limits>
 #include <vector>
 #include <stdexcept>
@@ -49,6 +50,8 @@ protected:
   const std::array<Label, 2> tile_size_;
   const std::array<Label, 2> n_tiles_per_dim_;
 
+  std::vector<Label> tile_starts_;
+
   std::vector<Edge> edges_;
   Label nodes_;
 };
@@ -73,6 +76,23 @@ GridGraph::GridGraph(std::array<Label, 2> grid_size, std::array<Label, 2> n_tile
       nodes_(grid_size_[0] * grid_size_[1]) {
   if (grid_size[0] >= (std::numeric_limits<Label>::max() - 1) / grid_size[1])
     throw(std::out_of_range("Use a bigger representation."));
+
+  tile_starts_.resize(n_tiles_per_dim_[0] * n_tiles_per_dim_[1], 0);
+  for (int tx = 0; tx < n_tiles_per_dim_[0]; ++tx)
+    for (int ty = 0; ty < n_tiles_per_dim_[0]; ++ty) {
+      const int index = tx + ty * n_tiles_per_dim_[0];
+
+      const Label this_tile_x_size = tx == n_tiles_per_dim_[0] - 1
+                                         ? grid_size_[0] - (n_tiles_per_dim_[0] - 1) * tile_size_[0]
+                                         : tile_size_[0];
+      const Label this_tile_y_size = ty == n_tiles_per_dim_[1] - 1
+                                         ? grid_size_[1] - (n_tiles_per_dim_[1] - 1) * tile_size_[1]
+                                         : tile_size_[1];
+      if (index + 1 < tile_starts_.size()) {
+        tile_starts_[index + 1] = tile_starts_[index] + this_tile_x_size * this_tile_y_size;
+        assert(tile_starts_[index + 1] < nodes_);
+      }
+    }
 
   if (construct)
     buildGraph(0, grid_size_[0], 0, grid_size_[1], rng, prob_connection);
@@ -100,14 +120,15 @@ inline Label GridGraph::coordinatesToId(Label x, Label y) const {
   const Label tile_x = x / tile_size_[0];
   const Label tile_y = y / tile_size_[1];
 
-  const Label tile_start =
-      tile_x * tile_size_[0] * tile_size_[1] + tile_y * grid_size_[0] * tile_size_[1];
+  const Label tile_start = tile_starts_[tile_x + n_tiles_per_dim_[0] * tile_y];
 
   // Coordinates relative to the tile start.
   x -= tile_x * tile_size_[0];
   y -= tile_y * tile_size_[1];
 
-  return tile_start + x + y * tile_size_[0];
+  const Label id =  tile_start + x + y * tile_size_[0];
+  assert(id < nodes_);
+  return id;
 }
 
 template <class Concurrency>

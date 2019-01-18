@@ -2,10 +2,10 @@
 #include "io/json11.hpp"
 #include "io/buffer.hpp"
 #include <sstream>
-//#include <boost/property_tree/ptree.hpp>
-//#include <boost/property_tree/json_parser.hpp>
-//#include <boost/foreach.hpp>
-#include <iostream>
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/json_parser.hpp>
+#include <boost/foreach.hpp>
+//#include <iostream>
 
 using namespace std;
 
@@ -15,7 +15,7 @@ namespace util {
 // Ignore lines that start with '#', as those are comments.
 // If not # or number, will throw error!
 // Does not check for duplicates and similar.
-/*vector<graph::Edge> GraphReader::read_graph_from_adjacency_list(string filename) {
+vector<graph::Edge> GraphReader::read_graph_from_adjacency_list(string filename) {
   ifstream adjacency_list;
 
   adjacency_list.open(filename);
@@ -46,7 +46,7 @@ namespace util {
 
   return edge_list;
 };
-*/
+
 void GraphReader::readCommAvoidingInput(const std::string& filename,
                                         std::vector<graph::Edge>& edges, graph::Label& nodes) {
   int n_edges, w;
@@ -78,7 +78,7 @@ void GraphReader::readCompressedCommAvoidingInput(const std::string& filename,
  * Otherwise: Comment or similar
  *
  * */
-/*std::vector<graph::Edge> GraphReader::read_graph_from_DIMACS_challenge(string filename) {
+std::vector<graph::Edge> GraphReader::read_graph_from_DIMACS_challenge(string filename) {
   ifstream file;
 
   file.open(filename);
@@ -157,7 +157,7 @@ void GraphReader::read_graph_from_DIMACS_challenge_to_file(string filename) {
   file.close();
   outfile.close();
 }
-*/
+
 int GraphReader::vertexNumber(const std::vector<graph::Edge>& edges) {
   graph::Label max_id = 0;
   for (const auto& edge : edges) {

@@ -40,6 +40,8 @@ public:
 
   static void readCommAvoidingInput(const std::string& filename, std::vector<graph::Edge>& edges,
                                     graph::Label& nodes);
+  static void readCompressedCommAvoidingInput(const std::string& filename,
+                                              std::vector<graph::Edge>& edges, graph::Label& nodes);
 };
 }  // namespace graph
 
