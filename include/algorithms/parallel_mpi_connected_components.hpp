@@ -10,7 +10,7 @@ namespace algorithms {
 
 // Returns the hooked tree and the time after the distribution of the edges.
 graph::HookTree parallelMpiConnectedComponents(graph::Label n_nodes,
-                                               std::vector<graph::Edge>& all_edges,
+                                               const std::vector<graph::Edge>& all_edges,
                                                int n_threads_per_node,
                                                double* computation_time = nullptr,
                                                double* total_time = nullptr);

@@ -35,7 +35,7 @@ unsigned int nextPowerOf2(unsigned int v) {
 }
 
 graph::HookTree parallelMpiConnectedComponents(graph::Label n_nodes,
-                                               std::vector<graph::Edge>& all_edges,
+                                               const std::vector<graph::Edge>& all_edges,
                                                int n_threads_per_node, double* computation_time,
                                                double* reduction_time) {
   // get MPI params
@@ -67,9 +67,12 @@ graph::HookTree parallelMpiConnectedComponents(graph::Label n_nodes,
 
   // scatter edges
   if (rank == 0) {
-    for (int dest = 1; dest < comm_size; ++dest)
-      checkMPI(MPI_Send(all_edges.data() + buff_size * dest, buff_size * sizeof(graph::Edge),
+    for (int dest = 1; dest < comm_size; ++dest) {
+      const std::size_t send_size =
+          dest == comm_size - 1 ? n_edges - (comm_size - 1) * buff_size : buff_size;
+      checkMPI(MPI_Send(all_edges.data() + buff_size * dest, send_size * sizeof(graph::Edge),
                         MPI_CHAR, dest, 0, MPI_COMM_WORLD));
+    }
     std::copy_n(all_edges.data(), my_edges.size(), my_edges.data());
   }
   else {
@@ -92,7 +95,7 @@ graph::HookTree parallelMpiConnectedComponents(graph::Label n_nodes,
   bool done = false;
   std::vector<graph::Label> peer_parents;
 
-  const auto start_redu = util::getTime(); // Note: for accurate timing insert a barrier.
+  const auto start_redu = util::getTime();  // Note: for accurate timing insert a barrier.
 
   while (n_active_nodes > 1 && !done) {
     if (rank < n_active_nodes / 2) {
