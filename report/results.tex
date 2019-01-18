@@ -155,17 +155,16 @@ shared memory architecture.
 
 \mypar{Distributed vertices}
 As the performance of the RMA controller is essential, we tested the distributed vertices algorithm only on Piz Daint.
-In \autoref{fig:distributed_scaling} we report the weak scaling for an input with 400M vertices per
-process, 18 threads per process, and 200M edges.
+We report the results of a weak scaling run in \autoref{fig:distributed_scaling}.
 
 While the scaling for this specific case is excellent, this works only when the average connected component size is
-extremely small. Due to development time constraints each MPI operation is
-synchronized locally, hurting the performance in cases where several RMA operations are required to obtain the
+extremely small. Due to development time constraints, each MPI operation is
+synchronized locally, hurting the performance in cases where several RMA reads are required to obtain the
 root of a tree.
 
 \begin{figure}%[H]
     \includegraphics[width=\fsize]{plots/weak_scaling.pdf}
-    \caption{Weak scaling on Piz Daint of the distributed vertices algorithm. Each process is run
-    on a single socket.}
+    \caption{Weak scaling of the distributed vertices algorithm on Piz Daint. Each process is run
+    on a single socket. The input size is 400M vertices per process, and 200M edges per process.}
     \label{fig:distributed_scaling}
 \end{figure}

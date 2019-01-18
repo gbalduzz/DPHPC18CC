@@ -106,7 +106,7 @@ In pseudocode our algorithm is:
 \label{algorithm:step:loop}
         \While{hook is not successful.}
                 \State from = max(root(i), root(j))
-                \State to = mint(root(i), root(j))
+                \State to = min(root(i), root(j))
                 \State  atomicHook(from, to)
         \EndWhile
         \State  \kif !isRoot(i) \kthen p[i] = root(i) \label{algorithm:step:skip_connection}
