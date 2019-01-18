@@ -73,7 +73,6 @@ scaling badly with the number of cores. This is expected since the edge contract
 on a single node. Since our algorithm does scale with the number of cores up
 to some point we manage to outperform the communication avoiding algorithm on each graph.
 
-
 %
 %\mypar{Mixing MPI and OMP}
 %
@@ -153,3 +152,19 @@ reduction step starts to be an issue.\\
 For the OMP version the discrepancy in the speed ups can be explained by the differences in the
 shared memory architecture.
 
+\mypar{Distributed vertices}
+As the performance of the RMA controller is essential, we tested the distributed vertices algorithm only on Piz Daint.
+In \autoref{fig:distributed_scaling} we report the weak scaling for an input with 400M vertices per
+process, 18 threads per process, and 200M edges.
+
+While the scaling for this specific case is excellent, this works only when the average connected component size is
+extremely small. Due to development time constraints each MPI operation is
+synchronized locally, hurting the performance in cases where several RMA operations are required to obtain the
+root of a tree.
+
+\begin{figure}%[H]
+    \includegraphics[width=\fsize]{plots/weak_scaling.pdf}
+    \caption{Weak scaling on Piz Daint of the distributed vertices algorithm. Each process is run
+    on a single socket.}
+    \label{fig:distributed_scaling}
+\end{figure}
