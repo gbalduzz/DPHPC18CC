@@ -99,7 +99,7 @@ for vertices in n_vertices:
 
     plot(data, 'mpi only',color='#144ead')
     plot(data_omp, 'omp only',color='red')
-    plot(data4, 'mpi 4 threads', color='auto')
+    plot(data4, 'mpi 4 threads', color='purple')
     plot(data_theirs, 'comm avoiding',color='green')
 
 
