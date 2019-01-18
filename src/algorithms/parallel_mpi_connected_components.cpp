@@ -66,17 +66,20 @@ graph::HookTree parallelMpiConnectedComponents(graph::Label n_nodes,
   }
 
   // scatter edges
+  using parallel::MPITypeMap;
+  using graph::Edge;
+
   if (rank == 0) {
     for (int dest = 1; dest < comm_size; ++dest) {
       const std::size_t send_size =
           dest == comm_size - 1 ? n_edges - (comm_size - 1) * buff_size : buff_size;
-      checkMPI(MPI_Send(all_edges.data() + buff_size * dest, send_size * sizeof(graph::Edge),
-                        MPI_CHAR, dest, 0, MPI_COMM_WORLD));
+      checkMPI(MPI_Send(all_edges.data() + buff_size * dest, send_size, MPITypeMap<Edge>::value(),
+                        dest, 0, MPI_COMM_WORLD));
     }
     std::copy_n(all_edges.data(), my_edges.size(), my_edges.data());
   }
   else {
-    checkMPI(MPI_Recv(my_edges.data(), buff_size * sizeof(graph::Edge), MPI_CHAR, 0, 0,
+    checkMPI(MPI_Recv(my_edges.data(), my_edges.size(), MPITypeMap<Edge>::value(), 0, 0,
                       MPI_COMM_WORLD, MPI_STATUS_IGNORE));
   }
 

@@ -55,10 +55,15 @@ void MpiConcurrency::broadcast(T& obj, int root) const {
 template <class T>
 void MpiConcurrency::broadcast(std::vector<T>& v, int root) const {
   std::size_t n = v.size();
-  broadcast(n);
-
+  broadcast(n, root);
   v.resize(n);
-  MPI_Bcast(v.data(), n * sizeof(T), MPI_CHAR, root, MPI_COMM_WORLD);
+
+  constexpr std::size_t block_size = std::numeric_limits<int>::max();
+
+  for (std::size_t start = 0; start < n; start += block_size) {
+    std::size_t msg_size = start + block_size <= n ? block_size : n - start;
+    MPI_Bcast(v.data() + start, msg_size, MPITypeMap<T>::value(), root, MPI_COMM_WORLD);
+  }
 }
 
 }  // parallel
